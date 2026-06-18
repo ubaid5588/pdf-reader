@@ -10,6 +10,7 @@ class Onboarding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -31,9 +32,9 @@ class Onboarding extends StatelessWidget {
                             controller
                                 .onboardingPages[controller.currentPage.value]
                                 .image,
-                            width: 180,
+                            width: screenSize.width * 0.25,
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: screenSize.height * 0.03),
                           Text(
                             controller
                                 .onboardingPages[controller.currentPage.value]
@@ -45,7 +46,7 @@ class Onboarding extends StatelessWidget {
                               height: 1.2,
                             ),
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: screenSize.height * 0.03),
 
                           Text(
                             controller

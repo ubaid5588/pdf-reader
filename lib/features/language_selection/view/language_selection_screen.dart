@@ -12,7 +12,6 @@ class LanguageSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -23,8 +22,8 @@ class LanguageSelectionScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    width: 68,
-                    height: 68,
+                    width: screenSize.width * 0.14,
+                    height: screenSize.height * 0.06,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: _blue,
@@ -125,7 +124,6 @@ class LanguageSelectionScreen extends StatelessWidget {
                                           : const Color(0xFF111827),
                                     ),
                                   ),
-
                                   Text(
                                     lang.name,
 

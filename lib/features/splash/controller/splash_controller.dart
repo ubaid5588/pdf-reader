@@ -16,7 +16,7 @@ class SplashController extends GetxController {
     print(box.get('settings')[0]['login']);
     if (box.containsKey('settings')) {
       if (box.get('settings')[0]['login'] == true) {
-        Get.offAll(() => HomePage());
+        Get.offAll(() => LanguageSelectionScreen());
       } else {
         Get.off(() => LanguageSelectionScreen());
       }
