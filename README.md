@@ -1,4 +1,4 @@
-# file_reader
+# pdf_reader
 
 A new Flutter project.
 
