@@ -19,9 +19,9 @@ class _HomeScreenState extends State<HomePageView> {
         children: [
           SizedBox(height: screenSize.height * 0.02),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: screenSize.height * 0.02),
             child: Container(
-              height: screenSize.height * 0.19,
+              height: screenSize.height * 0.195,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Color(0xFFEDE8FF), Color(0xFFDDD5FF)],

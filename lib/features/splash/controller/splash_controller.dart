@@ -13,14 +13,16 @@ class SplashController extends GetxController {
   void _navigatorToHome() async {
     await Future.delayed(Duration(seconds: 5));
     var box = Hive.box('settings');
-    print(box.get('settings')[0]['login']);
     if (box.containsKey('settings')) {
       if (box.get('settings')[0]['login'] == true) {
-        Get.offAll(() => LanguageSelectionScreen());
+        Get.offAll(() => HomePage());
+        return;
       } else {
         Get.off(() => LanguageSelectionScreen());
+        return;
       }
     }
-    // Get.off(() => LanguageSelectionScreen());s
+    Get.off(() => LanguageSelectionScreen());
+    return;
   }
 }
