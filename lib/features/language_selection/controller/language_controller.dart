@@ -1,6 +1,11 @@
+import 'dart:ui';
+
+import 'package:file_reader/features/home/view/home_page.dart';
 import 'package:file_reader/features/language_selection/model/language.dart';
 import 'package:file_reader/features/onboarding/view/onboarding.dart';
+import 'package:file_reader/features/setting/view/setting_page.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 
 class LanguageController extends GetxController {
   final List<Language> languages = const [
@@ -29,9 +34,18 @@ class LanguageController extends GetxController {
 
   void changeSelectedCode(String languageCode) {
     selectedCode.value = languageCode;
+    Get.updateLocale(Locale(languageCode));
   }
 
   void onContinue() {
-    Get.to(() => Onboarding());
+    final box = Hive.box('settings');
+
+    box.put('localization', selectedCode.value);
+
+    if (box.get('login') == true) {
+      Get.offAll(() => HomePage());
+    } else {
+      Get.to(() => Onboarding());
+    }
   }
 }

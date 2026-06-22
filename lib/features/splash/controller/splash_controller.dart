@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:file_reader/features/language_selection/controller/language_controller.dart';
 import 'package:file_reader/features/language_selection/view/language_selection_screen.dart';
 import 'package:file_reader/features/home/view/home_page.dart';
@@ -15,20 +17,16 @@ class SplashController extends GetxController {
 
   void _navigatorToHome() async {
     await Future.delayed(Duration(seconds: 5));
-    var box = Hive.box('settings');
-    if (box.containsKey('settings')) {
-      if (box.get('settings')[0]['login'] == true) {
-        languageController.selectedCode ==
-            box.get('settings')[0]['localization'];
+    final box = Hive.box('settings');
 
-        Get.offAll(() => HomePage());
-        return;
-      } else {
-        Get.off(() => LanguageSelectionScreen());
-        return;
-      }
+    if (box.get('login') == true) {
+      final String savedCode = box.get('localization') ?? 'en';
+      languageController.selectedCode.value = savedCode;
+      Get.updateLocale(Locale(savedCode));
+
+      Get.offAll(() => HomePage());
+    } else {
+      Get.off(() => LanguageSelectionScreen());
     }
-    Get.off(() => LanguageSelectionScreen());
-    return;
   }
 }

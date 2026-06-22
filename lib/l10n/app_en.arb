@@ -106,5 +106,9 @@
   "settingsLabel3": "Help & Support",
   "settingsLabel4": "Rate Us",
   "settingsLabel5": "About",
-  "settingsLogout": "Log out"
+  "settingsLogout": "Log out",
+  "selectLanguage" : "Select Language",
+  "preferredLangauge" : "Choose your preferred language to continue"
+  
+
 }

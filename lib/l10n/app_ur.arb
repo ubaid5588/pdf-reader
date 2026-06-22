@@ -1,19 +1,112 @@
 {
   "@@locale": "ur",
 
-  "splashAppName": "پی ڈی ایف ریڈر",
+  "splashAppName": "PDF ریڈر",
+  "splashAppTitle": "آپ کے تمام دستاویزات، ایک ٹچ میں",
 
-  "splashAppTitle": "آپ کی تمام دستاویزات، ایک ہی جگہ پر",
+  "onBoardingTitle1": "فوری طور پر PDF فائلیں پڑھیں",
+  "onBoardingSubtitle1": "ہموار اور تیز پڑھنے کے تجربے کے ساتھ اپنے تمام PDF دستاویزات کھولیں، دیکھیں اور منظم کریں۔",
+  "onBoardingTitle2": "ورڈ دستاویزات تک رسائی",
+  "onBoardingSubtitle2": "کسی بھی وقت DOC اور DOCX فائلیں دیکھیں، اپنے اہم دستاویزات کو ایک جگہ منظم رکھیں۔",
+  "onBoardingTitle3": "پریزنٹیشن آسان بنائیں",
+  "onBoardingSubtitle3": "کام، تعلیم اور پریزنٹیشن کے لیے PPT اور PPTX سلائیڈز آسانی سے کھولیں اور براؤز کریں۔",
+  "onBoardingNext": "اگلا",
+  "onBoardingSkip": "چھوڑیں",
+  "onBoardingDone": "مکمل",
 
-  "onBoardingTitle1": "پی ڈی ایف فائلیں فوراً پڑھیں",
+  "upgradeVip": "VIP اپ گریڈ کریں",
+  "bannerTitle": "ہمہ جہت\nPDF ورک اسپیس",
+  "bannerSubtitle": "اپنے دستاویزات کو تبدیل، ترمیم، منظم\nاور محفوظ کریں۔",
+  "tryNow": "ابھی آزمائیں",
 
-  "onBoardingSubtitle1": "اپنی تمام پی ڈی ایف دستاویزات کو آسانی اور تیز رفتاری سے کھولیں، دیکھیں اور منظم کریں۔",
+  "convertToPdf": "PDF میں تبدیل کریں",
+  "editAndOrganize": "ترمیم اور تنظیم",
 
-  "onBoardingTitle2": "ورڈ دستاویزات تک رسائی حاصل کریں",
+  "wordToPdf": "Word سے PDF",
+  "imageToPdf": "تصویر سے PDF",
+  "pptToPdf": "PPT سے PDF",
+  "excelToPdf": "Excel سے PDF",
+  "pdfToWord": "PDF سے Word",
+  "pdfToImage": "PDF سے تصویر",
+  "pdfToPpt": "PDF سے PPT",
+  "pdfToExcel": "PDF سے Excel",
+  "mergePdf": "PDF ضم کریں",
+  "splitPdf": "PDF تقسیم کریں",
+  "compressPdf": "PDF کمپریس کریں",
+  "protectPdf": "PDF محفوظ کریں",
+  "signOnPdf": "PDF پر دستخط کریں",
+  "ocrPdf": "OCR PDF",
+  "organizePdf": "PDF ترتیب دیں",
 
-  "onBoardingSubtitle2": "DOC اور DOCX فائلوں کو کسی بھی وقت دیکھیں اور اپنی اہم دستاویزات کو ایک ہی جگہ پر منظم رکھیں۔",
+  "wordToPdfSubtitle": "اپنے ورڈ دستاویزات (.doc, .docx) کو اعلیٰ معیار کی PDF فائلوں میں تبدیل کریں۔",
+  "imageToPdfSubtitle": "اپنی تصاویر (.jpg, .png, .webp) کو اعلیٰ معیار کی PDF فائلوں میں تبدیل کریں۔",
+  "pptToPdfSubtitle": "اپنی پریزنٹیشنز (.ppt, .pptx) کو اعلیٰ معیار کی PDF فائلوں میں تبدیل کریں۔",
+  "excelToPdfSubtitle": "اپنی اسپریڈ شیٹس (.xls, .xlsx) کو اعلیٰ معیار کی PDF فائلوں میں تبدیل کریں۔",
+  "pdfToWordSubtitle": "اپنی PDF فائلوں کو قابل ترمیم ورڈ دستاویزات (.docx) میں تبدیل کریں۔",
+  "pdfToImageSubtitle": "اپنے PDF صفحات کو اعلیٰ معیار کی تصاویر (.jpg, .png) میں تبدیل کریں۔",
+  "pdfToPptSubtitle": "اپنی PDF فائلوں کو قابل ترمیم پریزنٹیشنز (.pptx) میں تبدیل کریں۔",
+  "pdfToExcelSubtitle": "اپنی PDF فائلوں کو قابل ترمیم اسپریڈ شیٹس (.xlsx) میں تبدیل کریں۔",
+  "mergePdfSubtitle": "متعدد PDF فائلوں کو ایک دستاویز میں یکجا کریں۔",
+  "splitPdfSubtitle": "اپنی PDF کو الگ صفحات یا مخصوص صفحات کی حدود میں تقسیم کریں۔",
+  "compressPdfSubtitle": "معیار کھوئے بغیر اپنی PDF فائل کا حجم کم کریں۔",
+  "protectPdfSubtitle": "اپنے PDF دستاویزات کو انکرپٹ اور پاس ورڈ سے محفوظ کریں۔",
+  "signOnPdfSubtitle": "کسی بھی PDF دستاویز میں اپنے ڈیجیٹل دستخط شامل کریں۔",
+  "ocrPdfSubtitle": "آپٹیکل کریکٹر ریکگنیشن کا استعمال کرتے ہوئے اسکین کردہ PDFs سے متن نکالیں۔",
+  "organizePdfSubtitle": "اپنے PDF دستاویز میں صفحات کی ترتیب تبدیل کریں، گھمائیں یا حذف کریں۔",
+  "defaultToolSubtitle": "اپنی فائل کو اعلیٰ معیار کی PDF میں تبدیل کریں۔",
 
-  "onBoardingTitle3": "پریزنٹیشنز کو آسان بنائیں",
+  "selectWordFile": "ورڈ فائل منتخب کریں",
+  "selectImageFile": "تصویر فائل منتخب کریں",
+  "selectPptFile": "PPT فائل منتخب کریں",
+  "selectExcelFile": "Excel فائل منتخب کریں",
+  "selectPdfFile": "PDF فائل منتخب کریں",
+  "selectPdfFiles": "PDF فائلیں منتخب کریں",
+  "selectFile": "فائل منتخب کریں",
 
-  "onBoardingSubtitle3": "کام، تعلیم اور پریزنٹیشنز کے لیے PPT اور PPTX سلائیڈز کو آسانی سے کھولیں اور براؤز کریں۔"
+  "convertTool": "{toolName} تبدیل کریں",
+  "@convertTool": {
+    "description": "ٹول اسکرین کی سرخی، مثلاً 'Word سے PDF تبدیل کریں'",
+    "placeholders": {
+      "toolName": {
+        "type": "String",
+        "example": "Word سے PDF"
+      }
+    }
+  },
+
+  "almostDone": "تقریباً مکمل!",
+  "finalizingFileMessage": "براہ کرم انتظار کریں جب کہ ہم آپ کی فائل کو حتمی شکل دے رہے ہیں",
+  "protecting": "محفوظ کیا جا رہا ہے...",
+
+  "label1": "تیز تبدیلی",
+  "label2": "اصل فارمیٹنگ برقرار رکھیں",
+  "label3": "محفوظ اور ذاتی",
+
+  "home": "ہوم",
+  "files": "فائلیں",
+  "settings": "ترتیبات",
+  "file": "کوئی فائل نہیں ملی",
+
+  "upgradeProTitle": "پرو میں اپ گریڈ کریں",
+  "upgradeProSubtitle": "تمام خصوصیات کو کھولیں اور لامحدود رسائی سے لطف اندوز ہوں۔",
+  "upgrade": "اپ گریڈ کریں",
+
+  "languageOptions": "زبان کے اختیارات",
+  "feedback": "تاثرات",
+  "helpSupport": "مدد اور سپورٹ",
+  "rateUs": "ہمیں ریٹ کریں",
+  "about": "ہمارے بارے میں",
+  "logout": "لاگ آؤٹ",
+
+  "settingsPremiumTitle": "پرو میں اپ گریڈ کریں",
+  "settingsPremiumSutitle": "تمام خصوصیات کو کھولیں اور\nلامحدود رسائی سے لطف اندوز ہوں۔",
+  "settingsUpgrade": "اپ گریڈ کریں",
+  "settingsLabel1": "زبان کے اختیارات",
+  "settingsLabel2": "تاثرات",
+  "settingsLabel3": "مدد اور سپورٹ",
+  "settingsLabel4": "ہمیں ریٹ کریں",
+  "settingsLabel5": "ہمارے بارے میں",
+  "settingsLogout": "لاگ آؤٹ",
+  "selectLanguage": "زبان منتخب کریں",
+"preferredLangauge": "جاری رکھنے کے لیے اپنی پسندیدہ زبان منتخب کریں"
 }

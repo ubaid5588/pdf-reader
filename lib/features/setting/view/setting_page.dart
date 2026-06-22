@@ -1,16 +1,21 @@
+import 'package:file_reader/features/language_selection/controller/language_controller.dart';
+import 'package:file_reader/features/language_selection/view/language_selection_screen.dart';
+import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class SettingPaage extends StatelessWidget {
-  const SettingPaage({super.key});
+class SettingPage extends StatelessWidget {
+  const SettingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final lang = AppLocalizations.of(context)!;
     return Column(
       children: [
         Container(
           width: double.infinity,
-          height: screenSize.height * 0.145,
+          height: screenSize.height * 0.17,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -37,9 +42,9 @@ class SettingPaage extends StatelessWidget {
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
-                              'Upgrade to Pro',
+                              lang.settingsUpgrade,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -48,7 +53,7 @@ class SettingPaage extends StatelessWidget {
                             ),
                             SizedBox(height: 2),
                             Text(
-                              'Unlock all features and\nenjoy unlimited access.',
+                              lang.settingsPremiumSutitle,
                               style: TextStyle(
                                 color: Color(0xFFAAAAAA),
                                 fontSize: 13,
@@ -73,8 +78,8 @@ class SettingPaage extends StatelessWidget {
                           ),
                           elevation: 0,
                         ),
-                        child: const Text(
-                          'Upgrade',
+                        child: Text(
+                          lang.upgrade,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -109,27 +114,31 @@ class SettingPaage extends StatelessWidget {
               children: [
                 _buildMenuTile(
                   icon: Icons.language,
-                  label: 'Language options',
+                  label: lang.settingsLabel1,
                   isFirst: true,
+                  onTap: () => Get.to(() => LanguageSelectionScreen()),
                 ),
                 const Divider(height: 1, indent: 52, endIndent: 16),
 
                 _buildMenuTile(
                   icon: Icons.chat_bubble_outline,
-                  label: 'Feedback',
+                  label: lang.settingsLabel2,
                   isFirst: true,
                 ),
                 const Divider(height: 1, indent: 52, endIndent: 16),
                 _buildMenuTile(
                   icon: Icons.headset_mic_outlined,
-                  label: 'Help & Support',
+                  label: lang.settingsLabel3,
                 ),
                 const Divider(height: 1, indent: 52, endIndent: 16),
-                _buildMenuTile(icon: Icons.star_outline, label: 'Rate Us'),
+                _buildMenuTile(
+                  icon: Icons.star_outline,
+                  label: lang.settingsLabel4,
+                ),
                 const Divider(height: 1, indent: 52, endIndent: 16),
                 _buildMenuTile(
                   icon: Icons.info_outline,
-                  label: 'About',
+                  label: lang.settingsLabel5,
                   isLast: true,
                 ),
               ],
@@ -152,8 +161,8 @@ class SettingPaage extends StatelessWidget {
                 ),
                 elevation: 0,
               ),
-              child: const Text(
-                'Log out',
+              child: Text(
+                lang.settingsLogout,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
@@ -168,9 +177,10 @@ class SettingPaage extends StatelessWidget {
     required String label,
     bool isFirst = false,
     bool isLast = false,
+    VoidCallback? onTap,
   }) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       borderRadius: BorderRadius.vertical(
         top: isFirst ? const Radius.circular(16) : Radius.zero,
         bottom: isLast ? const Radius.circular(16) : Radius.zero,

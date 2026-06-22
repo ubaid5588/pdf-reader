@@ -6,7 +6,7 @@ import 'package:file_reader/features/file/view/file_page.dart';
 import 'package:file_reader/features/pdf_viewer/controller/file_view_controller.dart';
 import 'package:file_reader/features/home/controller/navi_controller.dart';
 import 'package:file_reader/features/pdf_viewer/view/pdf_viewer.dart';
-import 'package:file_reader/features/setting/view/setting_paage.dart';
+import 'package:file_reader/features/setting/view/setting_page.dart';
 import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    final List<Widget> screens = [HomePageView(), FilePage(), SettingPaage()];
+    final List<Widget> screens = [HomePageView(), FilePage(), SettingPage()];
     final lang = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(

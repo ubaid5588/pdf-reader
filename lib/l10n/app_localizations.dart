@@ -601,6 +601,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Log out'**
   String get settingsLogout;
+
+  /// No description provided for @selectLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get selectLanguage;
+
+  /// No description provided for @preferredLangauge.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your preferred language to continue'**
+  String get preferredLangauge;
 }
 
 class _AppLocalizationsDelegate

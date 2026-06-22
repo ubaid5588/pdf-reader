@@ -282,4 +282,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsLogout => 'Log out';
+
+  @override
+  String get selectLanguage => 'Select Language';
+
+  @override
+  String get preferredLangauge => 'Choose your preferred language to continue';
 }

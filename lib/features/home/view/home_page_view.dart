@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomePageView> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: screenSize.height * 0.02),
             child: Container(
-              height: screenSize.height * 0.195,
+              height: screenSize.height * 0.2,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Color(0xFFEDE8FF), Color(0xFFDDD5FF)],
@@ -116,14 +116,14 @@ class _HomeScreenState extends State<HomePageView> {
                       ],
                     ),
                   ),
-                  Positioned(
-                    right: screenSize.width * 0.12,
-                    top: screenSize.height * 0.026,
-                    child: Image.asset(
-                      'assets/images/prem.png',
-                      width: screenSize.height * 0.13,
-                    ),
-                  ),
+                  // Positioned(
+                  //   right: screenSize.width * 0.12,
+                  //   top: screenSize.height * 0.026,
+                  //   child: Image.asset(
+                  //     'assets/images/prem.png',
+                  //     width: screenSize.height * 0.13,
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -338,8 +338,6 @@ class _HomeScreenState extends State<HomePageView> {
     );
   }
 
-  // Built per-build (not as a field) because lang.* needs a BuildContext,
-  // which isn't available when instance fields are initialized.
   List<ToolItem> _convertToPdfItems(AppLocalizations lang) => [
     ToolItem(
       icon: Icons.text_fields,

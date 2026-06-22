@@ -9,12 +9,8 @@ class OnboardingController extends GetxController {
   RxInt currentPage = 0.obs;
 
   Future<void> saveSetting() async {
-    var box = Hive.box('settings');
-    box.put('settings', [
-      {'login': true},
-      {'localization': languageController.selectedCode.value},
-    ]);
-    print(box.get('settings'));
+    final box = Hive.box('settings');
+    await box.put('login', true);
   }
 
   void onComplete() {
@@ -22,12 +18,12 @@ class OnboardingController extends GetxController {
       currentPage += 1;
     } else {
       saveSetting();
-      Get.offAll(HomePage());
+      Get.offAll(() => HomePage());
     }
   }
 
   void onSkip() {
     saveSetting();
-    Get.offAll(HomePage());
+    Get.offAll(() => HomePage());
   }
 }

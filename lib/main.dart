@@ -10,11 +10,7 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('settings');
   final settings = Hive.box('settings');
-  String languageCode = 'en';
-  if (settings.containsKey('settings')) {
-    languageCode = settings.get('settings')[1]['localization'] ?? 'ur';
-  }
-  settings.clear();
+  final String languageCode = settings.get('localization') ?? 'en';
   runApp(Main(languageCode: languageCode));
 }
 

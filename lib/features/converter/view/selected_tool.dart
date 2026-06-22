@@ -7,7 +7,6 @@ import 'package:file_reader/features/merge_pdf/view/merge_pdf_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
 
 import 'package:file_reader/l10n/app_localizations.dart';
 

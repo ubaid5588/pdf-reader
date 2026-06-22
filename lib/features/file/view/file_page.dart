@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:file_reader/features/pdf_viewer/view/pdf_viewer.dart';
+import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -19,6 +20,7 @@ class FilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final lang = AppLocalizations.of(context)!;
     return Column(
       children: [
         Obx(() {
@@ -26,7 +28,7 @@ class FilePage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (controller.pdfFiles.isEmpty) {
-            return const Center(child: Text("No File found"));
+            return Center(child: Text(lang.file));
           }
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.8,
