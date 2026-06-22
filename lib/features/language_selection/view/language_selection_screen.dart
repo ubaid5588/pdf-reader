@@ -34,9 +34,7 @@ class LanguageSelectionScreen extends StatelessWidget {
                       size: 34,
                     ),
                   ),
-
                   const SizedBox(height: 18),
-
                   const Text(
                     'Select Language',
                     style: TextStyle(
@@ -45,9 +43,7 @@ class LanguageSelectionScreen extends StatelessWidget {
                       color: Color(0xFF111827),
                     ),
                   ),
-
                   const SizedBox(height: 6),
-
                   const Text(
                     'Choose your preferred language to continue',
                     textAlign: TextAlign.center,
@@ -56,69 +52,50 @@ class LanguageSelectionScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
             Expanded(
               child: ListView.separated(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-
                 itemCount: controller.languages.length,
-
                 separatorBuilder: (_, __) => const SizedBox(height: 10),
-
                 itemBuilder: (context, index) {
                   return Obx(() {
                     final lang = controller.languages[index];
-
                     final isSelected =
                         lang.code == controller.selectedCode.value;
-
                     return GestureDetector(
                       onTap: () => controller.changeSelectedCode(lang.code),
-
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 14,
                         ),
-
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xFFEFF6FF)
                               : Colors.white,
-
                           borderRadius: BorderRadius.circular(12),
-
                           border: Border.all(
                             color: isSelected ? _blue : const Color(0xFFE5E7EB),
-
                             width: 1.5,
                           ),
                         ),
-
                         child: Row(
                           children: [
                             Text(
                               lang.flag,
                               style: const TextStyle(fontSize: 28),
                             ),
-
                             const SizedBox(width: 14),
-
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-
                                 children: [
                                   Text(
                                     lang.nativeName,
-
                                     style: TextStyle(
                                       fontSize: 16,
-
                                       fontWeight: FontWeight.w600,
-
                                       color: isSelected
                                           ? _blue
                                           : const Color(0xFF111827),
@@ -126,17 +103,14 @@ class LanguageSelectionScreen extends StatelessWidget {
                                   ),
                                   Text(
                                     lang.name,
-
                                     style: TextStyle(
                                       fontSize: 13,
-
                                       color: isSelected ? _blue : Colors.grey,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-
                             if (isSelected)
                               const Icon(Icons.check, color: _blue, size: 20),
                           ],
@@ -147,15 +121,11 @@ class LanguageSelectionScreen extends StatelessWidget {
                 },
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(20),
-
               child: CustomButton(
                 text: 'Continue',
-
                 onPressed: controller.onContinue,
-
                 width: screenSize.width * 0.2,
               ),
             ),

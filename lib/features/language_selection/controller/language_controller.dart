@@ -32,6 +32,6 @@ class LanguageController extends GetxController {
   }
 
   void onContinue() {
-    Get.off(() => Onboarding());
+    Get.to(() => Onboarding());
   }
 }

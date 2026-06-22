@@ -7,6 +7,7 @@ import 'package:file_reader/features/pdf_viewer/controller/file_view_controller.
 import 'package:file_reader/features/home/controller/navi_controller.dart';
 import 'package:file_reader/features/pdf_viewer/view/pdf_viewer.dart';
 import 'package:file_reader/features/setting/view/setting_paage.dart';
+import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
@@ -101,6 +102,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     final List<Widget> screens = [HomePageView(), FilePage(), SettingPaage()];
+    final lang = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         top: true,
@@ -116,7 +118,7 @@ class _HomePageState extends State<HomePage> {
               )),
             ),
 
-            buildTopBar(screenSize),
+            buildTopBar(screenSize, lang.upgrade),
             Positioned(
               bottom: 16,
               left: 10,
@@ -142,9 +144,9 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    navItem(Icons.home_rounded, 'Home', 0),
-                    navItem(Icons.folder, 'Files', 1),
-                    navItem(Icons.settings, 'Setting', 2),
+                    navItem(Icons.home_rounded, lang.home, 0),
+                    navItem(Icons.folder, lang.files, 1),
+                    navItem(Icons.settings, lang.settings, 2),
                   ],
                 ),
               ),
@@ -192,7 +194,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Widget buildTopBar(Size screenSize) {
+  Widget buildTopBar(Size screenSize, String upgrade) {
     return Column(
       children: [
         Container(
@@ -233,11 +235,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   child: Row(
-                    children: const [
+                    children: [
                       Icon(Icons.star, color: Color(0xFFFFC107), size: 14),
                       SizedBox(width: 4),
                       Text(
-                        'Upgrade VIP',
+                        upgrade,
                         style: TextStyle(
                           color: Color(0xFFB8860B),
                           fontWeight: FontWeight.w600,

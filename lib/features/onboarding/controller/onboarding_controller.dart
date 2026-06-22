@@ -1,30 +1,10 @@
 import 'package:file_reader/features/home/view/home_page.dart';
+import 'package:file_reader/features/language_selection/controller/language_controller.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 
-import '../model/onboarding_model.dart';
-
 class OnboardingController extends GetxController {
-  final List<OnboardingModel> onboardingPages = const [
-    OnboardingModel(
-      title: 'Read PDF Files Instantly',
-      subtitle:
-          'Open, view, and manage all your PDF documents with a smooth and fast reading experience.',
-      image: 'assets/images/pdf.png',
-    ),
-    OnboardingModel(
-      title: 'Access Word Documents',
-      subtitle:
-          'View DOC and DOCX files anytime, keeping your important documents organized in one place.',
-      image: 'assets/images/doc.png',
-    ),
-    OnboardingModel(
-      title: 'Presentations Made Simple',
-      subtitle:
-          'Open and browse PPT and PPTX slides effortlessly for work, study, and presentations.',
-      image: 'assets/images/ppt.png',
-    ),
-  ];
+  final LanguageController languageController = Get.find();
 
   RxInt currentPage = 0.obs;
 
@@ -32,6 +12,7 @@ class OnboardingController extends GetxController {
     var box = Hive.box('settings');
     box.put('settings', [
       {'login': true},
+      {'localization': languageController.selectedCode.value},
     ]);
     print(box.get('settings'));
   }

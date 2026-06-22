@@ -1,3 +1,4 @@
+import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:file_reader/features/converter/view/selected_tool.dart';
 
@@ -12,7 +13,7 @@ class _HomeScreenState extends State<HomePageView> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-
+    final lang = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,8 +66,8 @@ class _HomeScreenState extends State<HomePageView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                'All-in-one PDF\nWorkspace',
+                              Text(
+                                lang.bannerTitle,
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -75,8 +76,8 @@ class _HomeScreenState extends State<HomePageView> {
                                 ),
                               ),
                               const SizedBox(height: 6),
-                              const Text(
-                                'Convert, edit, organize and\nsecure your documents.',
+                              Text(
+                                lang.bannerSubtitle,
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: Color(0xFF6B6B8A),
@@ -100,8 +101,8 @@ class _HomeScreenState extends State<HomePageView> {
                                   tapTargetSize:
                                       MaterialTapTargetSize.shrinkWrap,
                                 ),
-                                child: const Text(
-                                  'Try now',
+                                child: Text(
+                                  lang.tryNow,
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -130,14 +131,14 @@ class _HomeScreenState extends State<HomePageView> {
           SizedBox(height: screenSize.height * 0.02),
 
           buildSection(
-            title: 'Convert to PDF',
-            items: _convertToPdfItems,
+            title: lang.convertToPdf,
+            items: _convertToPdfItems(lang),
             crossAxisCount: 3,
           ),
           const SizedBox(height: 24),
           buildSection(
-            title: 'Edit & Organize',
-            items: _editOrganizeItems,
+            title: lang.editAndOrganize,
+            items: _editOrganizeItems(lang),
             crossAxisCount: 3,
           ),
           SizedBox(height: screenSize.height * 0.1),
@@ -300,8 +301,10 @@ class _HomeScreenState extends State<HomePageView> {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
+            // Pass the locale-independent enum, not the translated label -
+            // SelectedTool uses this to decide which controller to run.
             builder: (_) => SelectedTool(
-              title: item.label,
+              toolType: item.toolType,
               icon: item.icon,
               bgColor: item.bgColor,
             ),
@@ -335,75 +338,88 @@ class _HomeScreenState extends State<HomePageView> {
     );
   }
 
-  final List<ToolItem> _convertToPdfItems = [
+  // Built per-build (not as a field) because lang.* needs a BuildContext,
+  // which isn't available when instance fields are initialized.
+  List<ToolItem> _convertToPdfItems(AppLocalizations lang) => [
     ToolItem(
       icon: Icons.text_fields,
       iconColor: Colors.white,
-      bgColor: Color(0xFF4285F4),
-      label: 'Word to PDF',
+      bgColor: const Color(0xFF4285F4),
+      label: lang.wordToPdf,
+      toolType: ToolType.wordToPdf,
     ),
     ToolItem(
       icon: Icons.image_outlined,
       iconColor: Colors.white,
-      bgColor: Color(0xFF9C6CF5),
-      label: 'Image to PDF',
+      bgColor: const Color(0xFF9C6CF5),
+      label: lang.imageToPdf,
+      toolType: ToolType.imageToPdf,
     ),
     ToolItem(
       icon: Icons.slideshow,
       iconColor: Colors.white,
-      bgColor: Color(0xFFEA4335),
-      label: 'PPT to PDF',
+      bgColor: const Color(0xFFEA4335),
+      label: lang.pptToPdf,
+      toolType: ToolType.pptToPdf,
     ),
     ToolItem(
       icon: Icons.table_chart_outlined,
       iconColor: Colors.white,
-      bgColor: Color(0xFF34A853),
-      label: 'Excel to PDF',
+      bgColor: const Color(0xFF34A853),
+      label: lang.excelToPdf,
+      toolType: ToolType.excelToPdf,
     ),
   ];
 
-  final List<ToolItem> _editOrganizeItems = [
+  List<ToolItem> _editOrganizeItems(AppLocalizations lang) => [
     ToolItem(
       icon: Icons.merge_type,
       iconColor: const Color(0xFFFFA000),
-      bgColor: Color(0xFFFFF3E0),
-      label: 'Merge PDF',
+      bgColor: const Color(0xFFFFF3E0),
+      label: lang.mergePdf,
+      toolType: ToolType.mergePdf,
     ),
     ToolItem(
       icon: Icons.content_cut,
       iconColor: const Color(0xFFE53935),
-      bgColor: Color(0xFFFFEBEE),
-      label: 'Split PDF',
+      bgColor: const Color(0xFFFFEBEE),
+      label: lang.splitPdf,
+      toolType: ToolType.splitPdf,
     ),
     ToolItem(
       icon: Icons.compress,
       iconColor: const Color(0xFFFFA000),
-      bgColor: Color(0xFFFFF8E1),
-      label: 'Compress PDF',
+      bgColor: const Color(0xFFFFF8E1),
+      label: lang.compressPdf,
+      toolType: ToolType.compressPdf,
     ),
     ToolItem(
       icon: Icons.lock_outline,
       iconColor: const Color(0xFF43A047),
-      bgColor: Color(0xFFE8F5E9),
-      label: 'Protect PDF',
+      bgColor: const Color(0xFFE8F5E9),
+      label: lang.protectPdf,
+      toolType: ToolType.protectPdf,
     ),
     // ToolItem(
     //   icon: Icons.edit_outlined,
     //   iconColor: const Color(0xFFE53935),
-    //   bgColor: Color(0xFFFFEBEE),
-    //   label: 'Sign on PDF',
+    //   bgColor: const Color(0xFFFFEBEE),
+    //   label: lang.signOnPdf,
+    //   toolType: ToolType.signOnPdf,
     // ),
     // ToolItem(
     //   icon: Icons.document_scanner_outlined,
     //   iconColor: const Color(0xFF6C4EF5),
-    //   bgColor: Color(0xFFEDE8FF),
-    //   label: 'OCR PDF',
+    //   bgColor: const Color(0xFFEDE8FF),
+    //   label: lang.ocrPdf,
+    //   toolType: ToolType.ocrPdf,
     // ),
     // ToolItem(
     //   icon: Icons.dashboard_outlined,
     //   iconColor: const Color(0xFF4285F4),
-    //   bgColor: Color(0xFFE3F2FD),
-    //   label: 'Organize PDF',
+    //   bgColor: const Color(0xFFE3F2FD),
+    //   label: lang.organizePdf,
+    //   toolType: ToolType.organizePdf,
     // ),
   ];
 }
@@ -413,11 +429,13 @@ class ToolItem {
   final Color iconColor;
   final Color bgColor;
   final String label;
+  final ToolType toolType;
 
   const ToolItem({
     required this.icon,
     required this.iconColor,
     required this.bgColor,
     required this.label,
+    required this.toolType,
   });
 }

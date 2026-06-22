@@ -1,3 +1,4 @@
+import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,11 +9,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox('settings');
-  runApp(Main());
+  final settings = Hive.box('settings');
+  String languageCode = 'en';
+  if (settings.containsKey('settings')) {
+    languageCode = settings.get('settings')[1]['localization'] ?? 'ur';
+  }
+  settings.clear();
+  runApp(Main(languageCode: languageCode));
 }
 
 class Main extends StatelessWidget {
-  Main({super.key});
+  final String languageCode;
+  Main({super.key, required this.languageCode});
 
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   @override
@@ -20,6 +28,10 @@ class Main extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'File Reader',
+      locale: Locale(languageCode),
+      supportedLocales: const [Locale('en'), Locale('ur')],
+
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: ThemeData(
         fontFamily: 'Roboto',
         scaffoldBackgroundColor: const Color(0xFFF2F3F7),

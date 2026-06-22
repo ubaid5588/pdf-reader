@@ -1,4 +1,5 @@
 import 'package:file_reader/features/splash/controller/splash_controller.dart';
+import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -56,7 +57,7 @@ class _SplashPageState extends State<SplashPage> {
             SizedBox(height: screenSize.height * 0.01),
 
             Text(
-              'All your documents, one tap away',
+              AppLocalizations.of(context)!.splashAppTitle,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 17,

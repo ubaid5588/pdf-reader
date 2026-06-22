@@ -108,6 +108,13 @@ class SettingPaage extends StatelessWidget {
             child: Column(
               children: [
                 _buildMenuTile(
+                  icon: Icons.language,
+                  label: 'Language options',
+                  isFirst: true,
+                ),
+                const Divider(height: 1, indent: 52, endIndent: 16),
+
+                _buildMenuTile(
                   icon: Icons.chat_bubble_outline,
                   label: 'Feedback',
                   isFirst: true,

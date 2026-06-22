@@ -1,0 +1,110 @@
+{
+  "@@locale": "en",
+
+  "splashAppName": "PDF Reader",
+  "splashAppTitle": "All your documents, one tap away",
+
+  "onBoardingTitle1": "Read PDF Files Instantly",
+  "onBoardingSubtitle1": "Open, view, and manage all your PDF documents with a smooth and fast reading experience.",
+  "onBoardingTitle2": "Access Word Documents",
+  "onBoardingSubtitle2": "View DOC and DOCX files anytime, keeping your important documents organized in one place.",
+  "onBoardingTitle3": "Presentations Made Simple",
+  "onBoardingSubtitle3": "Open and browse PPT and PPTX slides effortlessly for work, study, and presentations.",
+  "onBoardingNext": "Next",
+  "onBoardingSkip": "Skip",
+  "onBoardingDone": "Done",
+
+  "upgradeVip": "Upgrade VIP",
+  "bannerTitle": "All-in-one\nPDF Workspace",
+  "bannerSubtitle": "Convert, edit, organize\nand secure your documents.",
+  "tryNow": "Try now",
+
+  "convertToPdf": "Convert to PDF",
+  "editAndOrganize": "Edit & Organize",
+
+  "wordToPdf": "Word to PDF",
+  "imageToPdf": "Image to PDF",
+  "pptToPdf": "PPT to PDF",
+  "excelToPdf": "Excel to PDF",
+  "pdfToWord": "PDF to Word",
+  "pdfToImage": "PDF to Image",
+  "pdfToPpt": "PDF to PPT",
+  "pdfToExcel": "PDF to Excel",
+  "mergePdf": "Merge PDF",
+  "splitPdf": "Split PDF",
+  "compressPdf": "Compress PDF",
+  "protectPdf": "Protect PDF",
+  "signOnPdf": "Sign on PDF",
+  "ocrPdf": "OCR PDF",
+  "organizePdf": "Organize PDF",
+
+  "wordToPdfSubtitle": "Convert your Word documents (.doc, .docx) to high-quality PDF files.",
+  "imageToPdfSubtitle": "Convert your images (.jpg, .png, .webp) to high-quality PDF files.",
+  "pptToPdfSubtitle": "Convert your presentations (.ppt, .pptx) to high-quality PDF files.",
+  "excelToPdfSubtitle": "Convert your spreadsheets (.xls, .xlsx) to high-quality PDF files.",
+  "pdfToWordSubtitle": "Convert your PDF files to editable Word documents (.docx).",
+  "pdfToImageSubtitle": "Convert your PDF pages to high-quality images (.jpg, .png).",
+  "pdfToPptSubtitle": "Convert your PDF files to editable presentations (.pptx).",
+  "pdfToExcelSubtitle": "Convert your PDF files to editable spreadsheets (.xlsx).",
+  "mergePdfSubtitle": "Combine multiple PDF files into a single document.",
+  "splitPdfSubtitle": "Split your PDF into separate pages or custom page ranges.",
+  "compressPdfSubtitle": "Reduce the size of your PDF file without losing quality.",
+  "protectPdfSubtitle": "Encrypt and password-protect your PDF documents.",
+  "signOnPdfSubtitle": "Add your digital signature to any PDF document.",
+  "ocrPdfSubtitle": "Extract text from scanned PDFs using optical character recognition.",
+  "organizePdfSubtitle": "Reorder, rotate, or delete pages in your PDF document.",
+  "defaultToolSubtitle": "Convert your file to a high-quality PDF.",
+
+  "selectWordFile": "Select Word File",
+  "selectImageFile": "Select Image File",
+  "selectPptFile": "Select PPT File",
+  "selectExcelFile": "Select Excel File",
+  "selectPdfFile": "Select PDF File",
+  "selectPdfFiles": "Select PDF Files",
+  "selectFile": "Select File",
+
+  "convertTool": "Convert {toolName}",
+  "@convertTool": {
+    "description": "Heading on the tool screen, e.g. 'Convert Word to PDF'",
+    "placeholders": {
+      "toolName": {
+        "type": "String",
+        "example": "Word to PDF"
+      }
+    }
+  },
+
+  "almostDone": "Almost Done!",
+  "finalizingFileMessage": "Please wait while we finalize your file",
+  "protecting": "Protecting...",
+
+  "label1": "Fast Conversion",
+  "label2": "Keep Original Formatting",
+  "label3": "Secure & Private",
+
+  "home": "Home",
+  "files": "Files",
+  "settings": "Settings",
+  "file": "No File Found",
+
+  "upgradeProTitle": "Upgrade to Pro",
+  "upgradeProSubtitle": "Unlock all features and enjoy unlimited access.",
+  "upgrade": "Upgrade",
+
+  "languageOptions": "Language Options",
+  "feedback": "Feedback",
+  "helpSupport": "Help & Support",
+  "rateUs": "Rate Us",
+  "about": "About",
+  "logout": "Log Out",
+
+  "settingsPremiumTitle": "Upgrade to Pro",
+  "settingsPremiumSutitle": "Unlock all features and\nenjoy unlimited access.",
+  "settingsUpgrade": "Upgrade",
+  "settingsLabel1": "Language options",
+  "settingsLabel2": "Feedback",
+  "settingsLabel3": "Help & Support",
+  "settingsLabel4": "Rate Us",
+  "settingsLabel5": "About",
+  "settingsLogout": "Log out"
+}

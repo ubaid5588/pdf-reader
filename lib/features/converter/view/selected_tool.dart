@@ -9,19 +9,37 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 
+import 'package:file_reader/l10n/app_localizations.dart';
+
+enum ToolType {
+  wordToPdf,
+  imageToPdf,
+  pptToPdf,
+  excelToPdf,
+  pdfToWord,
+  pdfToImage,
+  pdfToPpt,
+  pdfToExcel,
+  mergePdf,
+  splitPdf,
+  compressPdf,
+  protectPdf,
+  signOnPdf,
+  ocrPdf,
+  organizePdf,
+}
+
 class SelectedTool extends StatelessWidget {
-  final String title;
+  final ToolType toolType;
   final IconData icon;
   final Color bgColor;
 
   SelectedTool({
     super.key,
-    required this.title,
+    required this.toolType,
     required this.icon,
     required this.bgColor,
   });
-
-  ToolMeta get _meta => _resolveMeta(title);
 
   final ImageToPdfController imageToPdfController = Get.put(
     ImageToPdfController(),
@@ -43,6 +61,9 @@ class SelectedTool extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final meta = _resolveMeta(l10n, toolType);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -53,7 +74,7 @@ class SelectedTool extends StatelessWidget {
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
-          title,
+          meta.title,
           style: const TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w600,
@@ -65,16 +86,16 @@ class SelectedTool extends StatelessWidget {
       body: isProcessing
           ? Center(
               child: Column(
-                crossAxisAlignment: .center,
-                mainAxisAlignment: .center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CupertinoActivityIndicator(
+                  const CupertinoActivityIndicator(
                     radius:
                         22.0, // Default radius is 10.0; increase this to upscale it
                   ),
                   const SizedBox(height: 28),
                   Text(
-                    'Almost Done!',
+                    l10n.almostDone,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -83,7 +104,7 @@ class SelectedTool extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Please wait while we finalize your file',
+                    l10n.finalizingFileMessage,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 17,
@@ -116,8 +137,8 @@ class SelectedTool extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             _DocIcon(
-                              label: _meta.fromLabel,
-                              color: _meta.fromColor,
+                              label: meta.fromLabel,
+                              color: meta.fromColor,
                             ),
                             const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -127,15 +148,12 @@ class SelectedTool extends StatelessWidget {
                                 size: 28,
                               ),
                             ),
-                            _DocIcon(
-                              label: _meta.toLabel,
-                              color: _meta.toColor,
-                            ),
+                            _DocIcon(label: meta.toLabel, color: meta.toColor),
                           ],
                         ),
                         const SizedBox(height: 28),
                         Text(
-                          'Convert $title',
+                          l10n.convertTool(meta.title),
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -144,7 +162,7 @@ class SelectedTool extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          _meta.subtitle,
+                          meta.subtitle,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 13,
@@ -168,14 +186,14 @@ class SelectedTool extends StatelessWidget {
                       color: const Color(0xFFF0EFFE),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _FeatureRow(label: 'Fast Conversion'),
-                        SizedBox(height: 14),
-                        _FeatureRow(label: 'Keep Original Formatting'),
-                        SizedBox(height: 14),
-                        _FeatureRow(label: 'Secure & Private'),
+                        _FeatureRow(label: l10n.label1),
+                        const SizedBox(height: 14),
+                        _FeatureRow(label: l10n.label2),
+                        const SizedBox(height: 14),
+                        _FeatureRow(label: l10n.label3),
                       ],
                     ),
                   ),
@@ -185,7 +203,7 @@ class SelectedTool extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     height: 52,
-                    child: title == 'Protect PDF'
+                    child: toolType == ToolType.protectPdf
                         ? Obx(
                             () => ElevatedButton.icon(
                               onPressed: protectPdfController.isLoading.value
@@ -203,36 +221,52 @@ class SelectedTool extends StatelessWidget {
                                   : const Icon(Icons.lock),
                               label: Text(
                                 protectPdfController.isLoading.value
-                                    ? "Protecting..."
-                                    : "Protect PDF",
+                                    ? l10n.protecting
+                                    : l10n.protectPdf,
                               ),
                             ),
                           )
                         : ElevatedButton(
                             onPressed: () async {
-                              if (title == 'Image to PDF') {
-                                await imageToPdfController.pickImages();
-                              } else if (title == 'Word to PDF') {
-                                await wordToPdfController.pickFile(
-                                  OfficeFileType.word,
-                                );
-                              } else if (title == 'PPT to PDF') {
-                                await wordToPdfController.pickFile(
-                                  OfficeFileType.powerpoint,
-                                );
-                              } else if (title == 'Excel to PDF') {
-                                await wordToPdfController.pickFile(
-                                  OfficeFileType.excel,
-                                );
-                              } else if (title == 'Merge PDF') {
-                                Get.to(() => MergePdfPage());
-                              } else if (title == 'Split PDF') {
-                                await splitPdfController.pickFileAndSplit();
-                              } else if (title == 'Compress PDF') {
-                                await compressPdfController
-                                    .pickAndCompressPdf();
-                              } else if (title == 'Protected PDF') {
-                              } else {}
+                              // Branching on the enum (not the translated
+                              // title) is what makes this work in every
+                              // locale.
+                              switch (toolType) {
+                                case ToolType.imageToPdf:
+                                  await imageToPdfController.pickImages();
+                                  break;
+                                case ToolType.wordToPdf:
+                                  await wordToPdfController.pickFile(
+                                    OfficeFileType.word,
+                                  );
+                                  break;
+                                case ToolType.pptToPdf:
+                                  await wordToPdfController.pickFile(
+                                    OfficeFileType.powerpoint,
+                                  );
+                                  break;
+                                case ToolType.excelToPdf:
+                                  await wordToPdfController.pickFile(
+                                    OfficeFileType.excel,
+                                  );
+                                  break;
+                                case ToolType.mergePdf:
+                                  Get.to(() => MergePdfPage());
+                                  break;
+                                case ToolType.splitPdf:
+                                  await splitPdfController.pickFileAndSplit();
+                                  break;
+                                case ToolType.compressPdf:
+                                  await compressPdfController
+                                      .pickAndCompressPdf();
+                                  break;
+                                default:
+                                  // pdfToWord, pdfToImage, pdfToPpt,
+                                  // pdfToExcel, signOnPdf, ocrPdf,
+                                  // organizePdf: wire these up to their
+                                  // controllers the same way once ready.
+                                  break;
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF5B4EE8),
@@ -243,7 +277,7 @@ class SelectedTool extends StatelessWidget {
                               elevation: 0,
                             ),
                             child: Text(
-                              _meta.buttonLabel,
+                              meta.buttonLabel,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -261,6 +295,7 @@ class SelectedTool extends StatelessWidget {
 }
 
 class ToolMeta {
+  final String title;
   final String fromLabel;
   final Color fromColor;
   final String toLabel;
@@ -269,6 +304,7 @@ class ToolMeta {
   final String buttonLabel;
 
   const ToolMeta({
+    required this.title,
     required this.fromLabel,
     required this.fromColor,
     required this.toLabel,
@@ -278,163 +314,166 @@ class ToolMeta {
   });
 }
 
-ToolMeta _resolveMeta(String title) {
+ToolMeta _resolveMeta(AppLocalizations l10n, ToolType type) {
   const pdfRed = Color(0xFFEF5350);
   const wordBlue = Color(0xFF2B6FE0);
   const excelGreen = Color(0xFF34A853);
   const pptOrange = Color(0xFFEA4335);
   const imageViolet = Color(0xFF9C6CF5);
 
-  switch (title) {
-    case 'Word to PDF':
+  // fromLabel / toLabel are short file-type tags shown inside the colored
+  // icon boxes (PDF, IMG, XLS...). These are kept as universal abbreviations
+  // rather than translated, same as file extensions.
+  switch (type) {
+    case ToolType.wordToPdf:
       return ToolMeta(
+        title: l10n.wordToPdf,
         fromLabel: 'Word',
         fromColor: wordBlue,
         toLabel: 'PDF',
         toColor: pdfRed,
-        subtitle:
-            'Convert your Word documents (.doc, .docx)\nto high-quality PDF files.',
-        buttonLabel: 'Select Word File',
+        subtitle: l10n.wordToPdfSubtitle,
+        buttonLabel: l10n.selectWordFile,
       );
-    case 'Image to PDF':
+    case ToolType.imageToPdf:
       return ToolMeta(
+        title: l10n.imageToPdf,
         fromLabel: 'IMG',
         fromColor: imageViolet,
         toLabel: 'PDF',
         toColor: pdfRed,
-        subtitle:
-            'Convert your images (.jpg, .png, .webp)\nto high-quality PDF files.',
-        buttonLabel: 'Select Image File',
+        subtitle: l10n.imageToPdfSubtitle,
+        buttonLabel: l10n.selectImageFile,
       );
-    case 'PPT to PDF':
+    case ToolType.pptToPdf:
       return ToolMeta(
+        title: l10n.pptToPdf,
         fromLabel: 'PPT',
         fromColor: pptOrange,
         toLabel: 'PDF',
         toColor: pdfRed,
-        subtitle:
-            'Convert your presentations (.ppt, .pptx)\nto high-quality PDF files.',
-        buttonLabel: 'Select PPT File',
+        subtitle: l10n.pptToPdfSubtitle,
+        buttonLabel: l10n.selectPptFile,
       );
-    case 'Excel to PDF':
+    case ToolType.excelToPdf:
       return ToolMeta(
+        title: l10n.excelToPdf,
         fromLabel: 'XLS',
         fromColor: excelGreen,
         toLabel: 'PDF',
         toColor: pdfRed,
-        subtitle:
-            'Convert your spreadsheets (.xls, .xlsx)\nto high-quality PDF files.',
-        buttonLabel: 'Select Excel File',
+        subtitle: l10n.excelToPdfSubtitle,
+        buttonLabel: l10n.selectExcelFile,
       );
-    case 'PDF to Word':
+    case ToolType.pdfToWord:
       return ToolMeta(
+        title: l10n.pdfToWord,
         fromLabel: 'PDF',
         fromColor: pdfRed,
         toLabel: 'Word',
         toColor: wordBlue,
-        subtitle: 'Convert your PDF files\nto editable Word documents (.docx).',
-        buttonLabel: 'Select PDF File',
+        subtitle: l10n.pdfToWordSubtitle,
+        buttonLabel: l10n.selectPdfFile,
       );
-    case 'PDF to Image':
+    case ToolType.pdfToImage:
       return ToolMeta(
+        title: l10n.pdfToImage,
         fromLabel: 'PDF',
         fromColor: pdfRed,
         toLabel: 'IMG',
         toColor: imageViolet,
-        subtitle:
-            'Convert your PDF pages\nto high-quality images (.jpg, .png).',
-        buttonLabel: 'Select PDF File',
+        subtitle: l10n.pdfToImageSubtitle,
+        buttonLabel: l10n.selectPdfFile,
       );
-    case 'PDF to PPT':
+    case ToolType.pdfToPpt:
       return ToolMeta(
+        title: l10n.pdfToPpt,
         fromLabel: 'PDF',
         fromColor: pdfRed,
         toLabel: 'PPT',
         toColor: pptOrange,
-        subtitle: 'Convert your PDF files\nto editable presentations (.pptx).',
-        buttonLabel: 'Select PDF File',
+        subtitle: l10n.pdfToPptSubtitle,
+        buttonLabel: l10n.selectPdfFile,
       );
-    case 'PDF to Excel':
+    case ToolType.pdfToExcel:
       return ToolMeta(
+        title: l10n.pdfToExcel,
         fromLabel: 'PDF',
         fromColor: pdfRed,
         toLabel: 'XLS',
         toColor: excelGreen,
-        subtitle: 'Convert your PDF files\nto editable spreadsheets (.xlsx).',
-        buttonLabel: 'Select PDF File',
+        subtitle: l10n.pdfToExcelSubtitle,
+        buttonLabel: l10n.selectPdfFile,
       );
-    case 'Merge PDF':
+    case ToolType.mergePdf:
       return ToolMeta(
+        title: l10n.mergePdf,
         fromLabel: 'PDF',
         fromColor: pdfRed,
         toLabel: 'PDF',
         toColor: const Color(0xFFFFA000),
-        subtitle: 'Combine multiple PDF files\ninto a single document.',
-        buttonLabel: 'Select PDF Files',
+        subtitle: l10n.mergePdfSubtitle,
+        buttonLabel: l10n.selectPdfFiles,
       );
-    case 'Split PDF':
+    case ToolType.splitPdf:
       return ToolMeta(
+        title: l10n.splitPdf,
         fromLabel: 'PDF',
         fromColor: pdfRed,
         toLabel: 'PDF',
         toColor: const Color(0xFFE53935),
-        subtitle: 'Split your PDF into separate pages\nor custom page ranges.',
-        buttonLabel: 'Select PDF File',
+        subtitle: l10n.splitPdfSubtitle,
+        buttonLabel: l10n.selectPdfFile,
       );
-    case 'Compress PDF':
+    case ToolType.compressPdf:
       return ToolMeta(
+        title: l10n.compressPdf,
         fromLabel: 'PDF',
         fromColor: pdfRed,
         toLabel: 'PDF',
         toColor: const Color(0xFFFFA000),
-        subtitle: 'Reduce the size of your PDF file\nwithout losing quality.',
-        buttonLabel: 'Select PDF File',
+        subtitle: l10n.compressPdfSubtitle,
+        buttonLabel: l10n.selectPdfFile,
       );
-    case 'Protect PDF':
+    case ToolType.protectPdf:
       return ToolMeta(
+        title: l10n.protectPdf,
         fromLabel: 'PDF',
         fromColor: pdfRed,
         toLabel: 'PDF',
         toColor: const Color(0xFF43A047),
-        subtitle: 'Encrypt and password-protect\nyour PDF documents.',
-        buttonLabel: 'Select PDF File',
+        subtitle: l10n.protectPdfSubtitle,
+        buttonLabel: l10n.protectPdf,
       );
-    case 'Sign on PDF':
+    case ToolType.signOnPdf:
       return ToolMeta(
+        title: l10n.signOnPdf,
         fromLabel: 'PDF',
         fromColor: pdfRed,
         toLabel: 'PDF',
         toColor: const Color(0xFFE53935),
-        subtitle: 'Add your digital signature\nto any PDF document.',
-        buttonLabel: 'Select PDF File',
+        subtitle: l10n.signOnPdfSubtitle,
+        buttonLabel: l10n.selectPdfFile,
       );
-    case 'OCR PDF':
+    case ToolType.ocrPdf:
       return ToolMeta(
+        title: l10n.ocrPdf,
         fromLabel: 'PDF',
         fromColor: pdfRed,
         toLabel: 'PDF',
         toColor: const Color(0xFF6C4EF5),
-        subtitle:
-            'Extract text from scanned PDFs\nusing optical character recognition.',
-        buttonLabel: 'Select PDF File',
+        subtitle: l10n.ocrPdfSubtitle,
+        buttonLabel: l10n.selectPdfFile,
       );
-    case 'Organize PDF':
+    case ToolType.organizePdf:
       return ToolMeta(
+        title: l10n.organizePdf,
         fromLabel: 'PDF',
         fromColor: pdfRed,
         toLabel: 'PDF',
         toColor: const Color(0xFF4285F4),
-        subtitle: 'Reorder, rotate, or delete pages\nin your PDF document.',
-        buttonLabel: 'Select PDF File',
-      );
-    default:
-      return ToolMeta(
-        fromLabel: title.split(' ').first,
-        fromColor: const Color(0xFF6C4EF5),
-        toLabel: 'PDF',
-        toColor: pdfRed,
-        subtitle: 'Convert your file to a high-quality PDF.',
-        buttonLabel: 'Select File',
+        subtitle: l10n.organizePdfSubtitle,
+        buttonLabel: l10n.selectPdfFile,
       );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:file_reader/core/widgets/custom_button.dart';
 import 'package:file_reader/features/onboarding/controller/onboarding_controller.dart';
+import 'package:file_reader/features/onboarding/model/onboarding_model.dart';
+import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,6 +12,25 @@ class Onboarding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final language = AppLocalizations.of(context)!;
+
+    final List<OnboardingModel> onboardingPages = [
+      OnboardingModel(
+        title: language.onBoardingTitle1,
+        subtitle: language.onBoardingSubtitle1,
+        image: 'assets/images/pdf.png',
+      ),
+      OnboardingModel(
+        title: language.onBoardingTitle2,
+        subtitle: language.onBoardingSubtitle2,
+        image: 'assets/images/doc.png',
+      ),
+      OnboardingModel(
+        title: language.onBoardingTitle3,
+        subtitle: language.onBoardingSubtitle3,
+        image: 'assets/images/ppt.png',
+      ),
+    ];
     final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -29,16 +50,12 @@ class Onboarding extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Image.asset(
-                            controller
-                                .onboardingPages[controller.currentPage.value]
-                                .image,
+                            onboardingPages[controller.currentPage.value].image,
                             width: screenSize.width * 0.25,
                           ),
                           SizedBox(height: screenSize.height * 0.03),
                           Text(
-                            controller
-                                .onboardingPages[controller.currentPage.value]
-                                .title,
+                            onboardingPages[controller.currentPage.value].title,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 21,
@@ -49,8 +66,7 @@ class Onboarding extends StatelessWidget {
                           SizedBox(height: screenSize.height * 0.03),
 
                           Text(
-                            controller
-                                .onboardingPages[controller.currentPage.value]
+                            onboardingPages[controller.currentPage.value]
                                 .subtitle,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
@@ -83,17 +99,21 @@ class Onboarding extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: controller.onSkip,
-                    child: const Padding(
+                    child: Padding(
                       padding: EdgeInsets.symmetric(
                         vertical: 25,
                         horizontal: 4,
                       ),
-                      child: Text(
-                        'Skip',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w500,
+                      child: Obx(
+                        () => Text(
+                          controller.currentPage.value < 2
+                              ? language.onBoardingSkip
+                              : '',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
@@ -120,7 +140,9 @@ class Onboarding extends StatelessWidget {
                   ),
                   Obx(
                     () => CustomButton(
-                      text: controller.currentPage.value != 2 ? 'Next' : 'Done',
+                      text: controller.currentPage.value != 2
+                          ? language.onBoardingNext
+                          : language.onBoardingDone,
                       onPressed: controller.onComplete,
                       width: MediaQuery.of(context).size.width * 0.1,
                     ),
