@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> {
         final initialPath = await _fileChannel.invokeMethod<String>(
           'getInitialFile',
         );
+
         if (mounted && initialPath != null) {
           await _openFile(initialPath);
         }
@@ -61,8 +62,11 @@ class _HomePageState extends State<HomePage> {
       files,
     ) async {
       if (!mounted || files.isEmpty) return;
+
       final uri = files.first.value;
-      if (uri == null) return;
+
+      if (uri == null || uri.isEmpty) return;
+
       await _openFile(uri);
     });
   }
@@ -70,10 +74,13 @@ class _HomePageState extends State<HomePage> {
   Future<void> _handleIntent() async {
     try {
       final files = await _controller.getInitialFiles();
+
       if (!mounted || files.isEmpty) return;
 
       final uri = files.first.value;
+
       if (uri == null || uri.isEmpty) return;
+
       await _openFile(uri);
     } catch (e) {
       debugPrint('Handle intent error: $e');
@@ -82,7 +89,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _openFile(String uri) async {
     try {
-      Uint8List bytes = await _controller.getPdfBytes(uri);
+      final Uint8List bytes = await _controller.getPdfBytes(uri);
 
       if (!mounted) return;
 
@@ -100,91 +107,214 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
-    final List<Widget> screens = [HomePageView(), FilePage(), SettingPage()];
     final lang = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: SafeArea(
-        top: true,
-        bottom: false,
-        child: Stack(
-          children: [
-            Obx(
-              (() => Column(
-                children: [
-                  SizedBox(height: 70),
-                  Expanded(child: screens[naviController.selectedIndex.value]),
-                ],
-              )),
-            ),
 
-            buildTopBar(screenSize, lang.upgrade),
-            Positioned(
-              bottom: 16,
-              left: 10,
-              right: 10,
-              child: Container(
-                padding: EdgeInsets.all(12),
-                width: screenSize.width,
-                height: Platform.isIOS ? 76 : 64,
-                decoration: BoxDecoration(
-                  color: Platform.isIOS
-                      ? const Color.fromARGB(120, 252, 252, 252)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(35),
-                  border: Border.all(
-                    color: Color.fromARGB(9, 101, 92, 92),
-                    width: 1.3,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final height = constraints.maxHeight;
+
+        final bool isSmallPhone = width < 360;
+        final bool isTablet = width >= 600;
+
+        final double topBarHeight = isSmallPhone
+            ? 58
+            : isTablet
+            ? 72
+            : 64;
+
+        final double bottomBarHeight = Platform.isIOS
+            ? (isSmallPhone ? 68 : 76)
+            : (isSmallPhone ? 60 : 66);
+
+        final double horizontalMargin = isSmallPhone
+            ? 8
+            : isTablet
+            ? 24
+            : 10;
+
+        final double bottomMargin = isSmallPhone ? 8 : 16;
+
+        return Scaffold(
+          body: SafeArea(
+            top: true,
+            bottom: false,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: topBarHeight,
+                      bottom: bottomBarHeight + bottomMargin + 8,
+                    ),
+                    child: Obx(() {
+                      final List<Widget> screens = [
+                        const HomePageView(),
+                        FilePage(),
+                        const SettingPage(),
+                      ];
+
+                      return IndexedStack(
+                        index: naviController.selectedIndex.value,
+                        children: screens,
+                      );
+                    }),
                   ),
-                  // Border(
+                ),
 
-                  //   top: BorderSide(color: Color(0xFFEEEEEE), width: 4.5),
-                  // ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: buildTopBar(context, width, lang.upgrade),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    navItem(Icons.home_rounded, lang.home, 0),
-                    navItem(Icons.folder, lang.files, 1),
-                    navItem(Icons.settings, lang.settings, 2),
-                  ],
+
+                Positioned(
+                  bottom: bottomMargin,
+                  left: horizontalMargin,
+                  right: horizontalMargin,
+                  child: _buildBottomNavigation(
+                    context,
+                    width,
+                    bottomBarHeight,
+                    lang,
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomNavigation(
+    BuildContext context,
+    double width,
+    double height,
+    AppLocalizations lang,
+  ) {
+    final bool isSmallPhone = width < 360;
+    final bool isTablet = width >= 600;
+
+    final double iconSize = isSmallPhone
+        ? 21
+        : isTablet
+        ? 25
+        : 23;
+
+    final double fontSize = isSmallPhone
+        ? 10
+        : isTablet
+        ? 12
+        : 11;
+
+    return Container(
+      width: double.infinity,
+      height: height,
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmallPhone ? 6 : 10,
+        vertical: isSmallPhone ? 6 : 8,
+      ),
+      decoration: BoxDecoration(
+        color: Platform.isIOS
+            ? const Color.fromARGB(235, 252, 252, 252)
+            : const Color.fromARGB(235, 252, 252, 252),
+        borderRadius: BorderRadius.circular(isSmallPhone ? 28 : 35),
+        border: Border.all(
+          color: const Color.fromARGB(20, 101, 92, 92),
+          width: 1.2,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: navItem(
+              Icons.home_rounded,
+              lang.home,
+              0,
+              iconSize,
+              fontSize,
+            ),
+          ),
+          Expanded(
+            child: navItem(Icons.folder, lang.files, 1, iconSize, fontSize),
+          ),
+          Expanded(
+            child: navItem(
+              Icons.settings,
+              lang.settings,
+              2,
+              iconSize,
+              fontSize,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget navItem(IconData icon, String label, int index) {
+  Widget navItem(
+    IconData icon,
+    String label,
+    int index,
+    double iconSize,
+    double fontSize,
+  ) {
     return Obx(() {
-      final isSelected = naviController.selectedIndex.value == index;
+      final bool isSelected = naviController.selectedIndex.value == index;
 
       return GestureDetector(
-        onTap: () => naviController.changePage(index),
-        child: Container(
-          decoration: isSelected
-              ? BoxDecoration(
-                  color: const Color.fromARGB(50, 253, 240, 240),
-                  borderRadius: BorderRadius.circular(30),
-                )
-              : BoxDecoration(),
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          naviController.changePage(index);
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          constraints: const BoxConstraints(minHeight: 45),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? const Color.fromARGB(35, 108, 78, 245)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(30),
+          ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 icon,
-                size: isSelected ? 25 : 23,
+                size: isSelected ? iconSize + 1 : iconSize,
                 color: isSelected
                     ? const Color(0xFF6C4EF5)
                     : const Color(0xFFAAAAAA),
               ),
-              Text(
-                label,
-                style: TextStyle(
-                  color: isSelected
-                      ? const Color(0xFF6C4EF5)
-                      : const Color(0xFFAAAAAA),
+
+              const SizedBox(height: 1),
+
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isSelected
+                        ? const Color(0xFF6C4EF5)
+                        : const Color(0xFFAAAAAA),
+                    fontSize: fontSize,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
                 ),
               ),
             ],
@@ -194,66 +324,113 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Widget buildTopBar(Size screenSize, String upgrade) {
-    return Column(
-      children: [
-        Container(
-          color: const Color.fromARGB(120, 255, 246, 246),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+  Widget buildTopBar(BuildContext context, double width, String upgrade) {
+    final bool isSmallPhone = width < 360;
+    final bool isTablet = width >= 600;
+
+    final double logoSize = isSmallPhone
+        ? 28
+        : isTablet
+        ? 38
+        : 32;
+
+    final double titleSize = isSmallPhone
+        ? 18
+        : isTablet
+        ? 24
+        : 22;
+
+    final double horizontalPadding = isSmallPhone
+        ? 10
+        : isTablet
+        ? 24
+        : 16;
+
+    return Container(
+      width: double.infinity,
+      color: const Color.fromARGB(120, 255, 246, 246),
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: isSmallPhone ? 8 : 10,
+      ),
+      child: Row(
+        children: [
+          Expanded(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: screenSize.width * 0.1,
-                      child: Image.asset('assets/images/logo.png'),
-                    ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Pdf Reader',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1A1A2E),
-                      ),
-                    ),
-                  ],
+                SizedBox(
+                  width: logoSize,
+                  height: logoSize,
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    fit: BoxFit.contain,
+                  ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(64, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: const Color(0xFFFFD700),
-                      width: 1,
+
+                SizedBox(width: isSmallPhone ? 5 : 8),
+
+                Flexible(
+                  child: Text(
+                    'Pdf Reader',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1A1A2E),
                     ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.star, color: Color(0xFFFFC107), size: 14),
-                      SizedBox(width: 4),
-                      Text(
-                        upgrade,
-                        style: TextStyle(
-                          color: Color(0xFFB8860B),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ],
             ),
           ),
-        ),
-      ],
+
+          // const SizedBox(width: 8),
+
+          // Flexible(
+          //   flex: 0,
+          //   child: Container(
+          //     constraints: BoxConstraints(
+          //       maxWidth: isSmallPhone
+          //           ? 105
+          //           : isTablet
+          //           ? 150
+          //           : 125,
+          //     ),
+          //     padding: EdgeInsets.symmetric(
+          //       horizontal: isSmallPhone ? 8 : 12,
+          //       vertical: isSmallPhone ? 5 : 6,
+          //     ),
+          //     decoration: BoxDecoration(
+          //       color: const Color.fromARGB(64, 255, 255, 255),
+          //       borderRadius: BorderRadius.circular(20),
+          //       border: Border.all(color: const Color(0xFFFFD700), width: 1),
+          //     ),
+          //     child: Row(
+          //       mainAxisSize: MainAxisSize.min,
+          //       children: [
+          //         const Icon(Icons.star, color: Color(0xFFFFC107), size: 14),
+
+          //         // const SizedBox(width: 4),
+
+          //         // Flexible(
+          //         //   child: Text(
+          //         //     upgrade,
+          //         //     maxLines: 1,
+          //         //     overflow: TextOverflow.ellipsis,
+          //         //     style: TextStyle(
+          //         //       color: const Color(0xFFB8860B),
+          //         //       fontWeight: FontWeight.w600,
+          //         //       fontSize: isSmallPhone ? 10 : 12,
+          //         //     ),
+          //         //   ),
+          //         // ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+        ],
+      ),
     );
   }
 }

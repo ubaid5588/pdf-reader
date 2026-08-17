@@ -18,116 +18,116 @@ class _HomeScreenState extends State<HomePageView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: screenSize.height * 0.02),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: screenSize.height * 0.02),
-            child: Container(
-              height: screenSize.height * 0.2,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFEDE8FF), Color(0xFFDDD5FF)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: -20,
-                    right: 80,
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: -30,
-                    right: 20,
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                lang.bannerTitle,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1A1A2E),
-                                  height: 1.2,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                lang.bannerSubtitle,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Color(0xFF6B6B8A),
-                                  height: 1.4,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF6C4EF5),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 8,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                child: Text(
-                                  lang.tryNow,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // _buildPhoneIllustration(),
-                      ],
-                    ),
-                  ),
-                  // Positioned(
-                  //   right: screenSize.width * 0.12,
-                  //   top: screenSize.height * 0.026,
-                  //   child: Image.asset(
-                  //     'assets/images/prem.png',
-                  //     width: screenSize.height * 0.13,
-                  //   ),
-                  // ),
-                ],
-              ),
-            ),
-          ),
+          // SizedBox(height: screenSize.height * 0.02),
+          // Padding(
+          //   padding: EdgeInsets.symmetric(horizontal: screenSize.height * 0.02),
+          //   child: Container(
+          //     height: screenSize.height * 0.2,
+          //     decoration: BoxDecoration(
+          //       gradient: const LinearGradient(
+          //         colors: [Color(0xFFEDE8FF), Color(0xFFDDD5FF)],
+          //         begin: Alignment.topLeft,
+          //         end: Alignment.bottomRight,
+          //       ),
+          //       borderRadius: BorderRadius.circular(16),
+          //     ),
+          //     child: Stack(
+          //       children: [
+          //         Positioned(
+          //           top: -20,
+          //           right: 80,
+          //           child: Container(
+          //             width: 80,
+          //             height: 80,
+          //             decoration: BoxDecoration(
+          //               color: Colors.white.withOpacity(0.15),
+          //               shape: BoxShape.circle,
+          //             ),
+          //           ),
+          //         ),
+          //         Positioned(
+          //           bottom: -30,
+          //           right: 20,
+          //           child: Container(
+          //             width: 100,
+          //             height: 100,
+          //             decoration: BoxDecoration(
+          //               color: Colors.white.withOpacity(0.1),
+          //               shape: BoxShape.circle,
+          //             ),
+          //           ),
+          //         ),
+          //         Padding(
+          //           padding: const EdgeInsets.all(16),
+          //           child: Row(
+          //             children: [
+          //               Expanded(
+          //                 child: Column(
+          //                   crossAxisAlignment: CrossAxisAlignment.start,
+          //                   mainAxisAlignment: MainAxisAlignment.center,
+          //                   children: [
+          //                     Text(
+          //                       lang.bannerTitle,
+          //                       style: TextStyle(
+          //                         fontSize: 20,
+          //                         fontWeight: FontWeight.bold,
+          //                         color: Color(0xFF1A1A2E),
+          //                         height: 1.2,
+          //                       ),
+          //                     ),
+          //                     const SizedBox(height: 6),
+          //                     Text(
+          //                       lang.bannerSubtitle,
+          //                       style: TextStyle(
+          //                         fontSize: 11,
+          //                         color: Color(0xFF6B6B8A),
+          //                         height: 1.4,
+          //                       ),
+          //                     ),
+          //                     const SizedBox(height: 12),
+          //                     ElevatedButton(
+          //                       onPressed: () {},
+          //                       style: ElevatedButton.styleFrom(
+          //                         backgroundColor: const Color(0xFF6C4EF5),
+          //                         foregroundColor: Colors.white,
+          //                         padding: const EdgeInsets.symmetric(
+          //                           horizontal: 20,
+          //                           vertical: 8,
+          //                         ),
+          //                         shape: RoundedRectangleBorder(
+          //                           borderRadius: BorderRadius.circular(20),
+          //                         ),
+          //                         minimumSize: Size.zero,
+          //                         tapTargetSize:
+          //                             MaterialTapTargetSize.shrinkWrap,
+          //                       ),
+          //                       child: Text(
+          //                         lang.tryNow,
+          //                         style: TextStyle(
+          //                           fontSize: 13,
+          //                           fontWeight: FontWeight.w600,
+          //                         ),
+          //                       ),
+          //                     ),
+          //                   ],
+          //                 ),
+          //               ),
+          //               // _buildPhoneIllustration(),
+          //             ],
+          //           ),
+          //         ),
+          //         // Positioned(
+          //         //   right: screenSize.width * 0.12,
+          //         //   top: screenSize.height * 0.026,
+          //         //   child: Image.asset(
+          //         //     'assets/images/prem.png',
+          //         //     width: screenSize.height * 0.13,
+          //         //   ),
+          //         // ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
           SizedBox(height: screenSize.height * 0.02),
 
           buildSection(

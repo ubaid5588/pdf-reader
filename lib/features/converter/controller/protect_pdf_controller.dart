@@ -9,7 +9,6 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 class ProtectPdfController extends GetxController {
   RxBool isLoading = false.obs;
 
-  /// Full flow: pick a PDF from storage -> ask for password -> protect it
   Future<void> pickAndProtectPdf() async {
     try {
       final result = await fp.FilePicker.platform.pickFiles(
@@ -24,7 +23,6 @@ class ProtectPdfController extends GetxController {
 
       final sourceFile = File(path);
 
-      // Ask the user for a password before protecting
       final passwordController = TextEditingController();
       final password = await Get.dialog<String>(
         AlertDialog(

@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
-import 'package:file_reader/features/file/view/file_page.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:file_reader/features/home/controller/navi_controller.dart';
 
 class SplitPdfController extends GetxController {
   RxBool isLoading = false.obs;
@@ -23,7 +23,7 @@ class SplitPdfController extends GetxController {
 
       await splitIntoSinglePages(file);
 
-      Get.to(() => FilePage());
+      Get.find<NaviController>().changePage(1);
     } catch (e) {
       Get.snackbar("Error", "Could not create PDF: $e");
     } finally {

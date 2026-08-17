@@ -64,6 +64,7 @@ class SelectedTool extends StatelessWidget {
     final meta = _resolveMeta(l10n, toolType);
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
