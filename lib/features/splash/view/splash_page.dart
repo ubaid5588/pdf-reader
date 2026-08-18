@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:file_reader/features/splash/controller/splash_controller.dart';
 import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +31,6 @@ class _SplashPageState extends State<SplashPage>
       vsync: this,
     );
 
-    // Logo animation: scale and fade in
     _logoScale = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
@@ -44,7 +45,6 @@ class _SplashPageState extends State<SplashPage>
       ),
     );
 
-    // Title slide down animation
     _titleSlide = Tween<Offset>(begin: const Offset(0, -0.5), end: Offset.zero)
         .animate(
           CurvedAnimation(
@@ -53,7 +53,6 @@ class _SplashPageState extends State<SplashPage>
           ),
         );
 
-    // Subtitle slide down animation (delayed)
     _subtitleSlide =
         Tween<Offset>(begin: const Offset(0, -0.5), end: Offset.zero).animate(
           CurvedAnimation(
@@ -62,7 +61,6 @@ class _SplashPageState extends State<SplashPage>
           ),
         );
 
-    // Loading progress animation
     _loadingProgress = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
@@ -70,7 +68,6 @@ class _SplashPageState extends State<SplashPage>
       ),
     );
 
-    // Start animation
     _animationController.forward();
   }
 
@@ -105,7 +102,6 @@ class _SplashPageState extends State<SplashPage>
           children: [
             SizedBox(height: screenSize.height * 0.35),
 
-            // Animated Logo
             ScaleTransition(
               scale: _logoScale,
               child: FadeTransition(
@@ -133,7 +129,6 @@ class _SplashPageState extends State<SplashPage>
 
             SizedBox(height: screenSize.height * 0.02),
 
-            // Animated Title
             SlideTransition(
               position: _titleSlide,
               child: FadeTransition(
@@ -141,6 +136,7 @@ class _SplashPageState extends State<SplashPage>
                 child: Text(
                   'Pdf Reader',
                   style: TextStyle(
+                    fontFamily: "Archivo",
                     fontWeight: FontWeight.w700,
                     fontSize: screenSize.width * 0.08,
                     color: Colors.white,
@@ -152,7 +148,6 @@ class _SplashPageState extends State<SplashPage>
 
             SizedBox(height: screenSize.height * 0.005),
 
-            // Animated Subtitle
             SlideTransition(
               position: _subtitleSlide,
               child: FadeTransition(
@@ -165,6 +160,7 @@ class _SplashPageState extends State<SplashPage>
                     AppLocalizations.of(context)!.splashAppTitle,
                     textAlign: TextAlign.center,
                     style: TextStyle(
+                      fontFamily: "Archivo",
                       fontWeight: FontWeight.w400,
                       fontSize: screenSize.width * 0.045,
                       color: Colors.white.withOpacity(0.85),
@@ -177,7 +173,6 @@ class _SplashPageState extends State<SplashPage>
 
             const Spacer(),
 
-            // Animated Loading Bar
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: screenSize.width * 0.20,
@@ -200,15 +195,6 @@ class _SplashPageState extends State<SplashPage>
                           ),
                         ),
                       ),
-                      // SizedBox(height: screenSize.height * 0.02),
-                      // Text(
-                      //   '${(_loadingProgress.value * 100).toInt()}%',
-                      //   style: TextStyle(
-                      //     fontSize: screenSize.width * 0.03,
-                      //     color: Colors.white.withOpacity(0.6),
-                      //     fontWeight: FontWeight.w500,
-                      //   ),
-                      // ),
                     ],
                   );
                 },
