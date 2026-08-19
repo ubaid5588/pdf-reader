@@ -637,6 +637,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose your preferred language to continue'**
   String get preferredLangauge;
+
+  /// No description provided for @conversionComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversion Complete!'**
+  String get conversionComplete;
+
+  /// No description provided for @yourPdfIsReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Your PDF is ready'**
+  String get yourPdfIsReady;
+
+  /// No description provided for @openPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Open PDF'**
+  String get openPdf;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @conversionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversion Failed'**
+  String get conversionFailed;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @preparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing...'**
+  String get preparing;
+
+  /// No description provided for @converting.
+  ///
+  /// In en, this message translates to:
+  /// **'Converting...'**
+  String get converting;
+
+  /// No description provided for @keepAppOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Please keep the app open while processing'**
+  String get keepAppOpen;
 }
 
 class _AppLocalizationsDelegate

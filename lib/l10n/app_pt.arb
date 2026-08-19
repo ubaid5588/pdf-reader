@@ -110,5 +110,17 @@
   "settingsLabel5": "Sobre",
   "settingsLogout": "Terminar sessão",
   "selectLanguage": "Selecionar idioma",
-  "preferredLangauge": "Escolha o seu idioma de preferência para continuar"
+  "preferredLangauge": "Escolha o seu idioma de preferência para continuar",
+
+  "conversionComplete": "Conversão concluída!",
+  "yourPdfIsReady": "O seu PDF está pronto",
+  "openPdf": "Abrir PDF",
+  "share": "Partilhar",
+  "done": "Concluído",
+  "conversionFailed": "Falha na conversão",
+  "retry": "Tentar novamente",
+  "cancel": "Cancelar",
+  "preparing": "A preparar...",
+  "converting": "A converter...",
+  "keepAppOpen": "Por favor mantenha a aplicação aberta durante o processamento"
 }

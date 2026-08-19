@@ -291,4 +291,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get preferredLangauge => 'Choose your preferred language to continue';
+
+  @override
+  String get conversionComplete => 'Conversion Complete!';
+
+  @override
+  String get yourPdfIsReady => 'Your PDF is ready';
+
+  @override
+  String get openPdf => 'Open PDF';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get conversionFailed => 'Conversion Failed';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get preparing => 'Preparing...';
+
+  @override
+  String get converting => 'Converting...';
+
+  @override
+  String get keepAppOpen => 'Please keep the app open while processing';
 }

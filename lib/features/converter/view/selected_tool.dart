@@ -4,8 +4,8 @@ import 'package:file_reader/features/converter/controller/image_to_pdf_controlle
 import 'package:file_reader/features/converter/controller/file_to_pdf_controller.dart';
 import 'package:file_reader/features/converter/controller/protect_pdf_controller.dart';
 import 'package:file_reader/features/converter/controller/split_pdf_controller.dart';
+import 'package:file_reader/features/converter/view/conversion_processing_page.dart';
 import 'package:file_reader/features/merge_pdf/view/merge_pdf_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -57,8 +57,6 @@ class SelectedTool extends StatelessWidget {
     ProtectPdfController(),
   );
 
-  static bool isProcessing = false;
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -84,19 +82,39 @@ class SelectedTool extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: isProcessing
-          ? Center(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          children: [
+            const SizedBox(height: 16),
+
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 24),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0EFFE),
+                borderRadius: BorderRadius.circular(20),
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CupertinoActivityIndicator(
-                    radius:
-                        22.0, // Default radius is 10.0; increase this to upscale it
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _DocIcon(label: meta.fromLabel, color: meta.fromColor),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Icon(
+                          Icons.arrow_forward,
+                          color: Color(0xFF5B4EE8),
+                          size: 28,
+                        ),
+                      ),
+                      _DocIcon(label: meta.toLabel, color: meta.toColor),
+                    ],
                   ),
                   const SizedBox(height: 28),
                   Text(
-                    l10n.almostDone,
+                    l10n.convertTool(meta.title),
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -105,175 +123,198 @@ class SelectedTool extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    l10n.finalizingFileMessage,
+                    meta.subtitle,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 17,
+                      fontSize: 13,
                       color: Color(0xFF888899),
                       height: 1.5,
                     ),
                   ),
                 ],
               ),
-            )
-          : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+
+            const SizedBox(height: 16),
+
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0EFFE),
+                borderRadius: BorderRadius.circular(20),
+              ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 36,
-                      horizontal: 24,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF0EFFE),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _DocIcon(
-                              label: meta.fromLabel,
-                              color: meta.fromColor,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              child: Icon(
-                                Icons.arrow_forward,
-                                color: Color(0xFF5B4EE8),
-                                size: 28,
-                              ),
-                            ),
-                            _DocIcon(label: meta.toLabel, color: meta.toColor),
-                          ],
-                        ),
-                        const SizedBox(height: 28),
-                        Text(
-                          l10n.convertTool(meta.title),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A1A2E),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          meta.subtitle,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Color(0xFF888899),
-                            height: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 20,
-                      horizontal: 24,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF0EFFE),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _FeatureRow(label: l10n.label1),
-                        const SizedBox(height: 14),
-                        _FeatureRow(label: l10n.label2),
-                        const SizedBox(height: 14),
-                        _FeatureRow(label: l10n.label3),
-                      ],
-                    ),
-                  ),
-
-                  const Spacer(),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: toolType == ToolType.protectPdf
-                        ? Obx(
-                            () => ElevatedButton.icon(
-                              onPressed: protectPdfController.isLoading.value
-                                  ? null
-                                  : protectPdfController.pickAndProtectPdf,
-                              icon: protectPdfController.isLoading.value
-                                  ? const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  : const Icon(Icons.lock),
-                              label: Text(
-                                protectPdfController.isLoading.value
-                                    ? l10n.protecting
-                                    : l10n.protectPdf,
-                              ),
-                            ),
-                          )
-                        : CustomButton(
-                            text: meta.buttonLabel,
-                            width: double.infinity,
-                            onPressed: () async {
-                              switch (toolType) {
-                                case ToolType.imageToPdf:
-                                  await imageToPdfController.pickImages();
-                                  break;
-                                case ToolType.wordToPdf:
-                                  await wordToPdfController.pickFile(
-                                    OfficeFileType.word,
-                                  );
-                                  break;
-                                case ToolType.pptToPdf:
-                                  await wordToPdfController.pickFile(
-                                    OfficeFileType.powerpoint,
-                                  );
-                                  break;
-                                case ToolType.excelToPdf:
-                                  await wordToPdfController.pickFile(
-                                    OfficeFileType.excel,
-                                  );
-                                  break;
-                                case ToolType.mergePdf:
-                                  Get.to(() => MergePdfPage());
-                                  break;
-                                case ToolType.splitPdf:
-                                  await splitPdfController.pickFileAndSplit();
-                                  break;
-                                case ToolType.compressPdf:
-                                  await compressPdfController
-                                      .pickAndCompressPdf();
-                                  break;
-                                default:
-                                  // pdfToWord, pdfToImage, pdfToPpt,
-                                  // pdfToExcel, signOnPdf, ocrPdf,
-                                  // organizePdf: wire these up to their
-                                  // controllers the same way once ready.
-                                  break;
-                              }
-                            },
-                          ),
-                  ),
-                  const SizedBox(height: 28),
+                  _FeatureRow(label: l10n.label1),
+                  const SizedBox(height: 14),
+                  _FeatureRow(label: l10n.label2),
+                  const SizedBox(height: 14),
+                  _FeatureRow(label: l10n.label3),
                 ],
               ),
             ),
+
+            const Spacer(),
+
+            CustomButton(
+              text: meta.buttonLabel,
+              width: double.infinity,
+              onPressed: () async {
+                switch (toolType) {
+                  case ToolType.imageToPdf:
+                    final imagePaths = await imageToPdfController
+                        .pickImageFiles();
+                    if (imagePaths != null && imagePaths.isNotEmpty) {
+                      Get.to(
+                        () => ConversionProcessingPage(
+                          title: meta.title,
+                          initialMessage:
+                              'Converting ${imagePaths.length} image(s) to PDF...',
+                          processOperation: (onProgress) =>
+                              imageToPdfController.createPdfFromImages(
+                                imagePaths,
+                                onProgress: onProgress,
+                              ),
+                        ),
+                      );
+                    }
+                    break;
+
+                  case ToolType.wordToPdf:
+                    final path = await wordToPdfController.pickOfficeFile(
+                      OfficeFileType.word,
+                    );
+                    if (path != null) {
+                      Get.to(
+                        () => ConversionProcessingPage(
+                          title: meta.title,
+                          initialMessage: 'Converting Word document to PDF...',
+                          processOperation: (onProgress) =>
+                              wordToPdfController.convertOfficeFile(
+                                path,
+                                OfficeFileType.word,
+                                onProgress: onProgress,
+                              ),
+                        ),
+                      );
+                    }
+                    break;
+
+                  case ToolType.pptToPdf:
+                    final path = await wordToPdfController.pickOfficeFile(
+                      OfficeFileType.powerpoint,
+                    );
+                    if (path != null) {
+                      Get.to(
+                        () => ConversionProcessingPage(
+                          title: meta.title,
+                          initialMessage:
+                              'Converting PowerPoint presentation to PDF...',
+                          processOperation: (onProgress) =>
+                              wordToPdfController.convertOfficeFile(
+                                path,
+                                OfficeFileType.powerpoint,
+                                onProgress: onProgress,
+                              ),
+                        ),
+                      );
+                    }
+                    break;
+
+                  case ToolType.excelToPdf:
+                    final path = await wordToPdfController.pickOfficeFile(
+                      OfficeFileType.excel,
+                    );
+                    if (path != null) {
+                      Get.to(
+                        () => ConversionProcessingPage(
+                          title: meta.title,
+                          initialMessage:
+                              'Converting Excel spreadsheet to PDF...',
+                          processOperation: (onProgress) =>
+                              wordToPdfController.convertOfficeFile(
+                                path,
+                                OfficeFileType.excel,
+                                onProgress: onProgress,
+                              ),
+                        ),
+                      );
+                    }
+                    break;
+
+                  case ToolType.mergePdf:
+                    Get.to(() => MergePdfPage());
+                    break;
+
+                  case ToolType.splitPdf:
+                    final file = await splitPdfController.pickPdfFile();
+                    if (file != null) {
+                      Get.to(
+                        () => ConversionProcessingPage(
+                          title: meta.title,
+                          initialMessage: 'Splitting PDF document pages...',
+                          processOperation: (onProgress) => splitPdfController
+                              .splitPdf(file, onProgress: onProgress),
+                        ),
+                      );
+                    }
+                    break;
+
+                  case ToolType.compressPdf:
+                    final file = await compressPdfController.pickPdfFile();
+                    if (file != null) {
+                      Get.to(
+                        () => ConversionProcessingPage(
+                          title: meta.title,
+                          initialMessage: 'Compressing and optimizing PDF...',
+                          processOperation: (onProgress) =>
+                              compressPdfController.compressPdf(
+                                file,
+                                onProgress: onProgress,
+                              ),
+                        ),
+                      );
+                    }
+                    break;
+
+                  case ToolType.protectPdf:
+                    final file = await protectPdfController.pickPdfFile();
+                    if (file != null) {
+                      final password = await protectPdfController
+                          .promptPassword();
+                      if (password != null && password.isNotEmpty) {
+                        Get.to(
+                          () => ConversionProcessingPage(
+                            title: meta.title,
+                            initialMessage: 'Encrypting and protecting PDF...',
+                            processOperation: (onProgress) =>
+                                protectPdfController.protectPdf(
+                                  file,
+                                  userPassword: password,
+                                  onProgress: onProgress,
+                                ),
+                          ),
+                        );
+                      }
+                    }
+                    break;
+
+                  default:
+                    Get.snackbar(
+                      meta.title,
+                      'This conversion tool will be available soon.',
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                    break;
+                }
+              },
+            ),
+            const SizedBox(height: 28),
+          ],
+        ),
+      ),
     );
   }
 }

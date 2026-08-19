@@ -110,5 +110,17 @@
   "settingsLabel5": "حول التطبيق",
   "settingsLogout": "تسجيل الخروج",
   "selectLanguage": "اختر اللغة",
-  "preferredLangauge": "اختر لغتك المفضلة للمتابعة"
+  "preferredLangauge": "اختر لغتك المفضلة للمتابعة",
+
+  "conversionComplete": "اكتمل التحويل!",
+  "yourPdfIsReady": "ملف PDF الخاص بك جاهز",
+  "openPdf": "فتح PDF",
+  "share": "مشاركة",
+  "done": "تم",
+  "conversionFailed": "فشل التحويل",
+  "retry": "إعادة المحاولة",
+  "cancel": "إلغاء",
+  "preparing": "جارٍ التحضير...",
+  "converting": "جارٍ التحويل...",
+  "keepAppOpen": "يرجى إبقاء التطبيق مفتوحًا أثناء المعالجة"
 }

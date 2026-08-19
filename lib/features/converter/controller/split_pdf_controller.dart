@@ -1,48 +1,62 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
+import 'package:file_reader/features/converter/services/pdf_storage_service.dart';
+import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:get/get.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'package:file_reader/features/home/controller/navi_controller.dart';
 
 class SplitPdfController extends GetxController {
   RxBool isLoading = false.obs;
 
-  Future<void> pickFileAndSplit() async {
+  Future<File?> pickPdfFile() async {
     try {
       final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
+        allowMultiple: false,
       );
-      isLoading.value = true;
 
-      final platFormFile = result!.files.first;
-
-      final File file = File(platFormFile.path!);
-
-      await splitIntoSinglePages(file);
-
-      Get.find<NaviController>().changePage(1);
+      if (result == null || result.files.isEmpty) return null;
+      final path = result.files.single.path;
+      if (path == null) return null;
+      return File(path);
     } catch (e) {
-      Get.snackbar("Error", "Could not create PDF: $e");
-    } finally {
-      isLoading.value = false;
+      Get.snackbar('Error', 'Failed to pick file: $e');
+      return null;
     }
   }
 
-  Future<List<File>> splitIntoSinglePages(File sourceFile) async {
-    final List<File> outputFiles = [];
-
+  Future<File> splitPdf(
+    File sourceFile, {
+    void Function(double progress, String status)? onProgress,
+  }) async {
     try {
       isLoading.value = true;
+      onProgress?.call(0.2, 'Analyzing PDF document pages...');
 
       final bytes = await sourceFile.readAsBytes();
       final PdfDocument sourceDoc = PdfDocument(inputBytes: bytes);
-      final dir = await getApplicationDocumentsDirectory();
-      final baseName = sourceFile.path.split('/').last.replaceAll('.pdf', '');
+      final int totalPages = sourceDoc.pages.count;
 
-      for (int i = 0; i < sourceDoc.pages.count; i++) {
+      if (totalPages == 0) {
+        throw Exception('The PDF contains no pages.');
+      }
+
+      final baseName = sourceFile.path
+          .split(Platform.pathSeparator)
+          .last
+          .replaceAll('.pdf', '');
+
+      File? firstOutputFile;
+
+      for (int i = 0; i < totalPages; i++) {
+        final progressPct = 0.25 + (0.6 * ((i + 1) / totalPages));
+        onProgress?.call(
+          progressPct,
+          'Splitting page ${i + 1} of $totalPages...',
+        );
+
         final PdfDocument newDoc = PdfDocument();
         final PdfPage sourcePage = sourceDoc.pages[i];
         final Size pageSize = sourcePage.size;
@@ -58,21 +72,38 @@ class SplitPdfController extends GetxController {
           pageSize,
         );
 
-        final outputFile = File('${dir.path}/${baseName}_page${i + 1}.pdf');
-        await outputFile.writeAsBytes(await newDoc.save());
+        final splitBytes = await newDoc.save();
         newDoc.dispose();
 
-        outputFiles.add(outputFile);
+        final splitFileName = '${baseName}_page_${i + 1}.pdf';
+        final savedPath = await PdfStorageService.savePdfToDownloads(
+          pdfBytes: splitBytes,
+          fileName: splitFileName,
+        );
+
+        if (savedPath != null && firstOutputFile == null) {
+          firstOutputFile = File(savedPath);
+        }
       }
 
       sourceDoc.dispose();
-      Get.snackbar("Split complete", "${outputFiles.length} pages created");
+
+      onProgress?.call(1.0, 'Finalizing $totalPages pages...');
+
+      try {
+        if (Get.isRegistered<FilePageController>()) {
+          await Get.find<FilePageController>().refreshPdfs();
+        }
+      } catch (_) {}
+
+      if (firstOutputFile != null) {
+        return firstOutputFile;
+      }
+      throw Exception('Failed to split PDF');
     } catch (e) {
-      Get.snackbar("Error", "Could not split PDF: $e");
+      rethrow;
     } finally {
       isLoading.value = false;
     }
-
-    return outputFiles;
   }
 }

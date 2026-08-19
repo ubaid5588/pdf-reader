@@ -294,4 +294,37 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get preferredLangauge =>
       'جاری رکھنے کے لیے اپنی پسندیدہ زبان منتخب کریں';
+
+  @override
+  String get conversionComplete => 'تبدیلی مکمل ہو گئی!';
+
+  @override
+  String get yourPdfIsReady => 'آپ کی PDF تیار ہے';
+
+  @override
+  String get openPdf => 'PDF کھولیں';
+
+  @override
+  String get share => 'شیئر کریں';
+
+  @override
+  String get done => 'مکمل';
+
+  @override
+  String get conversionFailed => 'تبدیلی ناکام ہو گئی';
+
+  @override
+  String get retry => 'دوبارہ کوشش کریں';
+
+  @override
+  String get cancel => 'منسوخ کریں';
+
+  @override
+  String get preparing => 'تیاری جاری ہے...';
+
+  @override
+  String get converting => 'تبدیل کیا جا رہا ہے...';
+
+  @override
+  String get keepAppOpen => 'براہ کرم پروسیسنگ کے دوران ایپ کو کھلا رکھیں';
 }

@@ -110,5 +110,17 @@
   "settingsLabel5": "ہمارے بارے میں",
   "settingsLogout": "لاگ آؤٹ",
   "selectLanguage": "زبان منتخب کریں",
-  "preferredLangauge": "جاری رکھنے کے لیے اپنی پسندیدہ زبان منتخب کریں"
+  "preferredLangauge": "جاری رکھنے کے لیے اپنی پسندیدہ زبان منتخب کریں",
+
+  "conversionComplete": "تبدیلی مکمل ہو گئی!",
+  "yourPdfIsReady": "آپ کی PDF تیار ہے",
+  "openPdf": "PDF کھولیں",
+  "share": "شیئر کریں",
+  "done": "مکمل",
+  "conversionFailed": "تبدیلی ناکام ہو گئی",
+  "retry": "دوبارہ کوشش کریں",
+  "cancel": "منسوخ کریں",
+  "preparing": "تیاری جاری ہے...",
+  "converting": "تبدیل کیا جا رہا ہے...",
+  "keepAppOpen": "براہ کرم پروسیسنگ کے دوران ایپ کو کھلا رکھیں"
 }

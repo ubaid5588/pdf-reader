@@ -110,5 +110,17 @@
   "settingsLabel5": "アプリについて",
   "settingsLogout": "ログアウト",
   "selectLanguage": "言語を選択",
-  "preferredLangauge": "続けるには希望の言語を選択してください"
+  "preferredLangauge": "続けるには希望の言語を選択してください",
+
+  "conversionComplete": "変換が完了しました！",
+  "yourPdfIsReady": "PDFの準備ができました",
+  "openPdf": "PDFを開く",
+  "share": "共有",
+  "done": "完了",
+  "conversionFailed": "変換に失敗しました",
+  "retry": "再試行",
+  "cancel": "キャンセル",
+  "preparing": "準備中...",
+  "converting": "変換中...",
+  "keepAppOpen": "処理中はアプリを開いたままにしてください"
 }

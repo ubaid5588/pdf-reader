@@ -286,4 +286,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get preferredLangauge => 'اختر لغتك المفضلة للمتابعة';
+
+  @override
+  String get conversionComplete => 'اكتمل التحويل!';
+
+  @override
+  String get yourPdfIsReady => 'ملف PDF الخاص بك جاهز';
+
+  @override
+  String get openPdf => 'فتح PDF';
+
+  @override
+  String get share => 'مشاركة';
+
+  @override
+  String get done => 'تم';
+
+  @override
+  String get conversionFailed => 'فشل التحويل';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get preparing => 'جارٍ التحضير...';
+
+  @override
+  String get converting => 'جارٍ التحويل...';
+
+  @override
+  String get keepAppOpen => 'يرجى إبقاء التطبيق مفتوحًا أثناء المعالجة';
 }

@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:file_reader/features/converter/services/pdf_storage_service.dart';
+import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:get/get.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class MergePdfController extends GetxController {
@@ -20,13 +21,39 @@ class MergePdfController extends GetxController {
   Future<void> loadPdfs() async {
     try {
       isLoading.value = true;
-      final dir = await getApplicationDocumentsDirectory();
-      final files = dir
-          .listSync()
-          .whereType<File>()
-          .where((file) => file.path.endsWith('.pdf'))
-          .toList();
-      pdfFiles.value = files;
+      if (Get.isRegistered<FilePageController>()) {
+        final fileController = Get.find<FilePageController>();
+        if (fileController.pdfFiles.isNotEmpty) {
+          pdfFiles.value = fileController.pdfFiles;
+          return;
+        }
+      }
+
+      final searchPaths = [
+        '/storage/emulated/0/Download',
+        '/storage/emulated/0/Documents',
+        '/storage/emulated/0',
+      ];
+      final List<File> loaded = [];
+
+      for (var path in searchPaths) {
+        final dir = Directory(path);
+        if (await dir.exists()) {
+          try {
+            final files = dir
+                .listSync(recursive: false)
+                .whereType<File>()
+                .where((f) => f.path.toLowerCase().endsWith('.pdf'));
+            loaded.addAll(files);
+          } catch (_) {}
+        }
+      }
+
+      final unique = <String, File>{};
+      for (var f in loaded) {
+        unique[f.path] = f;
+      }
+      pdfFiles.value = unique.values.toList();
     } catch (e) {
       print("PDF load error: $e");
     } finally {
@@ -35,8 +62,8 @@ class MergePdfController extends GetxController {
   }
 
   void toggleSelection(File file) {
-    if (selectedForMerge.contains(file)) {
-      selectedForMerge.remove(file);
+    if (selectedForMerge.any((f) => f.path == file.path)) {
+      selectedForMerge.removeWhere((f) => f.path == file.path);
     } else {
       selectedForMerge.add(file);
     }
@@ -44,18 +71,31 @@ class MergePdfController extends GetxController {
 
   void clearSelection() => selectedForMerge.clear();
 
-  Future<File?> mergeSelectedPdfs({String? outputName}) async {
+  Future<File> mergeSelectedPdfs({
+    String? outputName,
+    void Function(double progress, String status)? onProgress,
+  }) async {
     if (selectedForMerge.length < 2) {
-      Get.snackbar("Merge PDF", "Select at least 2 PDFs to merge");
-      return null;
+      throw Exception('Please select at least 2 PDF files to merge.');
     }
 
     try {
       isMerging.value = true;
+      onProgress?.call(0.15, 'Preparing merge workspace...');
 
       final PdfDocument finalDocument = PdfDocument();
+      final total = selectedForMerge.length;
 
-      for (final file in selectedForMerge) {
+      for (int fIndex = 0; fIndex < total; fIndex++) {
+        final file = selectedForMerge[fIndex];
+        final fileName = file.path.split(Platform.pathSeparator).last;
+        final progressPct = 0.2 + (0.6 * ((fIndex + 1) / total));
+
+        onProgress?.call(
+          progressPct,
+          'Merging document ${fIndex + 1} of $total ($fileName)...',
+        );
+
         final bytes = await file.readAsBytes();
         final PdfDocument sourceDoc = PdfDocument(inputBytes: bytes);
 
@@ -63,7 +103,6 @@ class MergePdfController extends GetxController {
           final PdfPage sourcePage = sourceDoc.pages[i];
           final Size pageSize = sourcePage.size;
 
-          // Set page settings BEFORE adding the page — size is applied at creation time
           finalDocument.pageSettings.size = pageSize;
           finalDocument.pageSettings.margins.all = 0;
 
@@ -80,23 +119,35 @@ class MergePdfController extends GetxController {
         sourceDoc.dispose();
       }
 
-      final dir = await getApplicationDocumentsDirectory();
-      final name =
-          outputName ?? 'merged_${DateTime.now().millisecondsSinceEpoch}.pdf';
-      final outputFile = File('${dir.path}/$name');
-
+      onProgress?.call(0.85, 'Finalizing merged document...');
       final List<int> bytes = await finalDocument.save();
-      await outputFile.writeAsBytes(bytes);
       finalDocument.dispose();
 
-      selectedForMerge.clear();
-      await loadPdfs();
+      onProgress?.call(0.92, 'Saving to device storage...');
+      final name =
+          outputName ?? 'merged_${DateTime.now().millisecondsSinceEpoch}.pdf';
 
-      return outputFile;
+      final savedPath = await PdfStorageService.savePdfToDownloads(
+        pdfBytes: bytes,
+        fileName: name,
+      );
+
+      onProgress?.call(1.0, 'Finalizing...');
+
+      selectedForMerge.clear();
+
+      try {
+        if (Get.isRegistered<FilePageController>()) {
+          await Get.find<FilePageController>().refreshPdfs();
+        }
+      } catch (_) {}
+
+      if (savedPath != null) {
+        return File(savedPath);
+      }
+      throw Exception('Failed to save merged PDF');
     } catch (e) {
-      print("Merge error: $e");
-      Get.snackbar("Merge PDF", "Failed to merge: $e");
-      return null;
+      rethrow;
     } finally {
       isMerging.value = false;
     }

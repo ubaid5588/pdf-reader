@@ -270,4 +270,37 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get preferredLangauge => '続けるには希望の言語を選択してください';
+
+  @override
+  String get conversionComplete => '変換が完了しました！';
+
+  @override
+  String get yourPdfIsReady => 'PDFの準備ができました';
+
+  @override
+  String get openPdf => 'PDFを開く';
+
+  @override
+  String get share => '共有';
+
+  @override
+  String get done => '完了';
+
+  @override
+  String get conversionFailed => '変換に失敗しました';
+
+  @override
+  String get retry => '再試行';
+
+  @override
+  String get cancel => 'キャンセル';
+
+  @override
+  String get preparing => '準備中...';
+
+  @override
+  String get converting => '変換中...';
+
+  @override
+  String get keepAppOpen => '処理中はアプリを開いたままにしてください';
 }

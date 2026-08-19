@@ -270,4 +270,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get preferredLangauge => '选择您的首选语言以继续';
+
+  @override
+  String get conversionComplete => '转换完成！';
+
+  @override
+  String get yourPdfIsReady => '您的 PDF 已准备就绪';
+
+  @override
+  String get openPdf => '打开 PDF';
+
+  @override
+  String get share => '分享';
+
+  @override
+  String get done => '完成';
+
+  @override
+  String get conversionFailed => '转换失败';
+
+  @override
+  String get retry => '重试';
+
+  @override
+  String get cancel => '取消';
+
+  @override
+  String get preparing => '准备中...';
+
+  @override
+  String get converting => '正在转换...';
+
+  @override
+  String get keepAppOpen => '处理过程中请保持应用开启';
 }

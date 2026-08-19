@@ -110,5 +110,17 @@
   "settingsLabel5": "关于",
   "settingsLogout": "退出登录",
   "selectLanguage": "选择语言",
-  "preferredLangauge": "选择您的首选语言以继续"
+  "preferredLangauge": "选择您的首选语言以继续",
+
+  "conversionComplete": "转换完成！",
+  "yourPdfIsReady": "您的 PDF 已准备就绪",
+  "openPdf": "打开 PDF",
+  "share": "分享",
+  "done": "完成",
+  "conversionFailed": "转换失败",
+  "retry": "重试",
+  "cancel": "取消",
+  "preparing": "准备中...",
+  "converting": "正在转换...",
+  "keepAppOpen": "处理过程中请保持应用开启"
 }

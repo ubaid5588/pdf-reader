@@ -295,4 +295,38 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get preferredLangauge =>
       'Escolha o seu idioma de preferência para continuar';
+
+  @override
+  String get conversionComplete => 'Conversão concluída!';
+
+  @override
+  String get yourPdfIsReady => 'O seu PDF está pronto';
+
+  @override
+  String get openPdf => 'Abrir PDF';
+
+  @override
+  String get share => 'Partilhar';
+
+  @override
+  String get done => 'Concluído';
+
+  @override
+  String get conversionFailed => 'Falha na conversão';
+
+  @override
+  String get retry => 'Tentar novamente';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get preparing => 'A preparar...';
+
+  @override
+  String get converting => 'A converter...';
+
+  @override
+  String get keepAppOpen =>
+      'Por favor mantenha a aplicação aberta durante o processamento';
 }

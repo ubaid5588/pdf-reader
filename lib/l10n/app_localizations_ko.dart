@@ -270,4 +270,37 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get preferredLangauge => '계속하려면 원하는 언어를 선택하세요';
+
+  @override
+  String get conversionComplete => '변환이 완료되었습니다!';
+
+  @override
+  String get yourPdfIsReady => 'PDF가 준비되었습니다';
+
+  @override
+  String get openPdf => 'PDF 열기';
+
+  @override
+  String get share => '공유';
+
+  @override
+  String get done => '완료';
+
+  @override
+  String get conversionFailed => '변환에 실패했습니다';
+
+  @override
+  String get retry => '다시 시도';
+
+  @override
+  String get cancel => '취소';
+
+  @override
+  String get preparing => '준비 중...';
+
+  @override
+  String get converting => '변환 중...';
+
+  @override
+  String get keepAppOpen => '처리하는 동안 앱을 열어 두세요';
 }
