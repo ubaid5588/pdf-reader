@@ -1,3 +1,4 @@
+import 'package:file_reader/core/widgets/custom_button.dart';
 import 'package:file_reader/features/converter/controller/compress_pdf_controller.dart';
 import 'package:file_reader/features/converter/controller/image_to_pdf_controller.dart';
 import 'package:file_reader/features/converter/controller/file_to_pdf_controller.dart';
@@ -226,11 +227,10 @@ class SelectedTool extends StatelessWidget {
                               ),
                             ),
                           )
-                        : ElevatedButton(
+                        : CustomButton(
+                            text: meta.buttonLabel,
+                            width: double.infinity,
                             onPressed: () async {
-                              // Branching on the enum (not the translated
-                              // title) is what makes this work in every
-                              // locale.
                               switch (toolType) {
                                 case ToolType.imageToPdf:
                                   await imageToPdfController.pickImages();
@@ -268,22 +268,6 @@ class SelectedTool extends StatelessWidget {
                                   break;
                               }
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF5B4EE8),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Text(
-                              meta.buttonLabel,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
                           ),
                   ),
                   const SizedBox(height: 28),
