@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:file_reader/features/pdf_viewer/view/pdf_viewer.dart';
 import 'package:file_reader/l10n/app_localizations.dart';
@@ -54,16 +55,6 @@ class _FilePageState extends State<FilePage>
       _animationController.forward();
     } else if (selectedFiles.isEmpty) {
       _animationController.reverse();
-    }
-  }
-
-  void _selectAll(List<File> files) {
-    selectedFiles.clear();
-    for (var file in files) {
-      selectedFiles.add(file.path);
-    }
-    if (selectedFiles.isNotEmpty) {
-      _animationController.forward();
     }
   }
 
@@ -123,6 +114,7 @@ class _FilePageState extends State<FilePage>
   }
 
   Future<void> _showRenameDialog(BuildContext context, File file) async {
+    final colors = context.colors;
     final currentName = file.path.split(Platform.pathSeparator).last;
     final nameWithoutExt = currentName.toLowerCase().endsWith('.pdf')
         ? currentName.substring(0, currentName.length - 4)
@@ -134,24 +126,34 @@ class _FilePageState extends State<FilePage>
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Rename PDF'),
+          backgroundColor: colors.surfaceElevated,
+          title: Text('Rename PDF', style: TextStyle(color: colors.textPrimary)),
           content: TextField(
             controller: nameController,
             autofocus: true,
-            decoration: const InputDecoration(
+            style: TextStyle(color: colors.textPrimary),
+            decoration: InputDecoration(
               hintText: 'Enter new name',
+              hintStyle: TextStyle(color: colors.textSecondary),
               suffixText: '.pdf',
+              suffixStyle: TextStyle(color: colors.textSecondary),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: colors.border),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: colors.primary),
+              ),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
             ),
             TextButton(
               onPressed: () =>
                   Navigator.pop(dialogContext, nameController.text),
-              child: const Text('Rename'),
+              child: Text('Rename', style: TextStyle(color: colors.primary)),
             ),
           ],
         );
@@ -164,18 +166,23 @@ class _FilePageState extends State<FilePage>
   }
 
   Future<void> _showDeleteConfirm(BuildContext context, File file) async {
+    final colors = context.colors;
     final fileName = file.path.split(Platform.pathSeparator).last;
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Delete PDF'),
-          content: Text('Delete "$fileName"? This cannot be undone.'),
+          backgroundColor: colors.surfaceElevated,
+          title: Text('Delete PDF', style: TextStyle(color: colors.textPrimary)),
+          content: Text(
+            'Delete "$fileName"? This cannot be undone.',
+            style: TextStyle(color: colors.textSecondary),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
             ),
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, true),
@@ -194,6 +201,7 @@ class _FilePageState extends State<FilePage>
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context)!;
+    final colors = context.colors;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
     return LayoutBuilder(
@@ -240,16 +248,28 @@ class _FilePageState extends State<FilePage>
                       controller: _searchController,
                       onChanged: controller.updateSearch,
                       textInputAction: TextInputAction.search,
+                      style: TextStyle(color: colors.textPrimary),
                       decoration: InputDecoration(
                         hintText: 'Search PDFs',
-                        hintStyle: TextStyle(fontSize: isSmall ? 12 : 14),
-                        prefixIcon: Icon(Icons.search, size: isSmall ? 20 : 22),
+                        hintStyle: TextStyle(
+                          fontSize: isSmall ? 12 : 14,
+                          color: colors.textSecondary,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          size: isSmall ? 20 : 22,
+                          color: colors.textSecondary,
+                        ),
                         suffixIcon: Obx(() {
                           if (controller.searchQuery.value.isEmpty) {
                             return const SizedBox.shrink();
                           }
                           return IconButton(
-                            icon: Icon(Icons.clear, size: isSmall ? 19 : 21),
+                            icon: Icon(
+                              Icons.clear,
+                              size: isSmall ? 19 : 21,
+                              color: colors.textSecondary,
+                            ),
                             onPressed: () {
                               _searchController.clear();
                               controller.clearSearch();
@@ -257,11 +277,19 @@ class _FilePageState extends State<FilePage>
                           );
                         }),
                         filled: true,
-                        fillColor: Colors.grey.shade100,
+                        fillColor: colors.surface,
                         contentPadding: EdgeInsets.zero,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(color: colors.border, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(color: colors.border, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(color: colors.primary, width: 1.5),
                         ),
                       ),
                     ),
@@ -269,16 +297,18 @@ class _FilePageState extends State<FilePage>
                   secondChild: Container(
                     height: searchHeight,
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.blue.shade200),
+                      color: colors.primary.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: colors.primary.withOpacity(0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
                         const SizedBox(width: 12),
                         Icon(
                           Icons.check_circle,
-                          color: Colors.blue,
+                          color: colors.primary,
                           size: isSmall ? 20 : 22,
                         ),
                         const SizedBox(width: 12),
@@ -288,14 +318,14 @@ class _FilePageState extends State<FilePage>
                             style: TextStyle(
                               fontSize: isSmall ? 12 : 14,
                               fontWeight: FontWeight.w600,
-                              color: Colors.blue,
+                              color: colors.primary,
                             ),
                           ),
                         ),
                         // Share Button
                         IconButton(
                           icon: const Icon(Icons.share_outlined),
-                          color: Colors.blue,
+                          color: colors.primary,
                           iconSize: isSmall ? 18 : 20,
                           onPressed: _shareSelectedFiles,
                           tooltip: 'Share',
@@ -311,7 +341,7 @@ class _FilePageState extends State<FilePage>
                         // Close/Clear Button
                         IconButton(
                           icon: const Icon(Icons.close),
-                          color: Colors.blue,
+                          color: colors.primary,
                           iconSize: isSmall ? 18 : 20,
                           onPressed: _clearSelection,
                           tooltip: 'Clear',
@@ -330,7 +360,9 @@ class _FilePageState extends State<FilePage>
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: CircularProgressIndicator(color: colors.primary),
+                  );
                 }
 
                 final files = controller.filteredFiles;
@@ -339,7 +371,10 @@ class _FilePageState extends State<FilePage>
                   return Center(
                     child: Text(
                       lang.file,
-                      style: TextStyle(fontSize: isSmall ? 13 : 15),
+                      style: TextStyle(
+                        fontSize: isSmall ? 13 : 15,
+                        color: colors.textSecondary,
+                      ),
                     ),
                   );
                 }
@@ -353,25 +388,35 @@ class _FilePageState extends State<FilePage>
                       child: Text(
                         'No PDFs match your search',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: isSmall ? 13 : 15),
+                        style: TextStyle(
+                          fontSize: isSmall ? 13 : 15,
+                          color: colors.textSecondary,
+                        ),
                       ),
                     ),
                   );
                 }
 
                 return RefreshIndicator(
+                  color: colors.primary,
+                  backgroundColor: colors.surfaceElevated,
                   onRefresh: controller.loadPdfs,
                   child: ListView.separated(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: EdgeInsets.only(
                       left: horizontalPadding,
                       right: horizontalPadding,
-                      top: 8,
+                      top: 12,
                       bottom: keyboardHeight + 100,
                     ),
                     itemCount: files.length,
                     separatorBuilder: (context, index) {
-                      return const Divider(height: 1, indent: 8, endIndent: 8);
+                      return Divider(
+                        height: 1,
+                        indent: 8,
+                        endIndent: 8,
+                        color: colors.divider,
+                      );
                     },
                     itemBuilder: (context, index) {
                       final file = files[index];
@@ -383,13 +428,13 @@ class _FilePageState extends State<FilePage>
                           duration: const Duration(milliseconds: 200),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? Colors.blue.shade50
+                                ? colors.primary.withOpacity(0.12)
                                 : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: ListTile(
                             contentPadding: EdgeInsets.symmetric(
-                              horizontal: isSmall ? 4 : 8,
+                              horizontal: isSmall ? 6 : 10,
                               vertical: isSmall ? 4 : 6,
                             ),
                             minVerticalPadding: 4,
@@ -407,13 +452,18 @@ class _FilePageState extends State<FilePage>
                                     padding: EdgeInsets.all(isSmall ? 5 : 6),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? Colors.blue
-                                          : Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
+                                          ? colors.primary
+                                          : (colors.isDark
+                                              ? const Color(0xFF3B1E1E)
+                                              : const Color(0xFFFFEBEE)),
+                                      borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
                                         color: isSelected
-                                            ? Colors.blue
-                                            : Colors.grey.shade300,
+                                            ? colors.primary
+                                            : (colors.isDark
+                                                ? const Color(0xFF5A2525)
+                                                : const Color(0xFFFFCDD2)),
+                                        width: 1,
                                       ),
                                     ),
                                     child: isSelected
@@ -421,9 +471,12 @@ class _FilePageState extends State<FilePage>
                                             Icons.check,
                                             color: Colors.white,
                                           )
-                                        : Image.asset(
-                                            'assets/images/pdf_logo.png',
-                                            fit: BoxFit.contain,
+                                        : Icon(
+                                            Icons.picture_as_pdf_rounded,
+                                            color: colors.isDark
+                                                ? const Color(0xFFF87171)
+                                                : const Color(0xFFEF5350),
+                                            size: 26,
                                           ),
                                   ),
                                 ),
@@ -435,10 +488,10 @@ class _FilePageState extends State<FilePage>
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: titleFontSize,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                                 color: isSelected
-                                    ? Colors.blue.shade700
-                                    : Colors.black87,
+                                    ? colors.primary
+                                    : colors.textPrimary,
                               ),
                             ),
                             subtitle: FutureBuilder<DateTime>(
@@ -450,6 +503,7 @@ class _FilePageState extends State<FilePage>
                                     'Loading date...',
                                     style: TextStyle(
                                       fontSize: subtitleFontSize,
+                                      color: colors.textSecondary,
                                     ),
                                   );
                                 }
@@ -459,6 +513,7 @@ class _FilePageState extends State<FilePage>
                                     'Error loading date',
                                     style: TextStyle(
                                       fontSize: subtitleFontSize,
+                                      color: colors.textSecondary,
                                     ),
                                   );
                                 }
@@ -472,14 +527,17 @@ class _FilePageState extends State<FilePage>
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: subtitleFontSize,
-                                      color: Colors.grey.shade600,
+                                      color: colors.textSecondary,
                                     ),
                                   );
                                 }
 
                                 return Text(
                                   'No date found',
-                                  style: TextStyle(fontSize: subtitleFontSize),
+                                  style: TextStyle(
+                                    fontSize: subtitleFontSize,
+                                    color: colors.textSecondary,
+                                  ),
                                 );
                               },
                             ),
@@ -511,10 +569,19 @@ class _FilePageState extends State<FilePage>
   }
 
   Widget _buildPremiumPopupMenu(BuildContext context, File file, bool isSmall) {
+    final colors = context.colors;
+
     return PopupMenuButton<String>(
-      icon: Icon(Icons.more_vert, size: isSmall ? 20 : 22),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.white,
+      icon: Icon(
+        Icons.more_vert,
+        size: isSmall ? 20 : 22,
+        color: colors.textSecondary,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: colors.border, width: 1),
+      ),
+      color: colors.surfaceElevated,
       elevation: 8,
       onSelected: (value) {
         switch (value) {
@@ -534,29 +601,33 @@ class _FilePageState extends State<FilePage>
       },
       itemBuilder: (context) => [
         _buildPremiumPopupMenuItem(
+          context: context,
           icon: Icons.share_outlined,
           label: 'Share',
           value: 'share',
-          color: Colors.blue,
+          color: colors.primary,
         ),
         _buildPremiumPopupMenuItem(
+          context: context,
           icon: Icons.edit_outlined,
           label: 'Rename',
           value: 'rename',
           color: Colors.orange,
         ),
         _buildPremiumPopupMenuItem(
+          context: context,
           icon: Icons.check_circle_outline,
           label: 'Select',
           value: 'select',
-          color: Colors.green,
+          color: colors.success,
         ),
-        const PopupMenuDivider(height: 8),
+        PopupMenuDivider(height: 8),
         _buildPremiumPopupMenuItem(
+          context: context,
           icon: Icons.delete_outline,
           label: 'Delete',
           value: 'delete',
-          color: Colors.red,
+          color: colors.error,
           isDestructive: true,
         ),
       ],
@@ -564,26 +635,29 @@ class _FilePageState extends State<FilePage>
   }
 
   PopupMenuItem<String> _buildPremiumPopupMenuItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required String value,
     required Color color,
     bool isDestructive = false,
   }) {
+    final colors = context.colors;
+
     return PopupMenuItem<String>(
       value: value,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(7),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, color: color, size: 20),
+              child: Icon(icon, color: color, size: 18),
             ),
             const SizedBox(width: 12),
             Text(
@@ -591,7 +665,7 @@ class _FilePageState extends State<FilePage>
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: isDestructive ? Colors.red : Colors.black87,
+                color: isDestructive ? colors.error : colors.textPrimary,
               ),
             ),
           ],

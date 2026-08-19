@@ -303,4 +303,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get keepAppOpen => '处理过程中请保持应用开启';
+
+  @override
+  String get theme => '主题';
+
+  @override
+  String get systemTheme => '跟随系统';
+
+  @override
+  String get lightTheme => '浅色';
+
+  @override
+  String get darkTheme => '深色';
+
+  @override
+  String get chooseTheme => '选择主题';
 }

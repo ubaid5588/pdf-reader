@@ -327,4 +327,19 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get keepAppOpen =>
       'Por favor mantén la aplicación abierta mientras procesamos';
+
+  @override
+  String get theme => 'Tema';
+
+  @override
+  String get systemTheme => 'Sistema';
+
+  @override
+  String get lightTheme => 'Claro';
+
+  @override
+  String get darkTheme => 'Oscuro';
+
+  @override
+  String get chooseTheme => 'Elegir tema';
 }

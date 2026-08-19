@@ -122,5 +122,11 @@
   "cancel": "取消",
   "preparing": "准备中...",
   "converting": "正在转换...",
-  "keepAppOpen": "处理过程中请保持应用开启"
+  "keepAppOpen": "处理过程中请保持应用开启",
+
+  "theme": "主题",
+  "systemTheme": "跟随系统",
+  "lightTheme": "浅色",
+  "darkTheme": "深色",
+  "chooseTheme": "选择主题"
 }

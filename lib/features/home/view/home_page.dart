@@ -1,19 +1,19 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:file_reader/features/file/view/file_page.dart';
-import 'package:file_reader/features/pdf_viewer/controller/file_view_controller.dart';
 import 'package:file_reader/features/home/controller/navi_controller.dart';
+import 'package:file_reader/features/home/view/home_page_view.dart';
+import 'package:file_reader/features/pdf_viewer/controller/file_view_controller.dart';
 import 'package:file_reader/features/pdf_viewer/view/pdf_viewer.dart';
 import 'package:file_reader/features/setting/view/setting_page.dart';
 import 'package:file_reader/l10n/app_localizations.dart';
+import 'package:file_reader/services/recent_pdf_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
-import 'package:file_reader/services/recent_pdf_controller.dart';
-import 'package:file_reader/features/home/view/home_page_view.dart';
 import 'package:flutter_sharing_intent/model/sharing_file.dart';
 import 'package:get/get.dart';
 
@@ -111,11 +111,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context)!;
+    final colors = context.colors;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        final height = constraints.maxHeight;
 
         final bool isSmallPhone = width < 360;
         final bool isTablet = width >= 600;
@@ -132,6 +132,7 @@ class _HomePageState extends State<HomePage> {
             : 68;
 
         return Scaffold(
+          backgroundColor: colors.background,
           body: SafeArea(
             top: true,
             bottom: false,
@@ -192,6 +193,7 @@ class _HomePageState extends State<HomePage> {
     double height,
     AppLocalizations lang,
   ) {
+    final colors = context.colors;
     final bool isSmallPhone = width < 360;
     final bool isTablet = width >= 600;
 
@@ -222,22 +224,15 @@ class _HomePageState extends State<HomePage> {
             vertical: verticalPadding,
           ),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withOpacity(0.25),
-                Colors.white.withOpacity(0.12),
-              ],
-            ),
+            color: colors.bottomNavBg,
             borderRadius: BorderRadius.circular(isSmallPhone ? 24 : 28),
             border: Border.all(
-              color: Colors.white.withOpacity(0.4),
-              width: 1.5,
+              color: colors.bottomNavBorder,
+              width: 1.2,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: colors.cardShadow,
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -248,6 +243,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Expanded(
                 child: navItem(
+                  context,
                   Icons.home_rounded,
                   lang.home,
                   0,
@@ -258,6 +254,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Expanded(
                 child: navItem(
+                  context,
                   Icons.folder_outlined,
                   lang.files,
                   1,
@@ -268,6 +265,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Expanded(
                 child: navItem(
+                  context,
                   Icons.settings_outlined,
                   lang.settings,
                   2,
@@ -284,6 +282,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget navItem(
+    BuildContext context,
     IconData icon,
     String label,
     int index,
@@ -291,6 +290,8 @@ class _HomePageState extends State<HomePage> {
     double fontSize,
     bool isSmallPhone,
   ) {
+    final colors = context.colors;
+
     return Obx(() {
       final bool isSelected = naviController.selectedIndex.value == index;
 
@@ -308,11 +309,11 @@ class _HomePageState extends State<HomePage> {
           ),
           decoration: BoxDecoration(
             color: isSelected
-                ? const Color(0xFF5B5CFF).withOpacity(0.25)
+                ? colors.primary.withOpacity(0.2)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(30),
             border: isSelected
-                ? Border.all(color: Colors.white.withOpacity(0.5), width: 1.2)
+                ? Border.all(color: colors.primary.withOpacity(0.4), width: 1.2)
                 : null,
           ),
           child: Column(
@@ -322,9 +323,7 @@ class _HomePageState extends State<HomePage> {
               Icon(
                 icon,
                 size: iconSize,
-                color: isSelected
-                    ? const Color(0xFF5B5CFF)
-                    : const Color(0xFFB0B0B5),
+                color: isSelected ? colors.primary : colors.textSecondary,
               ),
               SizedBox(height: isSmallPhone ? 2 : 3),
               Flexible(
@@ -334,9 +333,7 @@ class _HomePageState extends State<HomePage> {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: isSelected
-                        ? const Color(0xFF5B5CFF)
-                        : const Color(0xFFB0B0B5),
+                    color: isSelected ? colors.primary : colors.textSecondary,
                     fontSize: fontSize,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   ),
@@ -354,6 +351,7 @@ class _HomePageState extends State<HomePage> {
     double width,
     AppLocalizations lang,
   ) {
+    final colors = context.colors;
     final bool isSmallPhone = width < 360;
     final bool isTablet = width >= 600;
 
@@ -381,7 +379,7 @@ class _HomePageState extends State<HomePage> {
 
     return Container(
       width: double.infinity,
-      color: const Color.fromARGB(120, 255, 246, 246),
+      color: colors.topBarBg,
       padding: EdgeInsets.symmetric(
         horizontal: horizontalPadding,
         vertical: verticalPadding,
@@ -410,7 +408,7 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(
                     fontSize: titleSize,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1A1A2E),
+                    color: colors.textPrimary,
                   ),
                 ),
 
@@ -420,7 +418,7 @@ class _HomePageState extends State<HomePage> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: subtitleSize,
-                    color: const Color(0xFF9CA3AF),
+                    color: colors.textSecondary,
                     fontWeight: FontWeight.w400,
                   ),
                 ),

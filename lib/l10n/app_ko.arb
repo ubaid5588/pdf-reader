@@ -122,5 +122,11 @@
   "cancel": "취소",
   "preparing": "준비 중...",
   "converting": "변환 중...",
-  "keepAppOpen": "처리하는 동안 앱을 열어 두세요"
+  "keepAppOpen": "처리하는 동안 앱을 열어 두세요",
+
+  "theme": "테마",
+  "systemTheme": "시스템",
+  "lightTheme": "라이트",
+  "darkTheme": "다크",
+  "chooseTheme": "테마 선택"
 }

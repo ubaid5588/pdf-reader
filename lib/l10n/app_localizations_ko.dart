@@ -303,4 +303,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get keepAppOpen => '처리하는 동안 앱을 열어 두세요';
+
+  @override
+  String get theme => '테마';
+
+  @override
+  String get systemTheme => '시스템';
+
+  @override
+  String get lightTheme => '라이트';
+
+  @override
+  String get darkTheme => '다크';
+
+  @override
+  String get chooseTheme => '테마 선택';
 }

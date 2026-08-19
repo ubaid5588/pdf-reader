@@ -1,15 +1,15 @@
+import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/core/widgets/custom_button.dart';
 import 'package:file_reader/features/converter/controller/compress_pdf_controller.dart';
-import 'package:file_reader/features/converter/controller/image_to_pdf_controller.dart';
 import 'package:file_reader/features/converter/controller/file_to_pdf_controller.dart';
+import 'package:file_reader/features/converter/controller/image_to_pdf_controller.dart';
 import 'package:file_reader/features/converter/controller/protect_pdf_controller.dart';
 import 'package:file_reader/features/converter/controller/split_pdf_controller.dart';
 import 'package:file_reader/features/converter/view/conversion_processing_page.dart';
 import 'package:file_reader/features/merge_pdf/view/merge_pdf_page.dart';
+import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import 'package:file_reader/l10n/app_localizations.dart';
 
 enum ToolType {
   wordToPdf,
@@ -60,22 +60,23 @@ class SelectedTool extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
     final meta = _resolveMeta(l10n, toolType);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: colors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: colors.textPrimary),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
           meta.title,
-          style: const TextStyle(
-            color: Colors.black,
+          style: TextStyle(
+            color: colors.textPrimary,
             fontWeight: FontWeight.w600,
             fontSize: 20,
           ),
@@ -90,22 +91,39 @@ class SelectedTool extends StatelessWidget {
 
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 24),
+              padding: const EdgeInsets.symmetric(
+                vertical: 36,
+                horizontal: 24,
+              ),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0EFFE),
+                color: colors.isDark ? colors.surface : const Color(0xFFF0EFFE),
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: colors.isDark ? colors.border : Colors.transparent,
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.cardShadow,
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _DocIcon(label: meta.fromLabel, color: meta.fromColor),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
+                      _DocIcon(
+                        label: meta.fromLabel,
+                        color: meta.fromColor,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Icon(
                           Icons.arrow_forward,
-                          color: Color(0xFF5B4EE8),
+                          color: colors.primary,
                           size: 28,
                         ),
                       ),
@@ -115,19 +133,19 @@ class SelectedTool extends StatelessWidget {
                   const SizedBox(height: 28),
                   Text(
                     l10n.convertTool(meta.title),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1A2E),
+                      color: colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     meta.subtitle,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF888899),
+                      color: colors.textSecondary,
                       height: 1.5,
                     ),
                   ),
@@ -139,10 +157,24 @@ class SelectedTool extends StatelessWidget {
 
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+              padding: const EdgeInsets.symmetric(
+                vertical: 20,
+                horizontal: 24,
+              ),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0EFFE),
+                color: colors.isDark ? colors.surface : const Color(0xFFF0EFFE),
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: colors.isDark ? colors.border : Colors.transparent,
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.cardShadow,
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,8 +196,8 @@ class SelectedTool extends StatelessWidget {
               onPressed: () async {
                 switch (toolType) {
                   case ToolType.imageToPdf:
-                    final imagePaths = await imageToPdfController
-                        .pickImageFiles();
+                    final imagePaths =
+                        await imageToPdfController.pickImageFiles();
                     if (imagePaths != null && imagePaths.isNotEmpty) {
                       Get.to(
                         () => ConversionProcessingPage(
@@ -174,9 +206,9 @@ class SelectedTool extends StatelessWidget {
                               'Converting ${imagePaths.length} image(s) to PDF...',
                           processOperation: (onProgress) =>
                               imageToPdfController.createPdfFromImages(
-                                imagePaths,
-                                onProgress: onProgress,
-                              ),
+                            imagePaths,
+                            onProgress: onProgress,
+                          ),
                         ),
                       );
                     }
@@ -193,10 +225,10 @@ class SelectedTool extends StatelessWidget {
                           initialMessage: 'Converting Word document to PDF...',
                           processOperation: (onProgress) =>
                               wordToPdfController.convertOfficeFile(
-                                path,
-                                OfficeFileType.word,
-                                onProgress: onProgress,
-                              ),
+                            path,
+                            OfficeFileType.word,
+                            onProgress: onProgress,
+                          ),
                         ),
                       );
                     }
@@ -214,10 +246,10 @@ class SelectedTool extends StatelessWidget {
                               'Converting PowerPoint presentation to PDF...',
                           processOperation: (onProgress) =>
                               wordToPdfController.convertOfficeFile(
-                                path,
-                                OfficeFileType.powerpoint,
-                                onProgress: onProgress,
-                              ),
+                            path,
+                            OfficeFileType.powerpoint,
+                            onProgress: onProgress,
+                          ),
                         ),
                       );
                     }
@@ -235,10 +267,10 @@ class SelectedTool extends StatelessWidget {
                               'Converting Excel spreadsheet to PDF...',
                           processOperation: (onProgress) =>
                               wordToPdfController.convertOfficeFile(
-                                path,
-                                OfficeFileType.excel,
-                                onProgress: onProgress,
-                              ),
+                            path,
+                            OfficeFileType.excel,
+                            onProgress: onProgress,
+                          ),
                         ),
                       );
                     }
@@ -255,8 +287,11 @@ class SelectedTool extends StatelessWidget {
                         () => ConversionProcessingPage(
                           title: meta.title,
                           initialMessage: 'Splitting PDF document pages...',
-                          processOperation: (onProgress) => splitPdfController
-                              .splitPdf(file, onProgress: onProgress),
+                          processOperation: (onProgress) =>
+                              splitPdfController.splitPdf(
+                            file,
+                            onProgress: onProgress,
+                          ),
                         ),
                       );
                     }
@@ -268,12 +303,13 @@ class SelectedTool extends StatelessWidget {
                       Get.to(
                         () => ConversionProcessingPage(
                           title: meta.title,
-                          initialMessage: 'Compressing and optimizing PDF...',
+                          initialMessage:
+                              'Compressing and optimizing PDF...',
                           processOperation: (onProgress) =>
                               compressPdfController.compressPdf(
-                                file,
-                                onProgress: onProgress,
-                              ),
+                            file,
+                            onProgress: onProgress,
+                          ),
                         ),
                       );
                     }
@@ -282,19 +318,20 @@ class SelectedTool extends StatelessWidget {
                   case ToolType.protectPdf:
                     final file = await protectPdfController.pickPdfFile();
                     if (file != null) {
-                      final password = await protectPdfController
-                          .promptPassword();
+                      final password =
+                          await protectPdfController.promptPassword();
                       if (password != null && password.isNotEmpty) {
                         Get.to(
                           () => ConversionProcessingPage(
                             title: meta.title,
-                            initialMessage: 'Encrypting and protecting PDF...',
+                            initialMessage:
+                                'Encrypting and protecting PDF...',
                             processOperation: (onProgress) =>
                                 protectPdfController.protectPdf(
-                                  file,
-                                  userPassword: password,
-                                  onProgress: onProgress,
-                                ),
+                              file,
+                              userPassword: password,
+                              onProgress: onProgress,
+                            ),
                           ),
                         );
                       }
@@ -346,9 +383,6 @@ ToolMeta _resolveMeta(AppLocalizations l10n, ToolType type) {
   const pptOrange = Color(0xFFEA4335);
   const imageViolet = Color(0xFF9C6CF5);
 
-  // fromLabel / toLabel are short file-type tags shown inside the colored
-  // icon boxes (PDF, IMG, XLS...). These are kept as universal abbreviations
-  // rather than translated, same as file extensions.
   switch (type) {
     case ToolType.wordToPdf:
       return ToolMeta(
@@ -532,9 +566,9 @@ class _DocIcon extends StatelessWidget {
               painter: _FoldedCornerPainter(
                 color: Color.fromARGB(
                   255,
-                  (color.red * 0.7).round(),
-                  (color.green * 0.7).round(),
-                  (color.blue * 0.7).round(),
+                  ((color.r * 255.0).round() * 0.7).round() & 0xff,
+                  ((color.g * 255.0).round() * 0.7).round() & 0xff,
+                  ((color.b * 255.0).round() * 0.7).round() & 0xff,
                 ),
               ),
             ),
@@ -588,23 +622,25 @@ class _FeatureRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Row(
       children: [
         Container(
           width: 22,
           height: 22,
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF5B4EE8), width: 1.8),
+            border: Border.all(color: colors.primary, width: 1.8),
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.check, color: Color(0xFF5B4EE8), size: 13),
+          child: Icon(Icons.check, color: colors.primary, size: 13),
         ),
         const SizedBox(width: 12),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: Color(0xFF444466),
+            color: colors.textPrimary,
             fontWeight: FontWeight.w500,
           ),
         ),

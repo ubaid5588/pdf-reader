@@ -122,5 +122,11 @@
   "cancel": "キャンセル",
   "preparing": "準備中...",
   "converting": "変換中...",
-  "keepAppOpen": "処理中はアプリを開いたままにしてください"
+  "keepAppOpen": "処理中はアプリを開いたままにしてください",
+
+  "theme": "テーマ",
+  "systemTheme": "システム",
+  "lightTheme": "ライト",
+  "darkTheme": "ダーク",
+  "chooseTheme": "テーマを選択"
 }

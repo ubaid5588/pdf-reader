@@ -1,3 +1,5 @@
+import 'package:file_reader/core/theme/app_colors.dart';
+import 'package:file_reader/core/theme/theme_controller.dart';
 import 'package:file_reader/features/about/aout_screen.dart';
 import 'package:file_reader/features/help_support/help_support.dart';
 import 'package:file_reader/features/language_selection/view/language_selection_screen.dart';
@@ -11,6 +13,8 @@ class SettingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context)!;
+    final colors = context.colors;
+    final themeController = Get.find<ThemeController>();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -25,178 +29,113 @@ class SettingPage extends StatelessWidget {
             ? 24
             : 16;
 
-        final double headerPadding = isSmall
-            ? 10
-            : isTablet
-            ? 18
-            : 16;
-
-        final double crownSize = isSmall
-            ? 24
-            : isTablet
-            ? 32
-            : 28;
-
-        final double titleSize = isSmall
-            ? 14
-            : isTablet
-            ? 18
-            : 16;
-
-        final double subtitleSize = isSmall
-            ? 10
-            : isTablet
-            ? 14
-            : 13;
-
-        final double buttonFontSize = isSmall
-            ? 11
-            : isTablet
-            ? 15
-            : 14;
-
         return SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           padding: EdgeInsets.only(bottom: isSmall ? 20 : 30),
           child: Column(
             children: [
-              // Container(
-              //   width: double.infinity,
-              //   decoration: const BoxDecoration(
-              //     gradient: LinearGradient(
-              //       begin: Alignment.topLeft,
-              //       end: Alignment.bottomRight,
-              //       colors: [
-              //         Color(0xFF7B5EA7),
-              //         Color(0xFF5B4FCF),
-              //         Color(0xFF8B6FD4),
-              //       ],
-              //     ),
-              //   ),
-              //   child: Padding(
-              //     padding: EdgeInsets.fromLTRB(
-              //       headerPadding,
-              //       headerPadding,
-              //       headerPadding,
-              //       headerPadding,
-              //     ),
-              //     child: Container(
-              //       padding: EdgeInsets.all(
-              //         isSmall
-              //             ? 12
-              //             : isTablet
-              //             ? 20
-              //             : 16,
-              //       ),
-              //       decoration: BoxDecoration(
-              //         color: const Color.fromARGB(230, 26, 26, 46),
-              //         borderRadius: BorderRadius.circular(16),
-              //       ),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.center,
-              //         children: [
-              //           Text('👑', style: TextStyle(fontSize: crownSize)),
-              //           SizedBox(width: isSmall ? 7 : 12),
-              //           Expanded(
-              //             child: Column(
-              //               crossAxisAlignment: CrossAxisAlignment.start,
-              //               mainAxisSize: MainAxisSize.min,
-              //               children: [
-              //                 Text(
-              //                   lang.settingsUpgrade,
-              //                   maxLines: 2,
-              //                   overflow: TextOverflow.ellipsis,
-              //                   style: TextStyle(
-              //                     color: Colors.white,
-              //                     fontSize: titleSize,
-              //                     fontWeight: FontWeight.bold,
-              //                   ),
-              //                 ),
-              //                 const SizedBox(height: 3),
-              //                 Text(
-              //                   lang.settingsPremiumSutitle,
-              //                   maxLines: isSmall ? 2 : 3,
-              //                   overflow: TextOverflow.ellipsis,
-              //                   style: TextStyle(
-              //                     color: const Color(0xFFAAAAAA),
-              //                     fontSize: subtitleSize,
-              //                     height: 1.3,
-              //                   ),
-              //                 ),
-              //               ],
-              //             ),
-              //           ),
-              //           SizedBox(width: isSmall ? 6 : 12),
-              //           ElevatedButton(
-              //             onPressed: () {},
-              //             style: ElevatedButton.styleFrom(
-              //               backgroundColor: const Color(0xFF6C5CE7),
-              //               foregroundColor: Colors.white,
-              //               shape: RoundedRectangleBorder(
-              //                 borderRadius: BorderRadius.circular(12),
-              //               ),
-              //               padding: EdgeInsets.symmetric(
-              //                 horizontal: isSmall ? 10 : 20,
-              //                 vertical: isSmall ? 8 : 12,
-              //               ),
-              //               minimumSize: Size.zero,
-              //               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              //               elevation: 0,
-              //             ),
-              //             child: Text(
-              //               lang.upgrade,
-              //               maxLines: 1,
-              //               overflow: TextOverflow.ellipsis,
-              //               style: TextStyle(
-              //                 fontSize: buttonFontSize,
-              //                 fontWeight: FontWeight.w600,
-              //               ),
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
               SizedBox(height: isSmall ? 12 : 18),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: colors.border, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.cardShadow,
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Column(
                     children: [
+                      // Theme Switcher Tile
+                      Obx(() {
+                        String currentModeLabel = lang.systemTheme;
+                        IconData modeIcon = Icons.brightness_auto_outlined;
+                        if (themeController.themeMode.value ==
+                            ThemeMode.light) {
+                          currentModeLabel = lang.lightTheme;
+                          modeIcon = Icons.light_mode_outlined;
+                        } else if (themeController.themeMode.value ==
+                            ThemeMode.dark) {
+                          currentModeLabel = lang.darkTheme;
+                          modeIcon = Icons.dark_mode_outlined;
+                        }
+
+                        return _buildMenuTile(
+                          context: context,
+                          icon: modeIcon,
+                          label: lang.theme,
+                          trailingText: currentModeLabel,
+                          isFirst: true,
+                          onTap: () =>
+                              _showThemeSelectionDialog(context, lang, themeController),
+                          isSmall: isSmall,
+                        );
+                      }),
+                      Divider(
+                        height: 1,
+                        indent: 52,
+                        endIndent: 16,
+                        color: colors.divider,
+                      ),
                       _buildMenuTile(
+                        context: context,
                         icon: Icons.language,
                         label: lang.settingsLabel1,
-                        isFirst: true,
                         onTap: () => Get.to(() => LanguageSelectionScreen()),
                         isSmall: isSmall,
                       ),
-                      const Divider(height: 1, indent: 52, endIndent: 16),
+                      Divider(
+                        height: 1,
+                        indent: 52,
+                        endIndent: 16,
+                        color: colors.divider,
+                      ),
                       _buildMenuTile(
+                        context: context,
                         icon: Icons.chat_bubble_outline,
                         label: lang.settingsLabel2,
                         isSmall: isSmall,
                       ),
-                      const Divider(height: 1, indent: 52, endIndent: 16),
+                      Divider(
+                        height: 1,
+                        indent: 52,
+                        endIndent: 16,
+                        color: colors.divider,
+                      ),
                       _buildMenuTile(
+                        context: context,
                         icon: Icons.headset_mic_outlined,
                         label: lang.settingsLabel3,
                         onTap: () => Get.to(() => HelpAndSupportScreen()),
                         isSmall: isSmall,
                       ),
-                      const Divider(height: 1, indent: 52, endIndent: 16),
+                      Divider(
+                        height: 1,
+                        indent: 52,
+                        endIndent: 16,
+                        color: colors.divider,
+                      ),
                       _buildMenuTile(
+                        context: context,
                         icon: Icons.star_outline,
                         label: lang.settingsLabel4,
                         isSmall: isSmall,
                       ),
-                      const Divider(height: 1, indent: 52, endIndent: 16),
+                      Divider(
+                        height: 1,
+                        indent: 52,
+                        endIndent: 16,
+                        color: colors.divider,
+                      ),
                       _buildMenuTile(
+                        context: context,
                         icon: Icons.info_outline,
                         label: lang.settingsLabel5,
                         isLast: true,
@@ -214,38 +153,6 @@ class SettingPage extends StatelessWidget {
                     ? 60
                     : 40,
               ),
-              // Padding(
-              //   padding: EdgeInsets.fromLTRB(
-              //     horizontalPadding,
-              //     0,
-              //     horizontalPadding,
-              //     20,
-              //   ),
-              //   child: SizedBox(
-              //     width: double.infinity,
-              //     height: isSmall ? 48 : 54,
-              //     child: ElevatedButton(
-              //       onPressed: () {},
-              //       style: ElevatedButton.styleFrom(
-              //         backgroundColor: const Color(0xFFE8453C),
-              //         foregroundColor: Colors.white,
-              //         shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(16),
-              //         ),
-              //         elevation: 0,
-              //       ),
-              //       child: Text(
-              //         lang.settingsLogout,
-              //         maxLines: 1,
-              //         overflow: TextOverflow.ellipsis,
-              //         style: TextStyle(
-              //           fontSize: isSmall ? 14 : 16,
-              //           fontWeight: FontWeight.w600,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         );
@@ -254,18 +161,22 @@ class SettingPage extends StatelessWidget {
   }
 
   Widget _buildMenuTile({
+    required BuildContext context,
     required IconData icon,
     required String label,
+    String? trailingText,
     bool isFirst = false,
     bool isLast = false,
     VoidCallback? onTap,
     bool isSmall = false,
   }) {
+    final colors = context.colors;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.vertical(
-        top: isFirst ? const Radius.circular(16) : Radius.zero,
-        bottom: isLast ? const Radius.circular(16) : Radius.zero,
+        top: isFirst ? const Radius.circular(20) : Radius.zero,
+        bottom: isLast ? const Radius.circular(20) : Radius.zero,
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -274,7 +185,11 @@ class SettingPage extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFF888888), size: isSmall ? 20 : 22),
+            Icon(
+              icon,
+              color: colors.primary,
+              size: isSmall ? 20 : 22,
+            ),
             SizedBox(width: isSmall ? 10 : 14),
             Expanded(
               child: Text(
@@ -284,12 +199,186 @@ class SettingPage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: isSmall ? 13 : 15,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF1A1A1A),
+                  color: colors.textPrimary,
                 ),
               ),
             ),
+            if (trailingText != null) ...[
+              Text(
+                trailingText,
+                style: TextStyle(
+                  fontSize: isSmall ? 12 : 13,
+                  fontWeight: FontWeight.w500,
+                  color: colors.textSecondary,
+                ),
+              ),
+              const SizedBox(width: 4),
+            ],
             SizedBox(width: isSmall ? 4 : 8),
-            const Icon(Icons.chevron_right, color: Color(0xFFBBBBBB), size: 22),
+            Icon(
+              Icons.chevron_right,
+              color: colors.textSecondary.withOpacity(0.5),
+              size: 22,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showThemeSelectionDialog(
+    BuildContext context,
+    AppLocalizations lang,
+    ThemeController themeController,
+  ) {
+    final colors = context.colors;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: colors.surfaceElevated,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colors.textSecondary.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  lang.chooseTheme,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildThemeOption(
+                  context: ctx,
+                  icon: Icons.brightness_auto_rounded,
+                  title: lang.systemTheme,
+                  subtitle: 'Match system theme settings',
+                  isSelected: themeController.themeMode.value == ThemeMode.system,
+                  onTap: () {
+                    themeController.setThemeMode(ThemeMode.system);
+                    Navigator.pop(ctx);
+                  },
+                ),
+                const SizedBox(height: 8),
+                _buildThemeOption(
+                  context: ctx,
+                  icon: Icons.light_mode_rounded,
+                  title: lang.lightTheme,
+                  subtitle: 'Crisp, bright appearance',
+                  isSelected: themeController.themeMode.value == ThemeMode.light,
+                  onTap: () {
+                    themeController.setThemeMode(ThemeMode.light);
+                    Navigator.pop(ctx);
+                  },
+                ),
+                const SizedBox(height: 8),
+                _buildThemeOption(
+                  context: ctx,
+                  icon: Icons.dark_mode_rounded,
+                  title: lang.darkTheme,
+                  subtitle: 'Modern, soft contrast dark palette',
+                  isSelected: themeController.themeMode.value == ThemeMode.dark,
+                  onTap: () {
+                    themeController.setThemeMode(ThemeMode.dark);
+                    Navigator.pop(ctx);
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildThemeOption({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final colors = context.colors;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? colors.primary.withOpacity(0.12)
+              : colors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? colors.primary : colors.border,
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? colors.primary.withOpacity(0.2)
+                    : colors.surfaceSecondary,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? colors.primary : colors.textSecondary,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      color: isSelected ? colors.primary : colors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              Icon(Icons.check_circle_rounded, color: colors.primary, size: 22),
           ],
         ),
       ),

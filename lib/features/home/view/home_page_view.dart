@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/features/converter/view/selected_tool.dart';
 import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:file_reader/features/home/controller/navi_controller.dart';
@@ -43,6 +44,7 @@ class _HomeScreenState extends State<HomePageView> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final lang = AppLocalizations.of(context)!;
+    final colors = context.colors;
 
     final bool isSmallPhone = screenSize.width < 360;
     final double horizontalPadding = isSmallPhone ? 12 : 16;
@@ -57,8 +59,9 @@ class _HomeScreenState extends State<HomePageView> {
 
           // Convert to PDF Section
           buildSection(
-            title: lang.convertToPdf,
-            items: _convertToPdfItems(lang),
+            context: context,
+            title: lang.convertToPdf.toUpperCase(),
+            items: _convertToPdfItems(lang, colors.isDark),
             crossAxisCount: 2,
             horizontalPadding: horizontalPadding,
           ),
@@ -67,8 +70,9 @@ class _HomeScreenState extends State<HomePageView> {
 
           // Edit & Organize Section
           buildSection(
-            title: lang.editAndOrganize,
-            items: _editOrganizeItems(lang),
+            context: context,
+            title: lang.editAndOrganize.toUpperCase(),
+            items: _editOrganizeItems(lang, colors.isDark),
             crossAxisCount: 2,
             horizontalPadding: horizontalPadding,
           ),
@@ -76,12 +80,12 @@ class _HomeScreenState extends State<HomePageView> {
           SizedBox(height: sectionSpacing),
 
           // All Files Count & Navigation Card
-          _buildAllFilesBanner(screenSize, lang, horizontalPadding),
+          _buildAllFilesBanner(context, screenSize, lang, horizontalPadding),
 
           SizedBox(height: sectionSpacing),
 
           // Recent Files Section
-          _buildRecentFilesSection(screenSize, lang, horizontalPadding),
+          _buildRecentFilesSection(context, screenSize, lang, horizontalPadding),
 
           SizedBox(height: isSmallPhone ? 60 : 80),
         ],
@@ -90,10 +94,13 @@ class _HomeScreenState extends State<HomePageView> {
   }
 
   Widget _buildAllFilesBanner(
+    BuildContext context,
     Size screenSize,
     AppLocalizations lang,
     double horizontalPadding,
   ) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       child: GestureDetector(
@@ -102,15 +109,18 @@ class _HomeScreenState extends State<HomePageView> {
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF5B5CFF), Color(0xFF4A4FE8)],
+              colors: [
+                colors.primaryGradientStart,
+                colors.primaryGradientEnd,
+              ],
             ),
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF5B5CFF).withOpacity(0.3),
+                color: colors.primary.withOpacity(colors.isDark ? 0.2 : 0.3),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),
@@ -160,36 +170,33 @@ class _HomeScreenState extends State<HomePageView> {
                   ],
                 ),
               ),
-              GestureDetector(
-                onTap: () => naviController.changePage(1),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 7,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.25),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'View all',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(width: 4),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.25),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'View all',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                         color: Colors.white,
-                        size: 11,
                       ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Colors.white,
+                      size: 11,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -200,10 +207,13 @@ class _HomeScreenState extends State<HomePageView> {
   }
 
   Widget _buildRecentFilesSection(
+    BuildContext context,
     Size screenSize,
     AppLocalizations lang,
     double horizontalPadding,
   ) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       child: Column(
@@ -212,12 +222,12 @@ class _HomeScreenState extends State<HomePageView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Recent Files',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF5B5CFF),
+                  color: colors.primary,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -227,12 +237,12 @@ class _HomeScreenState extends State<HomePageView> {
                 }
                 return GestureDetector(
                   onTap: () => recentController.clearRecentPdfs(),
-                  child: const Text(
+                  child: Text(
                     'Clear',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF9CA3AF),
+                      color: colors.textSecondary,
                     ),
                   ),
                 );
@@ -257,15 +267,15 @@ class _HomeScreenState extends State<HomePageView> {
                   horizontal: 16,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: colors.surface,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: const Color(0xFFE5E7EB),
+                    color: colors.border,
                     width: 1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: colors.cardShadow,
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -278,31 +288,33 @@ class _HomeScreenState extends State<HomePageView> {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEFF6FF),
+                        color: colors.isDark
+                            ? const Color(0xFF1E2438)
+                            : const Color(0xFFEFF6FF),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.history_rounded,
-                        color: Color(0xFF5B5CFF),
+                        color: colors.primary,
                         size: 26,
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const Text(
+                    Text(
                       'No Recent Files',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF1A1A2E),
+                        color: colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 3),
-                    const Text(
+                    Text(
                       'PDF files you open will appear here',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF9CA3AF),
+                        color: colors.textSecondary,
                       ),
                     ),
                   ],
@@ -314,15 +326,15 @@ class _HomeScreenState extends State<HomePageView> {
 
             return Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colors.surface,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: const Color(0xFFE5E7EB),
+                  color: colors.border,
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: colors.cardShadow,
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -333,11 +345,11 @@ class _HomeScreenState extends State<HomePageView> {
                 physics: const NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 itemCount: items.length,
-                separatorBuilder: (_, __) => const Divider(
+                separatorBuilder: (_, __) => Divider(
                   height: 1,
                   indent: 68,
                   endIndent: 16,
-                  color: Color(0xFFF3F4F6),
+                  color: colors.divider,
                 ),
                 itemBuilder: (context, index) {
                   final item = items[index];
@@ -371,12 +383,16 @@ class _HomeScreenState extends State<HomePageView> {
                       width: 42,
                       height: 42,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFEBEE),
+                        color: colors.isDark
+                            ? const Color(0xFF3B1E1E)
+                            : const Color(0xFFFFEBEE),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.picture_as_pdf_rounded,
-                        color: Color(0xFFEF5350),
+                        color: colors.isDark
+                            ? const Color(0xFFF87171)
+                            : const Color(0xFFEF5350),
                         size: 22,
                       ),
                     ),
@@ -384,25 +400,25 @@ class _HomeScreenState extends State<HomePageView> {
                       name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF1A1A2E),
+                        color: colors.textPrimary,
                       ),
                     ),
                     subtitle: formattedSubtitle.isNotEmpty
                         ? Text(
                             formattedSubtitle,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11.5,
-                              color: Color(0xFF9CA3AF),
+                              color: colors.textSecondary,
                             ),
                           )
                         : null,
-                    trailing: const Icon(
+                    trailing: Icon(
                       Icons.arrow_forward_ios_rounded,
                       size: 13,
-                      color: Color(0xFFD1D5DB),
+                      color: colors.textSecondary.withOpacity(0.5),
                     ),
                     onTap: () async {
                       final file = File(path);
@@ -429,11 +445,14 @@ class _HomeScreenState extends State<HomePageView> {
   }
 
   Widget buildSection({
+    required BuildContext context,
     required String title,
     required List<ToolItem> items,
     required int crossAxisCount,
     required double horizontalPadding,
   }) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       child: Column(
@@ -441,14 +460,14 @@ class _HomeScreenState extends State<HomePageView> {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
+            style: TextStyle(
+              fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF5B5CFF),
-              letterSpacing: 0.5,
+              color: colors.primary,
+              letterSpacing: 0.8,
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -456,14 +475,18 @@ class _HomeScreenState extends State<HomePageView> {
             childAspectRatio: 1.2,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            children: items.map((item) => _buildToolIcon(item)).toList(),
+            children: items
+                .map((item) => _buildToolIcon(context, item))
+                .toList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildToolIcon(ToolItem item) {
+  Widget _buildToolIcon(BuildContext context, ToolItem item) {
+    final colors = context.colors;
+
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
@@ -478,11 +501,15 @@ class _HomeScreenState extends State<HomePageView> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: const Color.fromARGB(196, 255, 255, 255),
+          color: colors.surface,
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: colors.border,
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: colors.cardShadow,
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -498,20 +525,20 @@ class _HomeScreenState extends State<HomePageView> {
                 color: item.bgColor,
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(item.icon, color: item.iconColor, size: 32),
+              child: Icon(item.icon, color: item.iconColor, size: 28),
             ),
             const SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 item.label,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12.5,
+                style: TextStyle(
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1A2E),
+                  color: colors.textPrimary,
                   height: 1.2,
                 ),
               ),
@@ -522,63 +549,63 @@ class _HomeScreenState extends State<HomePageView> {
     );
   }
 
-  List<ToolItem> _convertToPdfItems(AppLocalizations lang) => [
+  List<ToolItem> _convertToPdfItems(AppLocalizations lang, bool isDark) => [
     ToolItem(
-      icon: Icons.text_fields,
-      iconColor: Colors.white,
-      bgColor: const Color(0xFF4285F4),
+      icon: Icons.text_snippet_rounded,
+      iconColor: isDark ? const Color(0xFF3B82F6) : Colors.white,
+      bgColor: isDark ? const Color(0xFF152238) : const Color(0xFF4285F4),
       label: lang.wordToPdf,
       toolType: ToolType.wordToPdf,
     ),
     ToolItem(
-      icon: Icons.image_outlined,
-      iconColor: Colors.white,
-      bgColor: const Color(0xFF9C6CF5),
+      icon: Icons.image_rounded,
+      iconColor: isDark ? const Color(0xFFA78BFA) : Colors.white,
+      bgColor: isDark ? const Color(0xFF281E3B) : const Color(0xFF9C6CF5),
       label: lang.imageToPdf,
       toolType: ToolType.imageToPdf,
     ),
     ToolItem(
-      icon: Icons.slideshow,
-      iconColor: Colors.white,
-      bgColor: const Color(0xFFEA4335),
+      icon: Icons.slideshow_rounded,
+      iconColor: isDark ? const Color(0xFFF87171) : Colors.white,
+      bgColor: isDark ? const Color(0xFF3B1E1E) : const Color(0xFFEA4335),
       label: lang.pptToPdf,
       toolType: ToolType.pptToPdf,
     ),
     ToolItem(
-      icon: Icons.table_chart_outlined,
-      iconColor: Colors.white,
-      bgColor: const Color(0xFF34A853),
+      icon: Icons.table_chart_rounded,
+      iconColor: isDark ? const Color(0xFF34D399) : Colors.white,
+      bgColor: isDark ? const Color(0xFF163326) : const Color(0xFF34A853),
       label: lang.excelToPdf,
       toolType: ToolType.excelToPdf,
     ),
   ];
 
-  List<ToolItem> _editOrganizeItems(AppLocalizations lang) => [
+  List<ToolItem> _editOrganizeItems(AppLocalizations lang, bool isDark) => [
     ToolItem(
-      icon: Icons.merge_type,
-      iconColor: const Color(0xFFFFA000),
-      bgColor: const Color(0xFFFFF3E0),
+      icon: Icons.merge_type_rounded,
+      iconColor: isDark ? const Color(0xFFFBBF24) : const Color(0xFFFFA000),
+      bgColor: isDark ? const Color(0xFF382614) : const Color(0xFFFFF3E0),
       label: lang.mergePdf,
       toolType: ToolType.mergePdf,
     ),
     ToolItem(
-      icon: Icons.content_cut,
-      iconColor: const Color(0xFFE53935),
-      bgColor: const Color(0xFFFFEBEE),
+      icon: Icons.unfold_more_rounded,
+      iconColor: isDark ? const Color(0xFFF87171) : const Color(0xFFE53935),
+      bgColor: isDark ? const Color(0xFF381B1B) : const Color(0xFFFFEBEE),
       label: lang.splitPdf,
       toolType: ToolType.splitPdf,
     ),
     ToolItem(
-      icon: Icons.compress,
-      iconColor: const Color(0xFFFFA000),
-      bgColor: const Color(0xFFFFF8E1),
+      icon: Icons.compress_rounded,
+      iconColor: isDark ? const Color(0xFFFBBF24) : const Color(0xFFFFA000),
+      bgColor: isDark ? const Color(0xFF382614) : const Color(0xFFFFF8E1),
       label: lang.compressPdf,
       toolType: ToolType.compressPdf,
     ),
     ToolItem(
-      icon: Icons.lock_outline,
-      iconColor: const Color(0xFF43A047),
-      bgColor: const Color(0xFFE8F5E9),
+      icon: Icons.shield_outlined,
+      iconColor: isDark ? const Color(0xFF34D399) : const Color(0xFF43A047),
+      bgColor: isDark ? const Color(0xFF163326) : const Color(0xFFE8F5E9),
       label: lang.protectPdf,
       toolType: ToolType.protectPdf,
     ),

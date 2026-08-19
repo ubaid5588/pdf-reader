@@ -122,5 +122,11 @@
   "cancel": "Cancelar",
   "preparing": "Preparando...",
   "converting": "Convirtiendo...",
-  "keepAppOpen": "Por favor mantén la aplicación abierta mientras procesamos"
+  "keepAppOpen": "Por favor mantén la aplicación abierta mientras procesamos",
+
+  "theme": "Tema",
+  "systemTheme": "Sistema",
+  "lightTheme": "Claro",
+  "darkTheme": "Oscuro",
+  "chooseTheme": "Elegir tema"
 }

@@ -1,3 +1,4 @@
+import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,8 +22,22 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Help & Support'), elevation: 0),
+      backgroundColor: colors.background,
+      appBar: AppBar(
+        backgroundColor: colors.background,
+        iconTheme: IconThemeData(color: colors.textPrimary),
+        title: Text(
+          'Help & Support',
+          style: TextStyle(
+            color: colors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -32,25 +47,30 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
               padding: const EdgeInsets.symmetric(vertical: 30),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue.shade400, Colors.blue.shade600],
+                  colors: colors.isDark
+                      ? [
+                          const Color(0xFF1E2030),
+                          const Color(0xFF191B29),
+                        ]
+                      : [Colors.blue.shade400, Colors.blue.shade600],
                 ),
               ),
               child: Column(
                 children: [
-                  const Icon(Icons.help_outline, size: 50, color: Colors.white),
+                  Icon(Icons.help_outline_rounded, size: 48, color: colors.primary),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'We\'re Here to Help!',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: colors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  const SizedBox(height: 6),
+                  Text(
                     'Find answers to your questions',
-                    style: TextStyle(fontSize: 14, color: Colors.white70),
+                    style: TextStyle(fontSize: 14, color: colors.textSecondary),
                   ),
                 ],
               ),
@@ -63,27 +83,27 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Quick Support Section
-                  _buildQuickSupportSection(),
+                  _buildQuickSupportSection(context),
                   const SizedBox(height: 32),
 
                   // FAQ Section
-                  _buildFaqSection(),
+                  _buildFaqSection(context),
                   const SizedBox(height: 32),
 
                   // Troubleshooting Section
-                  _buildTroubleshootingSection(),
+                  _buildTroubleshootingSection(context),
                   const SizedBox(height: 32),
 
                   // Tips & Tricks Section
-                  _buildTipsAndTricksSection(),
+                  _buildTipsAndTricksSection(context),
                   const SizedBox(height: 32),
 
                   // Contact Support Section
-                  _buildContactSupportSection(),
+                  _buildContactSupportSection(context),
                   const SizedBox(height: 32),
 
                   // Feedback Section
-                  _buildFeedbackSection(),
+                  _buildFeedbackSection(context),
                   const SizedBox(height: 24),
                 ],
               ),
@@ -94,16 +114,18 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
     );
   }
 
-  Widget _buildQuickSupportSection() {
+  Widget _buildQuickSupportSection(BuildContext context) {
+    final colors = context.colors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Quick Support',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: colors.textPrimary,
           ),
         ),
         const SizedBox(height: 16),
@@ -111,6 +133,7 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
           children: [
             Expanded(
               child: _buildSupportCard(
+                context: context,
                 icon: Icons.mail_outline,
                 title: 'Email',
                 subtitle: 'support@example.com',
@@ -120,6 +143,7 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: _buildSupportCard(
+                context: context,
                 icon: Icons.message_outlined,
                 title: 'Chat',
                 subtitle: 'Live support',
@@ -133,19 +157,21 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
           children: [
             Expanded(
               child: _buildSupportCard(
+                context: context,
                 icon: Icons.bug_report_outlined,
                 title: 'Report Bug',
                 subtitle: 'Report issues',
-                onTap: () => _showBugReportDialog(),
+                onTap: () => _showBugReportDialog(context),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildSupportCard(
+                context: context,
                 icon: Icons.lightbulb_outline,
                 title: 'Suggest',
                 subtitle: 'New features',
-                onTap: () => _showFeatureRequestDialog(),
+                onTap: () => _showFeatureRequestDialog(context),
               ),
             ),
           ],
@@ -155,36 +181,43 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
   }
 
   Widget _buildSupportCard({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
     required VoidCallback onTap,
   }) {
+    final colors = context.colors;
+
     return Material(
-      color: Colors.blue.shade50,
-      borderRadius: BorderRadius.circular(12),
+      color: colors.surfaceElevated,
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(14.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colors.border),
+          ),
           child: Column(
             children: [
-              Icon(icon, color: Colors.blue, size: 28),
+              Icon(icon, color: colors.primary, size: 28),
               const SizedBox(height: 8),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: colors.textPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(fontSize: 11, color: Colors.grey),
+                style: TextStyle(fontSize: 11, color: colors.textSecondary),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -194,7 +227,9 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
     );
   }
 
-  Widget _buildFaqSection() {
+  Widget _buildFaqSection(BuildContext context) {
+    final colors = context.colors;
+
     final faqList = [
       {
         'question': 'How do I protect a PDF with a password?',
@@ -241,12 +276,12 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Frequently Asked Questions',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: colors.textPrimary,
           ),
         ),
         const SizedBox(height: 16),
@@ -254,9 +289,10 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: faqList.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (ctx, index) {
             final faq = faqList[index];
             return _buildFaqItem(
+              context: ctx,
               index: index,
               question: faq['question']!,
               answer: faq['answer']!,
@@ -268,20 +304,25 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
   }
 
   Widget _buildFaqItem({
+    required BuildContext context,
     required int index,
     required String question,
     required String answer,
   }) {
-    final isExpanded = expandedFaqIndex == index;
+    final colors = context.colors;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade200),
-        borderRadius: BorderRadius.circular(8),
+        color: colors.surface,
+        border: Border.all(color: colors.border),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
+          iconColor: colors.primary,
+          collapsedIconColor: colors.textSecondary,
           onExpansionChanged: (expanded) {
             setState(() {
               expandedFaqIndex = expanded ? index : null;
@@ -289,10 +330,10 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
           },
           title: Text(
             question,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: colors.textPrimary,
             ),
           ),
           children: [
@@ -300,9 +341,9 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
               padding: const EdgeInsets.all(12.0),
               child: Text(
                 answer,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
-                  color: Colors.grey,
+                  color: colors.textSecondary,
                   height: 1.5,
                 ),
               ),
@@ -313,7 +354,9 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
     );
   }
 
-  Widget _buildTroubleshootingSection() {
+  Widget _buildTroubleshootingSection(BuildContext context) {
+    final colors = context.colors;
+
     final troubleshoots = [
       {
         'issue': 'PDF won\'t convert',
@@ -350,12 +393,12 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Troubleshooting',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: colors.textPrimary,
           ),
         ),
         const SizedBox(height: 16),
@@ -363,9 +406,10 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: troubleshoots.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (ctx, index) {
             final item = troubleshoots[index];
             return _buildTroubleshootItem(
+              context: ctx,
               index: index,
               issue: item['issue']!,
               solution: item['solution']!,
@@ -377,21 +421,25 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
   }
 
   Widget _buildTroubleshootItem({
+    required BuildContext context,
     required int index,
     required String issue,
     required String solution,
   }) {
-    final isExpanded = expandedTroubleshootIndex == index;
+    final colors = context.colors;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.orange.shade200),
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.orange.shade50,
+        border: Border.all(color: colors.warning.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(12),
+        color: colors.warning.withOpacity(0.08),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
+          iconColor: colors.warning,
+          collapsedIconColor: colors.warning,
           onExpansionChanged: (expanded) {
             setState(() {
               expandedTroubleshootIndex = expanded ? index : null;
@@ -399,19 +447,19 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
           },
           title: Row(
             children: [
-              const Icon(
-                Icons.warning_outlined,
-                color: Colors.orange,
+              Icon(
+                Icons.warning_amber_rounded,
+                color: colors.warning,
                 size: 18,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   issue,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: colors.textPrimary,
                   ),
                 ),
               ),
@@ -423,18 +471,18 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.check_circle_outline,
-                    color: Colors.green,
+                    color: colors.success,
                     size: 18,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       solution,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey,
+                        color: colors.textSecondary,
                         height: 1.5,
                       ),
                     ),
@@ -448,77 +496,101 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
     );
   }
 
-  Widget _buildTipsAndTricksSection() {
+  Widget _buildTipsAndTricksSection(BuildContext context) {
+    final colors = context.colors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '💡 Tips & Tricks',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: colors.textPrimary,
           ),
         ),
         const SizedBox(height: 16),
         _buildTipCard(
-          '🔐 Strong Passwords',
-          'Use strong, unique passwords when protecting PDFs. Avoid simple words or birthdates.',
+          context: context,
+          title: '🔐 Strong Passwords',
+          description:
+              'Use strong, unique passwords when protecting PDFs. Avoid simple words or birthdates.',
         ),
         const SizedBox(height: 12),
         _buildTipCard(
-          '📦 Organize Files',
-          'Regularly organize your Files section. Delete old files to free up storage.',
+          context: context,
+          title: '📦 Organize Files',
+          description:
+              'Regularly organize your Files section. Delete old files to free up storage.',
         ),
         const SizedBox(height: 12),
         _buildTipCard(
-          '⚡ Batch Processing',
-          'You can convert multiple images to PDFs. Select all images at once for faster conversion.',
+          context: context,
+          title: '⚡ Batch Processing',
+          description:
+              'You can convert multiple images to PDFs. Select all images at once for faster conversion.',
         ),
         const SizedBox(height: 12),
         _buildTipCard(
-          '🗜️ Compression Tips',
-          'For better results, compress PDFs with mostly images rather than text. Text-heavy PDFs compress less.',
+          context: context,
+          title: '🗜️ Compression Tips',
+          description:
+              'For better results, compress PDFs with mostly images rather than text. Text-heavy PDFs compress less.',
         ),
         const SizedBox(height: 12),
         _buildTipCard(
-          '✂️ Split Wisely',
-          'Before splitting, note down the page numbers. This helps extract exactly what you need.',
+          context: context,
+          title: '✂️ Split Wisely',
+          description:
+              'Before splitting, note down the page numbers. This helps extract exactly what you need.',
         ),
         const SizedBox(height: 12),
         _buildTipCard(
-          '🔄 Merge Order',
-          'PDFs are merged in the order you select them. Choose carefully for the desired output.',
+          context: context,
+          title: '🔄 Merge Order',
+          description:
+              'PDFs are merged in the order you select them. Choose carefully for the desired output.',
         ),
       ],
     );
   }
 
-  Widget _buildTipCard(String title, String description) {
+  Widget _buildTipCard({
+    required BuildContext context,
+    required String title,
+    required String description,
+  }) {
+    final colors = context.colors;
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.green.shade50,
-        border: Border.all(color: Colors.green.shade200),
-        borderRadius: BorderRadius.circular(8),
+        color: colors.isDark
+            ? const Color(0xFF142920)
+            : Colors.green.shade50,
+        border: Border.all(
+          color: colors.success.withOpacity(0.3),
+        ),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Colors.green,
+              color: colors.success,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             description,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Colors.grey,
+              color: colors.textSecondary,
               height: 1.4,
             ),
           ),
@@ -527,20 +599,23 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
     );
   }
 
-  Widget _buildContactSupportSection() {
+  Widget _buildContactSupportSection(BuildContext context) {
+    final colors = context.colors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Contact Support',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: colors.textPrimary,
           ),
         ),
         const SizedBox(height: 16),
         _buildContactItem(
+          context: context,
           icon: Icons.email_outlined,
           title: 'Email Support',
           subtitle: 'support@example.com',
@@ -549,6 +624,7 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
         ),
         const SizedBox(height: 12),
         _buildContactItem(
+          context: context,
           icon: Icons.language,
           title: 'Visit Website',
           subtitle: 'www.example.com',
@@ -557,7 +633,8 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
         ),
         const SizedBox(height: 12),
         _buildContactItem(
-          icon: Icons.phone_outlined,
+          context: context,
+          icon: Icons.access_time_rounded,
           title: 'Response Time',
           subtitle: '24-48 hours',
           description: 'We typically respond within a day',
@@ -568,23 +645,30 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
   }
 
   Widget _buildContactItem({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
     required String description,
     VoidCallback? onTap,
   }) {
+    final colors = context.colors;
+
     return Material(
-      color: Colors.blue.shade50,
-      borderRadius: BorderRadius.circular(8),
+      color: colors.surfaceElevated,
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
           padding: const EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colors.border),
+          ),
           child: Row(
             children: [
-              Icon(icon, color: Colors.blue, size: 24),
+              Icon(icon, color: colors.primary, size: 24),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -592,34 +676,34 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        color: colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Colors.blue,
+                        color: colors.primary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       description,
-                      style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      style: TextStyle(fontSize: 11, color: colors.textSecondary),
                     ),
                   ],
                 ),
               ),
               if (onTap != null)
-                const Icon(
+                Icon(
                   Icons.arrow_forward_ios,
-                  size: 16,
-                  color: Colors.grey,
+                  size: 14,
+                  color: colors.textSecondary.withOpacity(0.5),
                 ),
             ],
           ),
@@ -628,61 +712,63 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
     );
   }
 
-  Widget _buildFeedbackSection() {
+  Widget _buildFeedbackSection(BuildContext context) {
+    final colors = context.colors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Your Feedback Matters',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: colors.textPrimary,
           ),
         ),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.purple.shade50,
-            border: Border.all(color: Colors.purple.shade200),
-            borderRadius: BorderRadius.circular(12),
+            color: colors.surfaceElevated,
+            border: Border.all(color: colors.border),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 '⭐ Rate This App',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.purple,
+                  color: colors.primary,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'If you love PDF Reader, please leave a rating on the app store. Your feedback helps us improve!',
-                style: TextStyle(fontSize: 12, color: Colors.grey, height: 1.4),
+                style: TextStyle(fontSize: 12, color: colors.textSecondary, height: 1.4),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               Row(
                 children: [
                   Expanded(
                     child: Material(
-                      color: Colors.purple,
-                      borderRadius: BorderRadius.circular(6),
+                      color: colors.primary,
+                      borderRadius: BorderRadius.circular(10),
                       child: InkWell(
                         onTap: () => _showComingSoon('Rate App'),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(10),
                         child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10.0),
+                          padding: EdgeInsets.symmetric(vertical: 12.0),
                           child: Center(
                             child: Text(
                               'Rate Now',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
-                                fontSize: 12,
+                                fontSize: 13,
                               ),
                             ),
                           ),
@@ -690,25 +776,29 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Material(
-                      color: Colors.purple.shade100,
-                      borderRadius: BorderRadius.circular(6),
+                      color: colors.surface,
+                      borderRadius: BorderRadius.circular(10),
                       child: InkWell(
                         onTap: () {
                           Get.back();
                         },
-                        borderRadius: BorderRadius.circular(6),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10.0),
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: colors.border),
+                          ),
                           child: Center(
                             child: Text(
                               'Later',
                               style: TextStyle(
-                                color: Colors.purple,
+                                color: colors.textSecondary,
                                 fontWeight: FontWeight.w600,
-                                fontSize: 12,
+                                fontSize: 13,
                               ),
                             ),
                           ),
@@ -729,41 +819,65 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
     Get.snackbar(
       'Coming Soon',
       '$feature is coming in the next update!',
+      snackPosition: SnackPosition.BOTTOM,
       duration: const Duration(seconds: 2),
     );
   }
 
-  void _showBugReportDialog() {
+  void _showBugReportDialog(BuildContext context) {
+    final colors = context.colors;
     final controller = TextEditingController();
+
     Get.dialog(
       AlertDialog(
-        title: const Text('Report a Bug'),
+        backgroundColor: colors.surfaceElevated,
+        title: Text('Report a Bug', style: TextStyle(color: colors.textPrimary)),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Describe the issue you encountered:',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+                style: TextStyle(fontSize: 12, color: colors.textSecondary),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: controller,
                 maxLines: 5,
+                style: TextStyle(color: colors.textPrimary),
                 decoration: InputDecoration(
+                  filled: true,
+                  fillColor: colors.surface,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: colors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: colors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: colors.primary),
                   ),
                   hintText: 'Describe the bug...',
+                  hintStyle: TextStyle(color: colors.textSecondary),
                 ),
               ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
+          ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colors.primary,
+              foregroundColor: Colors.white,
+            ),
             onPressed: () {
               if (controller.text.isNotEmpty) {
                 _launchUrl(
@@ -779,37 +893,60 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
     );
   }
 
-  void _showFeatureRequestDialog() {
+  void _showFeatureRequestDialog(BuildContext context) {
+    final colors = context.colors;
     final controller = TextEditingController();
+
     Get.dialog(
       AlertDialog(
-        title: const Text('Request a Feature'),
+        backgroundColor: colors.surfaceElevated,
+        title: Text('Request a Feature', style: TextStyle(color: colors.textPrimary)),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Tell us what feature you\'d like to see:',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+                style: TextStyle(fontSize: 12, color: colors.textSecondary),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: controller,
                 maxLines: 5,
+                style: TextStyle(color: colors.textPrimary),
                 decoration: InputDecoration(
+                  filled: true,
+                  fillColor: colors.surface,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: colors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: colors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: colors.primary),
                   ),
                   hintText: 'Describe your idea...',
+                  hintStyle: TextStyle(color: colors.textSecondary),
                 ),
               ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
+          ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colors.primary,
+              foregroundColor: Colors.white,
+            ),
             onPressed: () {
               if (controller.text.isNotEmpty) {
                 _launchUrl(

@@ -1,3 +1,4 @@
+import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/core/widgets/custom_button.dart';
 import 'package:file_reader/features/onboarding/controller/onboarding_controller.dart';
 import 'package:file_reader/features/onboarding/model/onboarding_model.dart';
@@ -48,7 +49,7 @@ class _OnboardingState extends State<Onboarding>
   @override
   Widget build(BuildContext context) {
     final language = AppLocalizations.of(context)!;
-    // final screenSize = MediaQuery.of(context).size;/
+    final colors = context.colors;
 
     final List<OnboardingModel> onboardingPages = [
       OnboardingModel(
@@ -69,40 +70,34 @@ class _OnboardingState extends State<Onboarding>
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
             Row(
               children: [
-                Spacer(),
+                const Spacer(),
                 GestureDetector(
                   onTap: controller.onSkip,
                   behavior: HitTestBehavior.opaque,
                   child: Container(
-                    margin: EdgeInsets.all(20),
-                    padding: EdgeInsets.all(12),
+                    margin: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
+                      color: colors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(60),
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 0.2,
-                          color: const Color(0xFF8B5CF6).withOpacity(0.3),
-                        ),
-                      ],
                     ),
-
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        language.onBoardingSkip,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: const Color(0xFF5B5CFF),
-                          fontWeight: FontWeight.w500,
-                        ),
+                    child: Text(
+                      language.onBoardingSkip,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colors.primary,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -135,9 +130,11 @@ class _OnboardingState extends State<Onboarding>
   }
 
   Widget _buildBottomSection(BuildContext context) {
+    final colors = context.colors;
+
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(color: Colors.white),
+      decoration: BoxDecoration(color: colors.background),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
         child: Column(
@@ -162,8 +159,8 @@ class _OnboardingState extends State<Onboarding>
                     height: 8,
                     decoration: BoxDecoration(
                       color: isActive
-                          ? const Color(0xFF5B5CFF)
-                          : const Color(0xFFD1D5DB),
+                          ? colors.primary
+                          : colors.border,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   );
@@ -207,6 +204,8 @@ class AnimatedContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
@@ -318,20 +317,16 @@ class AnimatedContent extends StatelessWidget {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              const Color(
-                                0xFF5B5CFF,
-                              ).withOpacity(0.15 * glowProgress),
-                              const Color(
-                                0xFF8B5CF6,
-                              ).withOpacity(0.12 * glowProgress),
+                              colors.primary.withOpacity(0.15 * glowProgress),
+                              colors.primaryLight.withOpacity(0.12 * glowProgress),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(30),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(
-                                0xFF5B5CFF,
-                              ).withOpacity(0.25 * glowProgress),
+                              color: colors.primary.withOpacity(
+                                0.25 * glowProgress,
+                              ),
                               blurRadius: glowAnimation.value * 1.5,
                               spreadRadius: glowAnimation.value * 0.5,
                             ),
@@ -373,11 +368,11 @@ class AnimatedContent extends StatelessWidget {
                           textAlign: TextAlign.center,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: "Archivo",
                             fontSize: 28,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF1A1A2E),
+                            color: colors.textPrimary,
                             height: 1.3,
                           ),
                         ),
@@ -403,16 +398,15 @@ class AnimatedContent extends StatelessWidget {
                         constraints: BoxConstraints(maxWidth: width * 0.88),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
-
                           child: Text(
                             model.subtitle,
                             textAlign: TextAlign.center,
                             maxLines: 4,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: "Archivo",
                               fontSize: 15,
-                              color: Color(0xFF6B7280),
+                              color: colors.textSecondary,
                               height: 1.5,
                               fontWeight: FontWeight.w400,
                             ),

@@ -319,4 +319,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get keepAppOpen => 'يرجى إبقاء التطبيق مفتوحًا أثناء المعالجة';
+
+  @override
+  String get theme => 'المظهر';
+
+  @override
+  String get systemTheme => 'النظام';
+
+  @override
+  String get lightTheme => 'فاتح';
+
+  @override
+  String get darkTheme => 'داكن';
+
+  @override
+  String get chooseTheme => 'اختر المظهر';
 }

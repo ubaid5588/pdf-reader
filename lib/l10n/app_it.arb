@@ -122,5 +122,11 @@
   "cancel": "Annulla",
   "preparing": "Preparazione in corso...",
   "converting": "Conversione in corso...",
-  "keepAppOpen": "Tieni aperta l'app durante l'elaborazione"
+  "keepAppOpen": "Tieni aperta l'app durante l'elaborazione",
+
+  "theme": "Tema",
+  "systemTheme": "Sistema",
+  "lightTheme": "Chiaro",
+  "darkTheme": "Scuro",
+  "chooseTheme": "Scegli tema"
 }

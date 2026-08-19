@@ -328,4 +328,19 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get keepAppOpen =>
       'Bitte lassen Sie die App während der Verarbeitung geöffnet';
+
+  @override
+  String get theme => 'Design';
+
+  @override
+  String get systemTheme => 'System';
+
+  @override
+  String get lightTheme => 'Hell';
+
+  @override
+  String get darkTheme => 'Dunkel';
+
+  @override
+  String get chooseTheme => 'Design auswählen';
 }

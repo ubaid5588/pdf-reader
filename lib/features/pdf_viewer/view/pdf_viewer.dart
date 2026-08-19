@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/services/recent_pdf_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -48,6 +49,8 @@ class _PdfViewerState extends State<PdfViewer> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     String title = 'PDF Viewer';
     if (widget.filePath is File) {
       title = (widget.filePath as File).path.split(Platform.pathSeparator).last;
@@ -56,12 +59,19 @@ class _PdfViewerState extends State<PdfViewer> {
     }
 
     return Scaffold(
+      backgroundColor: colors.background,
       appBar: AppBar(
+        backgroundColor: colors.background,
+        iconTheme: IconThemeData(color: colors.textPrimary),
         title: Text(
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 16),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: colors.textPrimary,
+          ),
         ),
       ),
       body: widget.filePath is Uint8List

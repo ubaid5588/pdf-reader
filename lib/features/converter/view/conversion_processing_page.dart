@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/core/widgets/custom_button.dart';
 import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:file_reader/features/pdf_viewer/view/pdf_viewer.dart';
@@ -158,6 +159,7 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context)!;
+    final colors = context.colors;
     final int percentage = (_progress * 100).toInt();
 
     return WillPopScope(
@@ -166,14 +168,16 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
           final shouldPop = await showDialog<bool>(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: Text(lang.cancel),
+              backgroundColor: colors.surfaceElevated,
+              title: Text(lang.cancel, style: TextStyle(color: colors.textPrimary)),
               content: Text(
                 'A conversion is currently in progress. Are you sure you want to exit?',
+                style: TextStyle(color: colors.textSecondary),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(false),
-                  child: Text(lang.cancel),
+                  child: Text(lang.cancel, style: TextStyle(color: colors.textSecondary)),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(true),
@@ -190,12 +194,12 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
         return true;
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF9FAFC),
+        backgroundColor: colors.background,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: colors.background,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.close_rounded, color: Color(0xFF1F2937)),
+            icon: Icon(Icons.close_rounded, color: colors.textPrimary),
             onPressed: () {
               if (_state == ConversionFlowState.processing) {
                 Navigator.of(context).maybePop();
@@ -206,8 +210,8 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
           ),
           title: Text(
             widget.title,
-            style: const TextStyle(
-              color: Color(0xFF1F2937),
+            style: TextStyle(
+              color: colors.textPrimary,
               fontWeight: FontWeight.w600,
               fontSize: 18,
             ),
@@ -226,13 +230,13 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
                   duration: const Duration(milliseconds: 350),
                   transitionBuilder: (child, animation) =>
                       ScaleTransition(scale: animation, child: child),
-                  child: _buildCurrentStateView(lang, percentage),
+                  child: _buildCurrentStateView(context, lang, percentage),
                 ),
 
                 const SizedBox(height: 48),
 
                 // Bottom Buttons based on state
-                _buildBottomActions(lang),
+                _buildBottomActions(context, lang),
 
                 const SizedBox(height: 16),
               ],
@@ -243,18 +247,28 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
     );
   }
 
-  Widget _buildCurrentStateView(AppLocalizations lang, int percentage) {
+  Widget _buildCurrentStateView(
+    BuildContext context,
+    AppLocalizations lang,
+    int percentage,
+  ) {
     switch (_state) {
       case ConversionFlowState.processing:
-        return _buildProcessingView(lang, percentage);
+        return _buildProcessingView(context, lang, percentage);
       case ConversionFlowState.completed:
-        return _buildCompletedView(lang);
+        return _buildCompletedView(context, lang);
       case ConversionFlowState.error:
-        return _buildErrorView(lang);
+        return _buildErrorView(context, lang);
     }
   }
 
-  Widget _buildProcessingView(AppLocalizations lang, int percentage) {
+  Widget _buildProcessingView(
+    BuildContext context,
+    AppLocalizations lang,
+    int percentage,
+  ) {
+    final colors = context.colors;
+
     return Column(
       key: const ValueKey('processing_view'),
       mainAxisSize: MainAxisSize.min,
@@ -275,9 +289,9 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
                     height: 180 + (_pulseController.value * 12),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(
-                        0xFF5B5CFF,
-                      ).withOpacity(0.08 * (1 - _pulseController.value * 0.5)),
+                      color: colors.primary.withOpacity(
+                        0.12 * (1 - _pulseController.value * 0.5),
+                      ),
                     ),
                   );
                 },
@@ -293,9 +307,11 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
                     child: CircularProgressIndicator(
                       value: _progressAnimation.value,
                       strokeWidth: 11,
-                      backgroundColor: const Color(0xFFE0E7FF),
-                      valueColor: const AlwaysStoppedAnimation<Color>(
-                        Color(0xFF2563EB),
+                      backgroundColor: colors.isDark
+                          ? const Color(0xFF1E2030)
+                          : const Color(0xFFE0E7FF),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        colors.primary,
                       ),
                       strokeCap: StrokeCap.round,
                     ),
@@ -310,22 +326,24 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEFF6FF),
+                      color: colors.isDark
+                          ? const Color(0xFF1E2438)
+                          : const Color(0xFFEFF6FF),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.description_rounded,
                       size: 32,
-                      color: Color(0xFF2563EB),
+                      color: colors.primary,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     '$percentage%',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF2563EB),
+                      color: colors.primary,
                       letterSpacing: -0.5,
                     ),
                   ),
@@ -340,10 +358,10 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
         // Phase Title
         Text(
           _getPhaseTitle(lang, _progress),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF111827),
+            color: colors.textPrimary,
           ),
         ),
 
@@ -357,9 +375,9 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
                 ? _statusMessage
                 : lang.finalizingFileMessage,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Color(0xFF6B7280),
+              color: colors.textSecondary,
               height: 1.4,
             ),
           ),
@@ -378,9 +396,11 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
                 height: 6,
                 child: LinearProgressIndicator(
                   value: _progressAnimation.value,
-                  backgroundColor: const Color(0xFFE5E7EB),
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                    Color(0xFF2563EB),
+                  backgroundColor: colors.isDark
+                      ? const Color(0xFF1E2030)
+                      : const Color(0xFFE5E7EB),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    colors.primary,
                   ),
                 ),
               ),
@@ -391,7 +411,9 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
     );
   }
 
-  Widget _buildCompletedView(AppLocalizations lang) {
+  Widget _buildCompletedView(BuildContext context, AppLocalizations lang) {
+    final colors = context.colors;
+
     return Column(
       key: const ValueKey('completed_view'),
       mainAxisSize: MainAxisSize.min,
@@ -401,23 +423,25 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
           width: 84,
           height: 84,
           decoration: BoxDecoration(
-            color: const Color(0xFFD1FAE5),
+            color: colors.isDark
+                ? const Color(0xFF0F382A)
+                : const Color(0xFFD1FAE5),
             shape: BoxShape.circle,
             border: Border.all(
-              color: const Color(0xFF10B981).withOpacity(0.4),
+              color: colors.success.withOpacity(0.4),
               width: 3,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF10B981).withOpacity(0.2),
+                color: colors.success.withOpacity(0.2),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
             ],
           ),
-          child: const Icon(
+          child: Icon(
             Icons.check_rounded,
-            color: Color(0xFF10B981),
+            color: colors.success,
             size: 46,
           ),
         ),
@@ -426,10 +450,10 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
 
         Text(
           lang.conversionComplete,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF111827),
+            color: colors.textPrimary,
           ),
         ),
 
@@ -437,7 +461,7 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
 
         Text(
           lang.yourPdfIsReady,
-          style: const TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+          style: TextStyle(fontSize: 14, color: colors.textSecondary),
         ),
 
         const SizedBox(height: 28),
@@ -446,12 +470,12 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: colors.surface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
+            border: Border.all(color: colors.border),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: colors.cardShadow,
                 blurRadius: 14,
                 offset: const Offset(0, 4),
               ),
@@ -464,14 +488,18 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFEBEE),
+                  color: colors.isDark
+                      ? const Color(0xFF3B1E1E)
+                      : const Color(0xFFFFEBEE),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
                     'PDF',
                     style: TextStyle(
-                      color: Color(0xFFEF4444),
+                      color: colors.isDark
+                          ? const Color(0xFFF87171)
+                          : const Color(0xFFEF4444),
                       fontWeight: FontWeight.w900,
                       fontSize: 12,
                     ),
@@ -490,18 +518,18 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
                       _fileName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14.5,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF111827),
+                        color: colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       '$_fileSize · Just now',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF9CA3AF),
+                        color: colors.textSecondary,
                       ),
                     ),
                   ],
@@ -513,13 +541,15 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
               // Success check circle
               Container(
                 padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFD1FAE5),
+                decoration: BoxDecoration(
+                  color: colors.isDark
+                      ? const Color(0xFF0F382A)
+                      : const Color(0xFFD1FAE5),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.check,
-                  color: Color(0xFF10B981),
+                  color: colors.success,
                   size: 16,
                 ),
               ),
@@ -530,7 +560,9 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
     );
   }
 
-  Widget _buildErrorView(AppLocalizations lang) {
+  Widget _buildErrorView(BuildContext context, AppLocalizations lang) {
+    final colors = context.colors;
+
     return Column(
       key: const ValueKey('error_view'),
       mainAxisSize: MainAxisSize.min,
@@ -539,16 +571,18 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: const Color(0xFFFEE2E2),
+            color: colors.isDark
+                ? const Color(0xFF3B1E1E)
+                : const Color(0xFFFEE2E2),
             shape: BoxShape.circle,
             border: Border.all(
-              color: const Color(0xFFEF4444).withOpacity(0.4),
+              color: colors.error.withOpacity(0.4),
               width: 2.5,
             ),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.error_outline_rounded,
-            color: Color(0xFFEF4444),
+            color: colors.error,
             size: 44,
           ),
         ),
@@ -557,10 +591,10 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
 
         Text(
           lang.conversionFailed,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF111827),
+            color: colors.textPrimary,
           ),
         ),
 
@@ -573,19 +607,21 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
                 ? _errorMessage
                 : 'An unexpected error occurred during processing.',
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 13.5, color: Color(0xFF6B7280)),
+            style: TextStyle(fontSize: 13.5, color: colors.textSecondary),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBottomActions(AppLocalizations lang) {
+  Widget _buildBottomActions(BuildContext context, AppLocalizations lang) {
+    final colors = context.colors;
+
     switch (_state) {
       case ConversionFlowState.processing:
         return Text(
           lang.keepAppOpen,
-          style: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+          style: TextStyle(fontSize: 12, color: colors.textSecondary),
         );
 
       case ConversionFlowState.completed:
@@ -613,17 +649,17 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      side: const BorderSide(color: Color(0xFFE5E7EB)),
+                      side: BorderSide(color: colors.border),
                     ),
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.share_outlined,
                       size: 18,
-                      color: Color(0xFF4B5563),
+                      color: colors.textPrimary,
                     ),
                     label: Text(
                       lang.share,
-                      style: const TextStyle(
-                        color: Color(0xFF4B5563),
+                      style: TextStyle(
+                        color: colors.textPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -644,12 +680,13 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE5E7EB),
-                      foregroundColor: const Color(0xFF1F2937),
+                      backgroundColor: colors.surfaceElevated,
+                      foregroundColor: colors.textPrimary,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(color: colors.border),
                       ),
                     ),
                     onPressed: () {
@@ -680,8 +717,8 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
                 lang.cancel,
-                style: const TextStyle(
-                  color: Color(0xFF6B7280),
+                style: TextStyle(
+                  color: colors.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),

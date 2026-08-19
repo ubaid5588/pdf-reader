@@ -327,4 +327,19 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get keepAppOpen => 'براہ کرم پروسیسنگ کے دوران ایپ کو کھلا رکھیں';
+
+  @override
+  String get theme => 'تھیم';
+
+  @override
+  String get systemTheme => 'سسٹم';
+
+  @override
+  String get lightTheme => 'لائٹ';
+
+  @override
+  String get darkTheme => 'ڈارک';
+
+  @override
+  String get chooseTheme => 'تھیم منتخب کریں';
 }

@@ -303,4 +303,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get keepAppOpen => '処理中はアプリを開いたままにしてください';
+
+  @override
+  String get theme => 'テーマ';
+
+  @override
+  String get systemTheme => 'システム';
+
+  @override
+  String get lightTheme => 'ライト';
+
+  @override
+  String get darkTheme => 'ダーク';
+
+  @override
+  String get chooseTheme => 'テーマを選択';
 }

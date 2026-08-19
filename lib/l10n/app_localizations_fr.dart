@@ -328,4 +328,19 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get keepAppOpen =>
       'Veuillez garder l\'application ouverte pendant le traitement';
+
+  @override
+  String get theme => 'Thème';
+
+  @override
+  String get systemTheme => 'Système';
+
+  @override
+  String get lightTheme => 'Clair';
+
+  @override
+  String get darkTheme => 'Sombre';
+
+  @override
+  String get chooseTheme => 'Choisir le thème';
 }

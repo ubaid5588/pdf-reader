@@ -1,3 +1,4 @@
+import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/core/widgets/custom_button.dart';
 import 'package:file_reader/features/language_selection/controller/language_controller.dart';
 import 'package:file_reader/l10n/app_localizations.dart';
@@ -7,15 +8,16 @@ import 'package:get/get.dart';
 class LanguageSelectionScreen extends StatelessWidget {
   LanguageSelectionScreen({super.key});
 
-  static const Color _blue = Color(0xFF2563EB);
   final LanguageController controller = Get.put(LanguageController());
 
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context)!;
+    final colors = context.colors;
     final screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -26,14 +28,14 @@ class LanguageSelectionScreen extends StatelessWidget {
                   Container(
                     width: screenSize.width * 0.14,
                     height: screenSize.height * 0.06,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: _blue,
+                      color: colors.primary,
                     ),
                     child: const Icon(
                       Icons.language_rounded,
-                      color: Color.fromARGB(255, 15, 5, 5),
-                      size: 34,
+                      color: Colors.white,
+                      size: 30,
                     ),
                   ),
                   const SizedBox(height: 18),
@@ -42,14 +44,14 @@ class LanguageSelectionScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF111827),
+                      color: colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     lang.preferredLangauge,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    style: TextStyle(fontSize: 14, color: colors.textSecondary),
                   ),
                 ],
               ),
@@ -62,11 +64,11 @@ class LanguageSelectionScreen extends StatelessWidget {
                 separatorBuilder: (_, __) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   return Obx(() {
-                    final lang = controller.languages[index];
+                    final langItem = controller.languages[index];
                     final isSelected =
-                        lang.code == controller.selectedCode.value;
+                        langItem.code == controller.selectedCode.value;
                     return GestureDetector(
-                      onTap: () => controller.changeSelectedCode(lang.code),
+                      onTap: () => controller.changeSelectedCode(langItem.code),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -74,18 +76,18 @@ class LanguageSelectionScreen extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0xFFEFF6FF)
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
+                              ? colors.primary.withOpacity(0.12)
+                              : colors.surface,
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isSelected ? _blue : const Color(0xFFE5E7EB),
-                            width: 1.5,
+                            color: isSelected ? colors.primary : colors.border,
+                            width: isSelected ? 1.5 : 1,
                           ),
                         ),
                         child: Row(
                           children: [
                             Text(
-                              lang.flag,
+                              langItem.flag,
                               style: const TextStyle(fontSize: 28),
                             ),
                             const SizedBox(width: 14),
@@ -94,27 +96,30 @@ class LanguageSelectionScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    lang.nativeName,
+                                    langItem.nativeName,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                       color: isSelected
-                                          ? _blue
-                                          : const Color(0xFF111827),
+                                          ? colors.primary
+                                          : colors.textPrimary,
                                     ),
                                   ),
                                   Text(
-                                    lang.name,
+                                    langItem.name,
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: isSelected ? _blue : Colors.grey,
+                                      color: isSelected
+                                          ? colors.primary
+                                          : colors.textSecondary,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                             if (isSelected)
-                              const Icon(Icons.check, color: _blue, size: 20),
+                              Icon(Icons.check_circle_rounded,
+                                  color: colors.primary, size: 22),
                           ],
                         ),
                       ),
