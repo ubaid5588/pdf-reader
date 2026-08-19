@@ -1,0 +1,112 @@
+{
+  "@@locale": "ja",
+
+  "splashAppName": "PDFリーダー",
+  "splashAppTitle": "すべての書類をワンタップで",
+
+  "onBoardingTitle1": "PDFファイルを素早く閲覧",
+  "onBoardingSubtitle1": "スムーズで快適な読書体験で、すべてのPDFドキュメントを開き、閲覧し、管理します。",
+  "onBoardingTitle2": "Word文書にアクセス",
+  "onBoardingSubtitle2": "DOCおよびDOCXファイルをいつでも表示し、重要な書類を一箇所にまとめて整理します。",
+  "onBoardingTitle3": "プレゼンテーションをシンプルに",
+  "onBoardingSubtitle3": "仕事や学習、発表のためにPPTおよびPPTXスライドを簡単に開いて閲覧できます。",
+  "onBoardingNext": "次へ",
+  "onBoardingSkip": "スキップ",
+  "onBoardingDone": "完了",
+
+  "upgradeVip": "VIPにアップグレード",
+  "bannerTitle": "オールインワン\nPDFワークスペース",
+  "bannerSubtitle": "ドキュメントの変換、編集、整理、\n保護をこれひとつで。",
+  "tryNow": "今すぐ試す",
+
+  "convertToPdf": "PDFに変換",
+  "editAndOrganize": "編集と整理",
+
+  "wordToPdf": "WordからPDF",
+  "imageToPdf": "画像からPDF",
+  "pptToPdf": "PPTからPDF",
+  "excelToPdf": "ExcelからPDF",
+  "pdfToWord": "PDFからWord",
+  "pdfToImage": "PDFから画像",
+  "pdfToPpt": "PDFからPPT",
+  "pdfToExcel": "PDFからExcel",
+  "mergePdf": "PDF結合",
+  "splitPdf": "PDF分割",
+  "compressPdf": "PDF圧縮",
+  "protectPdf": "PDF保護",
+  "signOnPdf": "PDFに署名",
+  "ocrPdf": "OCR PDF",
+  "organizePdf": "PDF整理",
+
+  "wordToPdfSubtitle": "Word文書（.doc, .docx）を高画質なPDFファイルに変換します。",
+  "imageToPdfSubtitle": "画像（.jpg, .png, .webp）を高画質なPDFファイルに変換します。",
+  "pptToPdfSubtitle": "プレゼンテーション（.ppt, .pptx）を高画質なPDFファイルに変換します。",
+  "excelToPdfSubtitle": "スプレッドシート（.xls, .xlsx）を高画質なPDFファイルに変換します。",
+  "pdfToWordSubtitle": "PDFファイルを編集可能なWord文書（.docx）に変換します。",
+  "pdfToImageSubtitle": "PDFページを高画質画像（.jpg, .png）に変換します。",
+  "pdfToPptSubtitle": "PDFファイルを編集可能なプレゼンテーション（.pptx）に変換します。",
+  "pdfToExcelSubtitle": "PDFファイルを編集可能なスプレッドシート（.xlsx）に変換します。",
+  "mergePdfSubtitle": "複数のPDFファイルを1つのドキュメントに結合します。",
+  "splitPdfSubtitle": "PDFを個別のページまたは指定したページ範囲に分割します。",
+  "compressPdfSubtitle": "品質を保ちながらPDFのファイルサイズを縮小します。",
+  "protectPdfSubtitle": "PDFドキュメントを暗号化し、パスワードで保護します。",
+  "signOnPdfSubtitle": "任意のPDFドキュメントにデジタル署名を追加します。",
+  "ocrPdfSubtitle": "光学文字認識（OCR）を使用して、スキャンしたPDFからテキストを抽出します。",
+  "organizePdfSubtitle": "PDFドキュメントのページの並べ替え、回転、削除を行います。",
+  "defaultToolSubtitle": "ファイルを高品質なPDFに変換します。",
+
+  "selectWordFile": "Wordファイルを選択",
+  "selectImageFile": "画像ファイルを選択",
+  "selectPptFile": "PPTファイルを選択",
+  "selectExcelFile": "Excelファイルを選択",
+  "selectPdfFile": "PDFファイルを選択",
+  "selectPdfFiles": "PDFファイルを選択",
+  "selectFile": "ファイルを選択",
+
+  "convertTool": "{toolName}を変換",
+  "@convertTool": {
+    "description": "ツール画面のタイトル、例：'WordからPDFを変換'",
+    "placeholders": {
+      "toolName": {
+        "type": "String",
+        "example": "WordからPDF"
+      }
+    }
+  },
+
+  "almostDone": "もうすぐ完了します！",
+  "finalizingFileMessage": "ファイルを処理しています。少々お待ちください",
+  "protecting": "保護中...",
+
+  "label1": "高速変換",
+  "label2": "元のレイアウトを保持",
+  "label3": "安全＆プライベート",
+
+  "home": "ホーム",
+  "files": "ファイル",
+  "settings": "設定",
+  "file": "ファイルが見つかりません",
+
+  "upgradeProTitle": "Proにアップグレード",
+  "upgradeProSubtitle": "すべての機能のロックを解除し、無制限のアクセスをお楽しみください。",
+  "upgrade": "アップグレード",
+
+  "languageOptions": "言語オプション",
+  "feedback": "フィードバック",
+  "helpSupport": "ヘルプ＆サポート",
+  "rateUs": "評価する",
+  "about": "アプリについて",
+  "logout": "ログアウト",
+
+  "settingsPremiumTitle": "Proにアップグレード",
+  "settingsPremiumSutitle": "すべての機能のロックを解除し、\n無制限のアクセスをお楽しみください。",
+  "settingsUpgrade": "アップグレード",
+  "settingsLabel1": "言語オプション",
+  "settingsLabel2": "フィードバック",
+  "settingsLabel3": "ヘルプ＆サポート",
+  "settingsLabel4": "評価する",
+  "settingsLabel5": "アプリについて",
+  "settingsLogout": "ログアウト",
+  "selectLanguage": "言語を選択",
+  "preferredLangauge": "続けるには希望の言語を選択してください"
+}

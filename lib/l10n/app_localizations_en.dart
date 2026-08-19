@@ -15,25 +15,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get splashAppTitle => 'All your documents, one tap away';
 
   @override
-  String get onBoardingTitle1 => 'Read PDF Files Instantly';
+  String get languageSelection => 'continue';
+
+  @override
+  String get onBoardingTitle1 => 'All Your PDFs in One Place';
 
   @override
   String get onBoardingSubtitle1 =>
-      'Open, view, and manage all your PDF documents with a smooth and fast reading experience.';
+      'Read, access, and manage your documents quickly and effortlessly.';
 
   @override
-  String get onBoardingTitle2 => 'Access Word Documents';
+  String get onBoardingTitle2 => 'Convert Files to PDF';
 
   @override
   String get onBoardingSubtitle2 =>
-      'View DOC and DOCX files anytime, keeping your important documents organized in one place.';
+      'Turn your documents and images into professional PDFs in just a few taps.';
 
   @override
-  String get onBoardingTitle3 => 'Presentations Made Simple';
+  String get onBoardingTitle3 => 'Powerful PDF Tools';
 
   @override
   String get onBoardingSubtitle3 =>
-      'Open and browse PPT and PPTX slides effortlessly for work, study, and presentations.';
+      'Merge, split, compress, and protect your PDFs with simple and powerful tools.';
 
   @override
   String get onBoardingNext => 'Next';

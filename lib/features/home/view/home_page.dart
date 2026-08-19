@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:file_reader/features/file/view/file_page.dart';
@@ -118,22 +119,15 @@ class _HomePageState extends State<HomePage> {
         final bool isTablet = width >= 600;
 
         final double topBarHeight = isSmallPhone
-            ? 58
+            ? 78
+            : isTablet
+            ? 88
+            : 52;
+        final double bottomBarHeight = isSmallPhone
+            ? 64
             : isTablet
             ? 72
-            : 64;
-
-        final double bottomBarHeight = Platform.isIOS
-            ? (isSmallPhone ? 68 : 76)
-            : (isSmallPhone ? 60 : 66);
-
-        final double horizontalMargin = isSmallPhone
-            ? 8
-            : isTablet
-            ? 24
-            : 10;
-
-        final double bottomMargin = isSmallPhone ? 8 : 16;
+            : 68;
 
         return Scaffold(
           body: SafeArea(
@@ -141,12 +135,10 @@ class _HomePageState extends State<HomePage> {
             bottom: false,
             child: Stack(
               children: [
+                // Content - extends full height under navigation
                 Positioned.fill(
                   child: Padding(
-                    padding: EdgeInsets.only(
-                      top: topBarHeight,
-                      bottom: bottomBarHeight + bottomMargin + 8,
-                    ),
+                    padding: EdgeInsets.only(top: topBarHeight),
                     child: Obx(() {
                       final List<Widget> screens = [
                         const HomePageView(),
@@ -162,22 +154,26 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
+                // Top Bar
                 Positioned(
                   top: 0,
                   left: 0,
                   right: 0,
-                  child: buildTopBar(context, width, lang.upgrade),
+                  child: buildTopBar(context, width, lang),
                 ),
 
+                // Bottom Navigation - Overlay on top with center positioning
                 Positioned(
-                  bottom: bottomMargin,
-                  left: horizontalMargin,
-                  right: horizontalMargin,
-                  child: _buildBottomNavigation(
-                    context,
-                    width,
-                    bottomBarHeight,
-                    lang,
+                  bottom: isSmallPhone ? 16 : 20,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: _buildBottomNavigation(
+                      context,
+                      width,
+                      bottomBarHeight,
+                      lang,
+                    ),
                   ),
                 ),
               ],
@@ -197,66 +193,90 @@ class _HomePageState extends State<HomePage> {
     final bool isSmallPhone = width < 360;
     final bool isTablet = width >= 600;
 
+    final double navWidth = width * 0.7;
+
     final double iconSize = isSmallPhone
-        ? 21
+        ? 22
         : isTablet
-        ? 25
-        : 23;
-
+        ? 26
+        : 24;
     final double fontSize = isSmallPhone
-        ? 10
+        ? 9.5
         : isTablet
-        ? 12
-        : 11;
+        ? 11.5
+        : 10.5;
+    final double horizontalPadding = isSmallPhone ? 10 : 4;
+    final double verticalPadding = isSmallPhone ? 8 : 2;
 
-    return Container(
-      width: double.infinity,
-      height: height,
-      padding: EdgeInsets.symmetric(
-        horizontal: isSmallPhone ? 6 : 10,
-        vertical: isSmallPhone ? 6 : 8,
-      ),
-      decoration: BoxDecoration(
-        color: Platform.isIOS
-            ? const Color.fromARGB(235, 252, 252, 252)
-            : const Color.fromARGB(235, 252, 252, 252),
-        borderRadius: BorderRadius.circular(isSmallPhone ? 28 : 35),
-        border: Border.all(
-          color: const Color.fromARGB(20, 101, 92, 92),
-          width: 1.2,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(isSmallPhone ? 24 : 35),
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          width: navWidth,
+          height: height,
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: verticalPadding,
+          ),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white.withOpacity(0.25),
+                Colors.white.withOpacity(0.12),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(isSmallPhone ? 24 : 28),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.4),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                child: navItem(
+                  Icons.home_rounded,
+                  lang.home,
+                  0,
+                  iconSize,
+                  fontSize,
+                  isSmallPhone,
+                ),
+              ),
+              Expanded(
+                child: navItem(
+                  Icons.folder_outlined,
+                  lang.files,
+                  1,
+                  iconSize,
+                  fontSize,
+                  isSmallPhone,
+                ),
+              ),
+              Expanded(
+                child: navItem(
+                  Icons.settings_outlined,
+                  lang.settings,
+                  2,
+                  iconSize,
+                  fontSize,
+                  isSmallPhone,
+                ),
+              ),
+            ],
+          ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: navItem(
-              Icons.home_rounded,
-              lang.home,
-              0,
-              iconSize,
-              fontSize,
-            ),
-          ),
-          Expanded(
-            child: navItem(Icons.folder, lang.files, 1, iconSize, fontSize),
-          ),
-          Expanded(
-            child: navItem(
-              Icons.settings,
-              lang.settings,
-              2,
-              iconSize,
-              fontSize,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -267,6 +287,7 @@ class _HomePageState extends State<HomePage> {
     int index,
     double iconSize,
     double fontSize,
+    bool isSmallPhone,
   ) {
     return Obx(() {
       final bool isSelected = naviController.selectedIndex.value == index;
@@ -277,29 +298,33 @@ class _HomePageState extends State<HomePage> {
           naviController.changePage(index);
         },
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 250),
           curve: Curves.easeInOut,
-          constraints: const BoxConstraints(minHeight: 45),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          padding: EdgeInsets.symmetric(
+            horizontal: isSmallPhone ? 6 : 8,
+            vertical: isSmallPhone ? 4 : 10,
+          ),
           decoration: BoxDecoration(
             color: isSelected
-                ? const Color.fromARGB(35, 108, 78, 245)
+                ? const Color(0xFF5B5CFF).withOpacity(0.25)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(30),
+            border: isSelected
+                ? Border.all(color: Colors.white.withOpacity(0.5), width: 1.2)
+                : null,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 icon,
-                size: isSelected ? iconSize + 1 : iconSize,
+                size: iconSize,
                 color: isSelected
-                    ? const Color(0xFF6C4EF5)
-                    : const Color(0xFFAAAAAA),
+                    ? const Color(0xFF5B5CFF)
+                    : const Color(0xFFB0B0B5),
               ),
-
-              const SizedBox(height: 1),
-
+              SizedBox(height: isSmallPhone ? 2 : 3),
               Flexible(
                 child: Text(
                   label,
@@ -308,12 +333,10 @@ class _HomePageState extends State<HomePage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: isSelected
-                        ? const Color(0xFF6C4EF5)
-                        : const Color(0xFFAAAAAA),
+                        ? const Color(0xFF5B5CFF)
+                        : const Color(0xFFB0B0B5),
                     fontSize: fontSize,
-                    fontWeight: isSelected
-                        ? FontWeight.w600
-                        : FontWeight.normal,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
               ),
@@ -324,111 +347,84 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Widget buildTopBar(BuildContext context, double width, String upgrade) {
+  Widget buildTopBar(
+    BuildContext context,
+    double width,
+    AppLocalizations lang,
+  ) {
     final bool isSmallPhone = width < 360;
     final bool isTablet = width >= 600;
 
     final double logoSize = isSmallPhone
-        ? 28
+        ? 34
         : isTablet
-        ? 38
-        : 32;
-
+        ? 42
+        : 38;
     final double titleSize = isSmallPhone
-        ? 18
+        ? 16.5
         : isTablet
-        ? 24
-        : 22;
-
+        ? 22
+        : 19;
+    final double subtitleSize = isSmallPhone
+        ? 10.5
+        : isTablet
+        ? 12.5
+        : 11.5;
     final double horizontalPadding = isSmallPhone
         ? 10
         : isTablet
         ? 24
-        : 16;
+        : 14;
+    final double verticalPadding = isSmallPhone ? 8 : 10;
 
     return Container(
       width: double.infinity,
       color: const Color.fromARGB(120, 255, 246, 246),
       padding: EdgeInsets.symmetric(
         horizontal: horizontalPadding,
-        vertical: isSmallPhone ? 8 : 10,
+        vertical: verticalPadding,
       ),
       child: Row(
         children: [
+          // Logo
+          SizedBox(
+            width: logoSize,
+            height: logoSize,
+            child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
+          ),
+
+          SizedBox(width: isSmallPhone ? 6 : 10),
+
+          // Title and Subtitle
           Expanded(
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: logoSize,
-                  height: logoSize,
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    fit: BoxFit.contain,
+                Text(
+                  'PDF Reader',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: titleSize,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1A1A2E),
                   ),
                 ),
 
-                SizedBox(width: isSmallPhone ? 5 : 8),
-
-                Flexible(
-                  child: Text(
-                    'Pdf Reader',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: titleSize,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1A1A2E),
-                    ),
+                Text(
+                  'Your document hub',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: subtitleSize,
+                    color: const Color(0xFF9CA3AF),
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
             ),
           ),
-
-          // const SizedBox(width: 8),
-
-          // Flexible(
-          //   flex: 0,
-          //   child: Container(
-          //     constraints: BoxConstraints(
-          //       maxWidth: isSmallPhone
-          //           ? 105
-          //           : isTablet
-          //           ? 150
-          //           : 125,
-          //     ),
-          //     padding: EdgeInsets.symmetric(
-          //       horizontal: isSmallPhone ? 8 : 12,
-          //       vertical: isSmallPhone ? 5 : 6,
-          //     ),
-          //     decoration: BoxDecoration(
-          //       color: const Color.fromARGB(64, 255, 255, 255),
-          //       borderRadius: BorderRadius.circular(20),
-          //       border: Border.all(color: const Color(0xFFFFD700), width: 1),
-          //     ),
-          //     child: Row(
-          //       mainAxisSize: MainAxisSize.min,
-          //       children: [
-          //         const Icon(Icons.star, color: Color(0xFFFFC107), size: 14),
-
-          //         // const SizedBox(width: 4),
-
-          //         // Flexible(
-          //         //   child: Text(
-          //         //     upgrade,
-          //         //     maxLines: 1,
-          //         //     overflow: TextOverflow.ellipsis,
-          //         //     style: TextStyle(
-          //         //       color: const Color(0xFFB8860B),
-          //         //       fontWeight: FontWeight.w600,
-          //         //       fontSize: isSmallPhone ? 10 : 12,
-          //         //     ),
-          //         //   ),
-          //         // ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

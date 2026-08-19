@@ -194,6 +194,7 @@ class _FilePageState extends State<FilePage>
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context)!;
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -229,14 +230,8 @@ class _FilePageState extends State<FilePage>
 
         return Column(
           children: [
-            // Search Bar with Selection Info
             Padding(
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                8,
-                horizontalPadding,
-                8,
-              ),
+              padding: const EdgeInsets.only(top: 20, left: 22, right: 22),
               child: Obx(
                 () => AnimatedCrossFade(
                   firstChild: SizedBox(
@@ -262,6 +257,7 @@ class _FilePageState extends State<FilePage>
                           );
                         }),
                         filled: true,
+                        fillColor: Colors.grey.shade100,
                         contentPadding: EdgeInsets.zero,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -371,7 +367,7 @@ class _FilePageState extends State<FilePage>
                       left: horizontalPadding,
                       right: horizontalPadding,
                       top: 8,
-                      bottom: 20,
+                      bottom: keyboardHeight + 100,
                     ),
                     itemCount: files.length,
                     separatorBuilder: (context, index) {

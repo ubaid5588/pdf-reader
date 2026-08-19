@@ -14,8 +14,8 @@ class OnboardingController extends GetxController {
   }
 
   void onComplete() {
-    if (currentPage < 2) {
-      currentPage += 1;
+    if (currentPage.value < 2) {
+      currentPage.value += 1;
     } else {
       saveSetting();
       Get.offAll(() => HomePage());

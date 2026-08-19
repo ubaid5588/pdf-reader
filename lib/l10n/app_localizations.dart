@@ -5,8 +5,17 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_ar.dart';
+import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
+import 'app_localizations_fr.dart';
+import 'app_localizations_it.dart';
+import 'app_localizations_ja.dart';
+import 'app_localizations_ko.dart';
+import 'app_localizations_pt.dart';
 import 'app_localizations_ur.dart';
+import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
 
@@ -94,8 +103,17 @@ abstract class AppLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
+    Locale('ar'),
+    Locale('de'),
     Locale('en'),
+    Locale('es'),
+    Locale('fr'),
+    Locale('it'),
+    Locale('ja'),
+    Locale('ko'),
+    Locale('pt'),
     Locale('ur'),
+    Locale('zh'),
   ];
 
   /// No description provided for @splashAppName.
@@ -110,40 +128,46 @@ abstract class AppLocalizations {
   /// **'All your documents, one tap away'**
   String get splashAppTitle;
 
+  /// No description provided for @languageSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'continue'**
+  String get languageSelection;
+
   /// No description provided for @onBoardingTitle1.
   ///
   /// In en, this message translates to:
-  /// **'Read PDF Files Instantly'**
+  /// **'All Your PDFs in One Place'**
   String get onBoardingTitle1;
 
   /// No description provided for @onBoardingSubtitle1.
   ///
   /// In en, this message translates to:
-  /// **'Open, view, and manage all your PDF documents with a smooth and fast reading experience.'**
+  /// **'Read, access, and manage your documents quickly and effortlessly.'**
   String get onBoardingSubtitle1;
 
   /// No description provided for @onBoardingTitle2.
   ///
   /// In en, this message translates to:
-  /// **'Access Word Documents'**
+  /// **'Convert Files to PDF'**
   String get onBoardingTitle2;
 
   /// No description provided for @onBoardingSubtitle2.
   ///
   /// In en, this message translates to:
-  /// **'View DOC and DOCX files anytime, keeping your important documents organized in one place.'**
+  /// **'Turn your documents and images into professional PDFs in just a few taps.'**
   String get onBoardingSubtitle2;
 
   /// No description provided for @onBoardingTitle3.
   ///
   /// In en, this message translates to:
-  /// **'Presentations Made Simple'**
+  /// **'Powerful PDF Tools'**
   String get onBoardingTitle3;
 
   /// No description provided for @onBoardingSubtitle3.
   ///
   /// In en, this message translates to:
-  /// **'Open and browse PPT and PPTX slides effortlessly for work, study, and presentations.'**
+  /// **'Merge, split, compress, and protect your PDFs with simple and powerful tools.'**
   String get onBoardingSubtitle3;
 
   /// No description provided for @onBoardingNext.
@@ -625,8 +649,19 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'ur'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'ar',
+    'de',
+    'en',
+    'es',
+    'fr',
+    'it',
+    'ja',
+    'ko',
+    'pt',
+    'ur',
+    'zh',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -635,10 +670,28 @@ class _AppLocalizationsDelegate
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'ar':
+      return AppLocalizationsAr();
+    case 'de':
+      return AppLocalizationsDe();
     case 'en':
       return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
+    case 'fr':
+      return AppLocalizationsFr();
+    case 'it':
+      return AppLocalizationsIt();
+    case 'ja':
+      return AppLocalizationsJa();
+    case 'ko':
+      return AppLocalizationsKo();
+    case 'pt':
+      return AppLocalizationsPt();
     case 'ur':
       return AppLocalizationsUr();
+    case 'zh':
+      return AppLocalizationsZh();
   }
 
   throw FlutterError(

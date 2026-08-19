@@ -1,0 +1,112 @@
+{
+  "@@locale": "pt",
+
+  "splashAppName": "Leitor de PDF",
+  "splashAppTitle": "Todos os seus documentos a um toque de distância",
+
+  "onBoardingTitle1": "Leia ficheiros PDF instantaneamente",
+  "onBoardingSubtitle1": "Abra, visualize e gira todos os seus documentos PDF com uma experiência de leitura rápida e fluida.",
+  "onBoardingTitle2": "Aceda a documentos do Word",
+  "onBoardingSubtitle2": "Visualize ficheiros DOC e DOCX a qualquer momento, mantendo os seus documentos importantes organizados num só lugar.",
+  "onBoardingTitle3": "Apresentações simplificadas",
+  "onBoardingSubtitle3": "Abra e navegue em diapositivos PPT e PPTX sem esforço para trabalho, estudo e apresentações.",
+  "onBoardingNext": "Seguinte",
+  "onBoardingSkip": "Ignorar",
+  "onBoardingDone": "Concluído",
+
+  "upgradeVip": "Atualizar para VIP",
+  "bannerTitle": "Espaço de trabalho PDF\ntudo-em-um",
+  "bannerSubtitle": "Converta, edite, organize\ne proteja os seus documentos.",
+  "tryNow": "Experimentar",
+
+  "convertToPdf": "Converter para PDF",
+  "editAndOrganize": "Editar e Organizar",
+
+  "wordToPdf": "Word para PDF",
+  "imageToPdf": "Imagem para PDF",
+  "pptToPdf": "PPT para PDF",
+  "excelToPdf": "Excel para PDF",
+  "pdfToWord": "PDF para Word",
+  "pdfToImage": "PDF para Imagem",
+  "pdfToPpt": "PDF para PPT",
+  "pdfToExcel": "PDF para Excel",
+  "mergePdf": "Juntar PDF",
+  "splitPdf": "Dividir PDF",
+  "compressPdf": "Comprimir PDF",
+  "protectPdf": "Proteger PDF",
+  "signOnPdf": "Assinar em PDF",
+  "ocrPdf": "OCR PDF",
+  "organizePdf": "Organizar PDF",
+
+  "wordToPdfSubtitle": "Converta os seus documentos Word (.doc, .docx) em ficheiros PDF de alta qualidade.",
+  "imageToPdfSubtitle": "Converta as suas imagens (.jpg, .png, .webp) em ficheiros PDF de alta qualidade.",
+  "pptToPdfSubtitle": "Converta as suas apresentações (.ppt, .pptx) em ficheiros PDF de alta qualidade.",
+  "excelToPdfSubtitle": "Converta as suas folhas de cálculo (.xls, .xlsx) em ficheiros PDF de alta qualidade.",
+  "pdfToWordSubtitle": "Converta os seus ficheiros PDF em documentos editáveis do Word (.docx).",
+  "pdfToImageSubtitle": "Converta as suas páginas PDF em imagens de alta qualidade (.jpg, .png).",
+  "pdfToPptSubtitle": "Converta os seus ficheiros PDF em apresentações editáveis (.pptx).",
+  "pdfToExcelSubtitle": "Converta os seus ficheiros PDF em folhas de cálculo editáveis (.xlsx).",
+  "mergePdfSubtitle": "Combine múltiplos ficheiros PDF num único documento.",
+  "splitPdfSubtitle": "Divida o seu PDF em páginas separadas ou intervalos de páginas personalizados.",
+  "compressPdfSubtitle": "Reduza o tamanho do seu ficheiro PDF sem perder qualidade.",
+  "protectPdfSubtitle": "Encripte e proteja com palavra-passe os seus documentos PDF.",
+  "signOnPdfSubtitle": "Adicione a sua assinatura digital a qualquer documento PDF.",
+  "ocrPdfSubtitle": "Extraia texto de PDFs digitalizados usando reconhecimento ótico de caracteres.",
+  "organizePdfSubtitle": "Reordene, rode ou elimine páginas no seu documento PDF.",
+  "defaultToolSubtitle": "Converta o seu ficheiro num PDF de alta qualidade.",
+
+  "selectWordFile": "Selecionar ficheiro Word",
+  "selectImageFile": "Selecionar ficheiro de imagem",
+  "selectPptFile": "Selecionar ficheiro PPT",
+  "selectExcelFile": "Selecionar ficheiro Excel",
+  "selectPdfFile": "Selecionar ficheiro PDF",
+  "selectPdfFiles": "Selecionar ficheiros PDF",
+  "selectFile": "Selecionar ficheiro",
+
+  "convertTool": "Converter {toolName}",
+  "@convertTool": {
+    "description": "Cabeçalho na tela de ferramentas, ex. 'Converter Word para PDF'",
+    "placeholders": {
+      "toolName": {
+        "type": "String",
+        "example": "Word para PDF"
+      }
+    }
+  },
+
+  "almostDone": "Quase pronto!",
+  "finalizingFileMessage": "Aguarde enquanto finalizamos o seu ficheiro",
+  "protecting": "A proteger...",
+
+  "label1": "Conversão rápida",
+  "label2": "Manter formatação original",
+  "label3": "Seguro e privado",
+
+  "home": "Início",
+  "files": "Ficheiros",
+  "settings": "Definições",
+  "file": "Nenhum ficheiro encontrado",
+
+  "upgradeProTitle": "Atualizar para Pro",
+  "upgradeProSubtitle": "Desbloqueie todas as funcionalidades e desfrute de acesso ilimitado.",
+  "upgrade": "Atualizar",
+
+  "languageOptions": "Opções de idioma",
+  "feedback": "Comentários",
+  "helpSupport": "Ajuda e suporte",
+  "rateUs": "Avalie-nos",
+  "about": "Sobre",
+  "logout": "Terminar sessão",
+
+  "settingsPremiumTitle": "Atualizar para Pro",
+  "settingsPremiumSutitle": "Desbloqueie todas as funcionalidades e\ndesfrute de acesso ilimitado.",
+  "settingsUpgrade": "Atualizar",
+  "settingsLabel1": "Opções de idioma",
+  "settingsLabel2": "Comentários",
+  "settingsLabel3": "Ajuda e suporte",
+  "settingsLabel4": "Avalie-nos",
+  "settingsLabel5": "Sobre",
+  "settingsLogout": "Terminar sessão",
+  "selectLanguage": "Selecionar idioma",
+  "preferredLangauge": "Escolha o seu idioma de preferência para continuar"
+}

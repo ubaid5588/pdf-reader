@@ -15,6 +15,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get splashAppTitle => 'آپ کے تمام دستاویزات، ایک ٹچ میں';
 
   @override
+  String get languageSelection => 'continue';
+
+  @override
   String get onBoardingTitle1 => 'فوری طور پر PDF فائلیں پڑھیں';
 
   @override

@@ -1,0 +1,112 @@
+{
+  "@@locale": "it",
+
+  "splashAppName": "Lettore PDF",
+  "splashAppTitle": "Tutti i tuoi documenti a portata di tocco",
+
+  "onBoardingTitle1": "Leggi file PDF all'istante",
+  "onBoardingSubtitle1": "Apri, visualizza e gestisci tutti i tuoi documenti PDF con un'esperienza di lettura fluida e veloce.",
+  "onBoardingTitle2": "Accedi ai documenti Word",
+  "onBoardingSubtitle2": "Visualizza file DOC e DOCX in qualsiasi momento, tenendo i tuoi documenti importanti organizzati in un unico posto.",
+  "onBoardingTitle3": "Presentazioni rese semplici",
+  "onBoardingSubtitle3": "Apri ed esplora diapositive PPT e PPTX senza sforzo per lavoro, studio e presentazioni.",
+  "onBoardingNext": "Avanti",
+  "onBoardingSkip": "Salta",
+  "onBoardingDone": "Fine",
+
+  "upgradeVip": "Passa a VIP",
+  "bannerTitle": "Spazio di lavoro PDF\ntutto in uno",
+  "bannerSubtitle": "Converti, modifica, organizza\ne proteggi i tuoi documenti.",
+  "tryNow": "Prova ora",
+
+  "convertToPdf": "Converti in PDF",
+  "editAndOrganize": "Modifica & Organizza",
+
+  "wordToPdf": "Word in PDF",
+  "imageToPdf": "Immagine in PDF",
+  "pptToPdf": "PPT in PDF",
+  "excelToPdf": "Excel in PDF",
+  "pdfToWord": "PDF in Word",
+  "pdfToImage": "PDF in Immagine",
+  "pdfToPpt": "PDF in PPT",
+  "pdfToExcel": "PDF in Excel",
+  "mergePdf": "Unisci PDF",
+  "splitPdf": "Dividi PDF",
+  "compressPdf": "Comprimi PDF",
+  "protectPdf": "Proteggi PDF",
+  "signOnPdf": "Firma su PDF",
+  "ocrPdf": "OCR PDF",
+  "organizePdf": "Organizza PDF",
+
+  "wordToPdfSubtitle": "Converti i tuoi documenti Word (.doc, .docx) in file PDF di alta qualità.",
+  "imageToPdfSubtitle": "Converti le tue immagini (.jpg, .png, .webp) in file PDF di alta qualità.",
+  "pptToPdfSubtitle": "Converti le tue presentazioni (.ppt, .pptx) in file PDF di alta qualità.",
+  "excelToPdfSubtitle": "Converti i tuoi fogli di calcolo (.xls, .xlsx) in file PDF di alta qualità.",
+  "pdfToWordSubtitle": "Converti i tuoi file PDF in documenti Word modificabili (.docx).",
+  "pdfToImageSubtitle": "Converti le tue pagine PDF in immagini di alta qualità (.jpg, .png).",
+  "pdfToPptSubtitle": "Converti i tuoi file PDF in presentazioni modificabili (.pptx).",
+  "pdfToExcelSubtitle": "Converti i tuoi file PDF in fogli di calcolo modificabili (.xlsx).",
+  "mergePdfSubtitle": "Unisci più file PDF in un unico documento.",
+  "splitPdfSubtitle": "Dividi il tuo PDF in pagine separate o intervalli personalizzati.",
+  "compressPdfSubtitle": "Riduci la dimensione del tuo file PDF senza perdere qualità.",
+  "protectPdfSubtitle": "Crittografa e proteggi con password i tuoi documenti PDF.",
+  "signOnPdfSubtitle": "Aggiungi la tua firma digitale a qualsiasi documento PDF.",
+  "ocrPdfSubtitle": "Estrai testo dai PDF scansionati utilizzando il riconoscimento ottico dei caratteri.",
+  "organizePdfSubtitle": "Riordina, ruota o elimina pagine nel tuo documento PDF.",
+  "defaultToolSubtitle": "Converti il tuo file in un PDF di alta qualità.",
+
+  "selectWordFile": "Seleziona file Word",
+  "selectImageFile": "Seleziona file immagine",
+  "selectPptFile": "Seleziona file PPT",
+  "selectExcelFile": "Seleziona file Excel",
+  "selectPdfFile": "Seleziona file PDF",
+  "selectPdfFiles": "Seleziona file PDF",
+  "selectFile": "Seleziona file",
+
+  "convertTool": "Converti {toolName}",
+  "@convertTool": {
+    "description": "Intestazione della schermata dello strumento, ad es. 'Converti Word in PDF'",
+    "placeholders": {
+      "toolName": {
+        "type": "String",
+        "example": "Word in PDF"
+      }
+    }
+  },
+
+  "almostDone": "Quasi pronto!",
+  "finalizingFileMessage": "Attendi mentre finalizziamo il tuo file",
+  "protecting": "Protezione in corso...",
+
+  "label1": "Conversione rapida",
+  "label2": "Mantieni la formattazione originale",
+  "label3": "Sicuro e privato",
+
+  "home": "Home",
+  "files": "File",
+  "settings": "Impostazioni",
+  "file": "Nessun file trovato",
+
+  "upgradeProTitle": "Passa a Pro",
+  "upgradeProSubtitle": "Sblocca tutte le funzionalità e goditi l'accesso illimitato.",
+  "upgrade": "Aggiorna",
+
+  "languageOptions": "Opzioni lingua",
+  "feedback": "Feedback",
+  "helpSupport": "Guida e supporto",
+  "rateUs": "Valutaci",
+  "about": "Info",
+  "logout": "Disconnetti",
+
+  "settingsPremiumTitle": "Passa a Pro",
+  "settingsPremiumSutitle": "Sblocca tutte le funzionalità e\ngoditi l'accesso illimitato.",
+  "settingsUpgrade": "Aggiorna",
+  "settingsLabel1": "Opzioni lingua",
+  "settingsLabel2": "Feedback",
+  "settingsLabel3": "Guida e supporto",
+  "settingsLabel4": "Valutaci",
+  "settingsLabel5": "Info",
+  "settingsLogout": "Disconnetti",
+  "selectLanguage": "Seleziona lingua",
+  "preferredLangauge": "Scegli la tua lingua preferita per continuare"
+}

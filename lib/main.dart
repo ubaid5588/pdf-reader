@@ -25,11 +25,11 @@ class Main extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'File Reader',
       locale: Locale(languageCode),
-      supportedLocales: const [Locale('en'), Locale('ur')],
+      supportedLocales: AppLocalizations.supportedLocales,
 
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: ThemeData(
-        fontFamily: 'Roboto',
+        fontFamily: 'Archivo',
         scaffoldBackgroundColor: const Color(0xFFF2F3F7),
       ),
       initialRoute: '/',

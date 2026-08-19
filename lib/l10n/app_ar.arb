@@ -1,0 +1,112 @@
+{
+  "@@locale": "ar",
+
+  "splashAppName": "قارئ PDF",
+  "splashAppTitle": "جميع مستنداتك بلمسة واحدة",
+
+  "onBoardingTitle1": "قراءة ملفات PDF على الفور",
+  "onBoardingSubtitle1": "افتح واعرض وأدر جميع مستندات PDF الخاصة بك بتجربة قراءة سلسة وسريعة.",
+  "onBoardingTitle2": "الوصول إلى مستندات Word",
+  "onBoardingSubtitle2": "عرض ملفات DOC و DOCX في أي وقت مع الحفاظ على تنظيم مستنداتك المهمة في مكان واحد.",
+  "onBoardingTitle3": "عروض تقديمية سهلة",
+  "onBoardingSubtitle3": "افتح واستعرض شرائح PPT و PPTX بسهولة للعمل والدراسة والعروض التقديمية.",
+  "onBoardingNext": "التالي",
+  "onBoardingSkip": "تخطي",
+  "onBoardingDone": "تم",
+
+  "upgradeVip": "الترقية إلى VIP",
+  "bannerTitle": "مساحة عمل PDF\nشاملة ومتكاملة",
+  "bannerSubtitle": "حوّل، عدّل، نظّم\nواحمِ مستنداتك.",
+  "tryNow": "جرب الآن",
+
+  "convertToPdf": "تحويل إلى PDF",
+  "editAndOrganize": "تعديل وتنظيم",
+
+  "wordToPdf": "Word إلى PDF",
+  "imageToPdf": "صورة إلى PDF",
+  "pptToPdf": "PPT إلى PDF",
+  "excelToPdf": "Excel إلى PDF",
+  "pdfToWord": "PDF إلى Word",
+  "pdfToImage": "PDF إلى صورة",
+  "pdfToPpt": "PDF إلى PPT",
+  "pdfToExcel": "PDF إلى Excel",
+  "mergePdf": "دمج PDF",
+  "splitPdf": "تقسيم PDF",
+  "compressPdf": "ضغط PDF",
+  "protectPdf": "حماية PDF",
+  "signOnPdf": "التوقيع على PDF",
+  "ocrPdf": "OCR PDF",
+  "organizePdf": "تنظيم PDF",
+
+  "wordToPdfSubtitle": "حوّل مستندات Word الخاصة بك (.doc, .docx) إلى ملفات PDF عالية الجودة.",
+  "imageToPdfSubtitle": "حوّل صورك (.jpg, .png, .webp) إلى ملفات PDF عالية الجودة.",
+  "pptToPdfSubtitle": "حوّل عروضك التقديمية (.ppt, .pptx) إلى ملفات PDF عالية الجودة.",
+  "excelToPdfSubtitle": "حوّل جداول البيانات الخاصة بك (.xls, .xlsx) إلى ملفات PDF عالية الجودة.",
+  "pdfToWordSubtitle": "حوّل ملفات PDF الخاصة بك إلى مستندات Word قابلة للتعديل (.docx).",
+  "pdfToImageSubtitle": "حوّل صفحات PDF إلى صور عالية الجودة (.jpg, .png).",
+  "pdfToPptSubtitle": "حوّل ملفات PDF إلى عروض تقديمية قابلة للتعديل (.pptx).",
+  "pdfToExcelSubtitle": "حوّل ملفات PDF إلى جداول بيانات قابلة للتعديل (.xlsx).",
+  "mergePdfSubtitle": "اجمع عدة ملفات PDF في مستند واحد.",
+  "splitPdfSubtitle": "قسّم ملف PDF إلى صفحات منفصلة أو نطاقات صفحات مخصصة.",
+  "compressPdfSubtitle": "قلل حجم ملف PDF دون فقدان الجودة.",
+  "protectPdfSubtitle": "شفّر مستندات PDF واحمِها بكلمة مرور.",
+  "signOnPdfSubtitle": "أضف توقيعك الرقمي إلى أي مستند PDF.",
+  "ocrPdfSubtitle": "استخرج النصوص من ملفات PDF الممسوحة ضوئيًا باستخدام التعرف الضوئي على الحروف.",
+  "organizePdfSubtitle": "أعد ترتيب الصفحات أو تدويرها أو حذفها في مستند PDF الخاص بك.",
+  "defaultToolSubtitle": "حوّل ملفك إلى PDF عالي الجودة.",
+
+  "selectWordFile": "اختر ملف Word",
+  "selectImageFile": "اختر ملف صورة",
+  "selectPptFile": "اختر ملف PPT",
+  "selectExcelFile": "اختر ملف Excel",
+  "selectPdfFile": "اختر ملف PDF",
+  "selectPdfFiles": "اختر ملفات PDF",
+  "selectFile": "اختر ملف",
+
+  "convertTool": "تحويل {toolName}",
+  "@convertTool": {
+    "description": "عنوان شاشة الأداة، مثل 'تحويل Word إلى PDF'",
+    "placeholders": {
+      "toolName": {
+        "type": "String",
+        "example": "Word إلى PDF"
+      }
+    }
+  },
+
+  "almostDone": "اكتمل تقريبًا!",
+  "finalizingFileMessage": "يرجى الانتظار بينما ننتهي من معالجة ملفك",
+  "protecting": "جارٍ الحماية...",
+
+  "label1": "تحويل سريع",
+  "label2": "الحفاظ على التنسيق الأصلي",
+  "label3": "آمن وخاص",
+
+  "home": "الرئيسية",
+  "files": "الملفات",
+  "settings": "الإعدادات",
+  "file": "لم يتم العثور على ملفات",
+
+  "upgradeProTitle": "الترقية إلى Pro",
+  "upgradeProSubtitle": "افتح جميع الميزات واستمتع بوصول غير محدود.",
+  "upgrade": "ترقية",
+
+  "languageOptions": "خيارات اللغة",
+  "feedback": "الملاحظات",
+  "helpSupport": "المساعدة والدعم",
+  "rateUs": "قيّمنا",
+  "about": "حول التطبيق",
+  "logout": "تسجيل الخروج",
+
+  "settingsPremiumTitle": "الترقية إلى Pro",
+  "settingsPremiumSutitle": "افتح جميع الميزات و\nاستمتع بوصول غير محدود.",
+  "settingsUpgrade": "ترقية",
+  "settingsLabel1": "خيارات اللغة",
+  "settingsLabel2": "الملاحظات",
+  "settingsLabel3": "المساعدة والدعم",
+  "settingsLabel4": "قيّمنا",
+  "settingsLabel5": "حول التطبيق",
+  "settingsLogout": "تسجيل الخروج",
+  "selectLanguage": "اختر اللغة",
+  "preferredLangauge": "اختر لغتك المفضلة للمتابعة"
+}

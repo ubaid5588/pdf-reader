@@ -3,13 +3,15 @@
 
   "splashAppName": "PDF Reader",
   "splashAppTitle": "All your documents, one tap away",
+ 
+  "languageSelection": "continue",
 
-  "onBoardingTitle1": "Read PDF Files Instantly",
-  "onBoardingSubtitle1": "Open, view, and manage all your PDF documents with a smooth and fast reading experience.",
-  "onBoardingTitle2": "Access Word Documents",
-  "onBoardingSubtitle2": "View DOC and DOCX files anytime, keeping your important documents organized in one place.",
-  "onBoardingTitle3": "Presentations Made Simple",
-  "onBoardingSubtitle3": "Open and browse PPT and PPTX slides effortlessly for work, study, and presentations.",
+  "onBoardingTitle1": "All Your PDFs in One Place",
+  "onBoardingSubtitle1": "Read, access, and manage your documents quickly and effortlessly.",
+  "onBoardingTitle2": "Convert Files to PDF",
+  "onBoardingSubtitle2": "Turn your documents and images into professional PDFs in just a few taps.",
+  "onBoardingTitle3": "Powerful PDF Tools",
+  "onBoardingSubtitle3": "Merge, split, compress, and protect your PDFs with simple and powerful tools.",
   "onBoardingNext": "Next",
   "onBoardingSkip": "Skip",
   "onBoardingDone": "Done",

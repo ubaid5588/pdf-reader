@@ -29,11 +29,29 @@ class LanguageController extends GetxController {
 
   RxString selectedCode = 'en'.obs;
 
+  @override
+  void onInit() {
+    super.onInit();
+    final box = Hive.box('settings');
+    final String? saved = box.get('localization');
+    if (saved != null && languages.any((lang) => lang.code == saved)) {
+      selectedCode.value = saved;
+    } else if (Get.locale != null &&
+        languages.any((lang) => lang.code == Get.locale!.languageCode)) {
+      selectedCode.value = Get.locale!.languageCode;
+    }
+  }
+
   Language get isSelected =>
-      languages.firstWhere((e) => e.code == selectedCode.value);
+      languages.firstWhere(
+        (e) => e.code == selectedCode.value,
+        orElse: () => languages.first,
+      );
 
   void changeSelectedCode(String languageCode) {
     selectedCode.value = languageCode;
+    final box = Hive.box('settings');
+    box.put('localization', languageCode);
     Get.updateLocale(Locale(languageCode));
   }
 

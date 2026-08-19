@@ -126,9 +126,9 @@ class LanguageSelectionScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(20),
               child: CustomButton(
-                text: lang.onBoardingDone,
+                text: lang.selectLanguage,
                 onPressed: controller.onContinue,
-                width: screenSize.width * 0.2,
+                width: screenSize.width * 0.8,
               ),
             ),
           ],

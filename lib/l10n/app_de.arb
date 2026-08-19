@@ -1,0 +1,112 @@
+{
+  "@@locale": "de",
+
+  "splashAppName": "PDF-Reader",
+  "splashAppTitle": "Alle Ihre Dokumente mit einem Fingertipp",
+
+  "onBoardingTitle1": "PDF-Dateien sofort lesen",
+  "onBoardingSubtitle1": "Öffnen, betrachten und verwalten Sie alle Ihre PDF-Dokumente mit einem reibungslosen und schnellen Leseerlebnis.",
+  "onBoardingTitle2": "Auf Word-Dokumente zugreifen",
+  "onBoardingSubtitle2": "DOC- und DOCX-Dateien jederzeit anzeigen und wichtige Dokumente an einem Ort organisiert halten.",
+  "onBoardingTitle3": "Präsentationen einfach gemacht",
+  "onBoardingSubtitle3": "PPT- und PPTX-Folien mühelos für Arbeit, Studium und Präsentationen öffnen und durchsuchen.",
+  "onBoardingNext": "Weiter",
+  "onBoardingSkip": "Überspringen",
+  "onBoardingDone": "Fertig",
+
+  "upgradeVip": "Auf VIP upgraden",
+  "bannerTitle": "Alles-in-einem\nPDF-Arbeitsbereich",
+  "bannerSubtitle": "Konvertieren, bearbeiten, organisieren\nund schützen Sie Ihre Dokumente.",
+  "tryNow": "Jetzt testen",
+
+  "convertToPdf": "In PDF konvertieren",
+  "editAndOrganize": "Bearbeiten & Organisieren",
+
+  "wordToPdf": "Word zu PDF",
+  "imageToPdf": "Bild zu PDF",
+  "pptToPdf": "PPT zu PDF",
+  "excelToPdf": "Excel zu PDF",
+  "pdfToWord": "PDF zu Word",
+  "pdfToImage": "PDF zu Bild",
+  "pdfToPpt": "PDF zu PPT",
+  "pdfToExcel": "PDF zu Excel",
+  "mergePdf": "PDF zusammenfügen",
+  "splitPdf": "PDF teilen",
+  "compressPdf": "PDF komprimieren",
+  "protectPdf": "PDF schützen",
+  "signOnPdf": "Auf PDF unterschreiben",
+  "ocrPdf": "OCR PDF",
+  "organizePdf": "PDF organisieren",
+
+  "wordToPdfSubtitle": "Konvertieren Sie Ihre Word-Dokumente (.doc, .docx) in hochwertige PDF-Dateien.",
+  "imageToPdfSubtitle": "Konvertieren Sie Ihre Bilder (.jpg, .png, .webp) in hochwertige PDF-Dateien.",
+  "pptToPdfSubtitle": "Konvertieren Sie Ihre Präsentationen (.ppt, .pptx) in hochwertige PDF-Dateien.",
+  "excelToPdfSubtitle": "Konvertieren Sie Ihre Tabellen (.xls, .xlsx) in hochwertige PDF-Dateien.",
+  "pdfToWordSubtitle": "Konvertieren Sie Ihre PDF-Dateien in bearbeitbare Word-Dokumente (.docx).",
+  "pdfToImageSubtitle": "Konvertieren Sie Ihre PDF-Seiten in hochwertige Bilder (.jpg, .png).",
+  "pdfToPptSubtitle": "Konvertieren Sie Ihre PDF-Dateien in bearbeitbare Präsentationen (.pptx).",
+  "pdfToExcelSubtitle": "Konvertieren Sie Ihre PDF-Dateien in bearbeitbare Tabellen (.xlsx).",
+  "mergePdfSubtitle": "Kombinieren Sie mehrere PDF-Dateien zu einem einzigen Dokument.",
+  "splitPdfSubtitle": "Teilen Sie Ihr PDF in einzelne Seiten oder benutzerdefinierte Seitenbereiche.",
+  "compressPdfSubtitle": "Reduzieren Sie die Dateigröße Ihres PDFs ohne Qualitätsverlust.",
+  "protectPdfSubtitle": "Verschlüsseln und schützen Sie Ihre PDF-Dokumente mit einem Passwort.",
+  "signOnPdfSubtitle": "Fügen Sie Ihre digitale Unterschrift zu jedem PDF-Dokument hinzu.",
+  "ocrPdfSubtitle": "Extrahieren Sie Text aus gescannten PDFs mithilfe optischer Zeichenerkennung.",
+  "organizePdfSubtitle": "Seiten in Ihrem PDF-Dokument neu anordnen, drehen oder löschen.",
+  "defaultToolSubtitle": "Konvertieren Sie Ihre Datei in ein hochwertiges PDF.",
+
+  "selectWordFile": "Word-Datei auswählen",
+  "selectImageFile": "Bilddatei auswählen",
+  "selectPptFile": "PPT-Datei auswählen",
+  "selectExcelFile": "Excel-Datei auswählen",
+  "selectPdfFile": "PDF-Datei auswählen",
+  "selectPdfFiles": "PDF-Dateien auswählen",
+  "selectFile": "Datei auswählen",
+
+  "convertTool": "{toolName} konvertieren",
+  "@convertTool": {
+    "description": "Überschrift im Werkzeugbildschirm, z.B. 'Word zu PDF konvertieren'",
+    "placeholders": {
+      "toolName": {
+        "type": "String",
+        "example": "Word zu PDF"
+      }
+    }
+  },
+
+  "almostDone": "Fast fertig!",
+  "finalizingFileMessage": "Bitte warten Sie, während wir Ihre Datei fertigstellen",
+  "protecting": "Schützen...",
+
+  "label1": "Schnelle Konvertierung",
+  "label2": "Ursprüngliche Formatierung beibehalten",
+  "label3": "Sicher & Privat",
+
+  "home": "Startseite",
+  "files": "Dateien",
+  "settings": "Einstellungen",
+  "file": "Keine Datei gefunden",
+
+  "upgradeProTitle": "Auf Pro upgraden",
+  "upgradeProSubtitle": "Schalten Sie alle Funktionen frei und genießen Sie unbegrenzten Zugriff.",
+  "upgrade": "Upgraden",
+
+  "languageOptions": "Sprachoptionen",
+  "feedback": "Feedback",
+  "helpSupport": "Hilfe & Support",
+  "rateUs": "Bewerten Sie uns",
+  "about": "Über uns",
+  "logout": "Abmelden",
+
+  "settingsPremiumTitle": "Auf Pro upgraden",
+  "settingsPremiumSutitle": "Schalten Sie alle Funktionen frei und\ngenießen Sie unbegrenzten Zugriff.",
+  "settingsUpgrade": "Upgraden",
+  "settingsLabel1": "Sprachoptionen",
+  "settingsLabel2": "Feedback",
+  "settingsLabel3": "Hilfe & Support",
+  "settingsLabel4": "Bewerten Sie uns",
+  "settingsLabel5": "Über uns",
+  "settingsLogout": "Abmelden",
+  "selectLanguage": "Sprache auswählen",
+  "preferredLangauge": "Wählen Sie Ihre bevorzugte Sprache, um fortzufahren"
+}
