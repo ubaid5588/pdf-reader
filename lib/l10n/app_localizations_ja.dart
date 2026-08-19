@@ -15,26 +15,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get splashAppTitle => 'すべての書類をワンタップで';
 
   @override
-  String get languageSelection => 'continue';
+  String get languageSelection => '続行';
 
   @override
-  String get onBoardingTitle1 => 'PDFファイルを素早く閲覧';
+  String get onBoardingTitle1 => 'すべてのPDFをひとつに';
 
   @override
-  String get onBoardingSubtitle1 => 'スムーズで快適な読書体験で、すべてのPDFドキュメントを開き、閲覧し、管理します。';
+  String get onBoardingSubtitle1 => 'ドキュメントを素早く手軽に閲覧、アクセス、管理できます。';
 
   @override
-  String get onBoardingTitle2 => 'Word文書にアクセス';
+  String get onBoardingTitle2 => 'ファイルをPDFに変換';
 
   @override
-  String get onBoardingSubtitle2 =>
-      'DOCおよびDOCXファイルをいつでも表示し、重要な書類を一箇所にまとめて整理します。';
+  String get onBoardingSubtitle2 => '数回タップするだけで、ドキュメントや画像を高品質なPDFに変換します。';
 
   @override
-  String get onBoardingTitle3 => 'プレゼンテーションをシンプルに';
+  String get onBoardingTitle3 => '強力なPDFツール';
 
   @override
-  String get onBoardingSubtitle3 => '仕事や学習、発表のためにPPTおよびPPTXスライドを簡単に開いて閲覧できます。';
+  String get onBoardingSubtitle3 => 'シンプルで強力なツールでPDFを結合、分割、圧縮、保護します。';
 
   @override
   String get onBoardingNext => '次へ';

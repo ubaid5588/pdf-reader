@@ -15,28 +15,28 @@ class AppLocalizationsUr extends AppLocalizations {
   String get splashAppTitle => 'آپ کے تمام دستاویزات، ایک ٹچ میں';
 
   @override
-  String get languageSelection => 'continue';
+  String get languageSelection => 'جاری رکھیں';
 
   @override
-  String get onBoardingTitle1 => 'فوری طور پر PDF فائلیں پڑھیں';
+  String get onBoardingTitle1 => 'آپ کی تمام PDFs ایک جگہ';
 
   @override
   String get onBoardingSubtitle1 =>
-      'ہموار اور تیز پڑھنے کے تجربے کے ساتھ اپنے تمام PDF دستاویزات کھولیں، دیکھیں اور منظم کریں۔';
+      'اپنے دستاویزات کو جلدی اور آسانی سے پڑھیں، رسائی حاصل کریں اور منظم کریں۔';
 
   @override
-  String get onBoardingTitle2 => 'ورڈ دستاویزات تک رسائی';
+  String get onBoardingTitle2 => 'فائلوں کو PDF میں تبدیل کریں';
 
   @override
   String get onBoardingSubtitle2 =>
-      'کسی بھی وقت DOC اور DOCX فائلیں دیکھیں، اپنے اہم دستاویزات کو ایک جگہ منظم رکھیں۔';
+      'صرف چند ٹیپس میں اپنے دستاویزات اور تصاویر کو پیشہ ورانہ PDFs میں تبدیل کریں۔';
 
   @override
-  String get onBoardingTitle3 => 'پریزنٹیشن آسان بنائیں';
+  String get onBoardingTitle3 => 'طاقتور PDF ٹولز';
 
   @override
   String get onBoardingSubtitle3 =>
-      'کام، تعلیم اور پریزنٹیشن کے لیے PPT اور PPTX سلائیڈز آسانی سے کھولیں اور براؤز کریں۔';
+      'سادہ اور طاقتور ٹولز کی مدد سے اپنے PDFs کو ضم، تقسیم، کمپریس اور محفوظ کریں۔';
 
   @override
   String get onBoardingNext => 'اگلا';

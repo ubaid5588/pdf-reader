@@ -9,6 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox('settings');
+  await Hive.openBox('recent_pdfs');
   final settings = Hive.box('settings');
   final String languageCode = settings.get('localization') ?? 'en';
   runApp(Main(languageCode: languageCode));

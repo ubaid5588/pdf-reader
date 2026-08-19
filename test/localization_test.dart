@@ -46,6 +46,7 @@ void main() {
           expect(localizations, isNotNull);
           expect(localizations.splashAppName.isNotEmpty, isTrue);
           expect(localizations.splashAppTitle.isNotEmpty, isTrue);
+          expect(localizations.languageSelection.isNotEmpty, isTrue);
           expect(localizations.onBoardingTitle1.isNotEmpty, isTrue);
           expect(localizations.onBoardingSubtitle1.isNotEmpty, isTrue);
           expect(localizations.onBoardingNext.isNotEmpty, isTrue);

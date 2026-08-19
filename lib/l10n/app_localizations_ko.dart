@@ -15,28 +15,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get splashAppTitle => '한 번의 탭으로 모든 문서를 확인하세요';
 
   @override
-  String get languageSelection => 'continue';
+  String get languageSelection => '계속';
 
   @override
-  String get onBoardingTitle1 => 'PDF 파일 즉시 읽기';
+  String get onBoardingTitle1 => '모든 PDF를 한곳에서';
 
   @override
-  String get onBoardingSubtitle1 =>
-      '빠르고 매끄러운 읽기 경험으로 모든 PDF 문서를 열고, 보고, 관리하세요.';
+  String get onBoardingSubtitle1 => '문서를 빠르고 손쉽게 읽고, 확인하고, 관리하세요.';
 
   @override
-  String get onBoardingTitle2 => 'Word 문서 액세스';
+  String get onBoardingTitle2 => '파일을 PDF로 변환';
 
   @override
-  String get onBoardingSubtitle2 =>
-      '언제 어디서나 DOC 및 DOCX 파일을 확인하고 중요한 문서를 한곳에 정리하세요.';
+  String get onBoardingSubtitle2 => '몇 번의 탭만으로 문서와 이미지를 전문적인 PDF로 변환하세요.';
 
   @override
-  String get onBoardingTitle3 => '간편한 프레젠테이션';
+  String get onBoardingTitle3 => '강력한 PDF 도구';
 
   @override
-  String get onBoardingSubtitle3 =>
-      '업무, 학습 및 발표를 위해 PPT 및 PPTX 슬라이드를 손쉽게 열고 탐색하세요.';
+  String get onBoardingSubtitle3 => '간단하고 강력한 도구로 PDF를 병합, 분할, 압축 및 보호하세요.';
 
   @override
   String get onBoardingNext => '다음';

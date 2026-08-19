@@ -15,28 +15,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String get splashAppTitle => 'جميع مستنداتك بلمسة واحدة';
 
   @override
-  String get languageSelection => 'continue';
+  String get languageSelection => 'متابعة';
 
   @override
-  String get onBoardingTitle1 => 'قراءة ملفات PDF على الفور';
+  String get onBoardingTitle1 => 'جميع ملفات PDF في مكان واحد';
 
   @override
   String get onBoardingSubtitle1 =>
-      'افتح واعرض وأدر جميع مستندات PDF الخاصة بك بتجربة قراءة سلسة وسريعة.';
+      'اقرأ مستنداتك وقم بالوصول إليها وإدارتها بسرعة وسهولة.';
 
   @override
-  String get onBoardingTitle2 => 'الوصول إلى مستندات Word';
+  String get onBoardingTitle2 => 'تحويل الملفات إلى PDF';
 
   @override
   String get onBoardingSubtitle2 =>
-      'عرض ملفات DOC و DOCX في أي وقت مع الحفاظ على تنظيم مستنداتك المهمة في مكان واحد.';
+      'حوّل مستنداتك وصورك إلى ملفات PDF احترافية بنقرات قليلة.';
 
   @override
-  String get onBoardingTitle3 => 'عروض تقديمية سهلة';
+  String get onBoardingTitle3 => 'أدوات PDF قوية';
 
   @override
   String get onBoardingSubtitle3 =>
-      'افتح واستعرض شرائح PPT و PPTX بسهولة للعمل والدراسة والعروض التقديمية.';
+      'ادمج، قسّم، اضغط، واحمِ ملفات PDF الخاصة بك بأدوات بسيطة وقوية.';
 
   @override
   String get onBoardingNext => 'التالي';

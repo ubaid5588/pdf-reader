@@ -4,12 +4,14 @@
   "splashAppName": "PDF ریڈر",
   "splashAppTitle": "آپ کے تمام دستاویزات، ایک ٹچ میں",
 
-  "onBoardingTitle1": "فوری طور پر PDF فائلیں پڑھیں",
-  "onBoardingSubtitle1": "ہموار اور تیز پڑھنے کے تجربے کے ساتھ اپنے تمام PDF دستاویزات کھولیں، دیکھیں اور منظم کریں۔",
-  "onBoardingTitle2": "ورڈ دستاویزات تک رسائی",
-  "onBoardingSubtitle2": "کسی بھی وقت DOC اور DOCX فائلیں دیکھیں، اپنے اہم دستاویزات کو ایک جگہ منظم رکھیں۔",
-  "onBoardingTitle3": "پریزنٹیشن آسان بنائیں",
-  "onBoardingSubtitle3": "کام، تعلیم اور پریزنٹیشن کے لیے PPT اور PPTX سلائیڈز آسانی سے کھولیں اور براؤز کریں۔",
+  "languageSelection": "جاری رکھیں",
+
+  "onBoardingTitle1": "آپ کی تمام PDFs ایک جگہ",
+  "onBoardingSubtitle1": "اپنے دستاویزات کو جلدی اور آسانی سے پڑھیں، رسائی حاصل کریں اور منظم کریں۔",
+  "onBoardingTitle2": "فائلوں کو PDF میں تبدیل کریں",
+  "onBoardingSubtitle2": "صرف چند ٹیپس میں اپنے دستاویزات اور تصاویر کو پیشہ ورانہ PDFs میں تبدیل کریں۔",
+  "onBoardingTitle3": "طاقتور PDF ٹولز",
+  "onBoardingSubtitle3": "سادہ اور طاقتور ٹولز کی مدد سے اپنے PDFs کو ضم، تقسیم، کمپریس اور محفوظ کریں۔",
   "onBoardingNext": "اگلا",
   "onBoardingSkip": "چھوڑیں",
   "onBoardingDone": "مکمل",
@@ -108,5 +110,5 @@
   "settingsLabel5": "ہمارے بارے میں",
   "settingsLogout": "لاگ آؤٹ",
   "selectLanguage": "زبان منتخب کریں",
-"preferredLangauge": "جاری رکھنے کے لیے اپنی پسندیدہ زبان منتخب کریں"
+  "preferredLangauge": "جاری رکھنے کے لیے اپنی پسندیدہ زبان منتخب کریں"
 }

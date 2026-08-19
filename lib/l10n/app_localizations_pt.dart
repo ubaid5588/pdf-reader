@@ -16,28 +16,28 @@ class AppLocalizationsPt extends AppLocalizations {
       'Todos os seus documentos a um toque de distância';
 
   @override
-  String get languageSelection => 'continue';
+  String get languageSelection => 'Continuar';
 
   @override
-  String get onBoardingTitle1 => 'Leia ficheiros PDF instantaneamente';
+  String get onBoardingTitle1 => 'Todos os seus PDFs num só lugar';
 
   @override
   String get onBoardingSubtitle1 =>
-      'Abra, visualize e gira todos os seus documentos PDF com uma experiência de leitura rápida e fluida.';
+      'Leia, aceda e gira os seus documentos com rapidez e facilidade.';
 
   @override
-  String get onBoardingTitle2 => 'Aceda a documentos do Word';
+  String get onBoardingTitle2 => 'Converter ficheiros para PDF';
 
   @override
   String get onBoardingSubtitle2 =>
-      'Visualize ficheiros DOC e DOCX a qualquer momento, mantendo os seus documentos importantes organizados num só lugar.';
+      'Transforme os seus documentos e imagens em PDFs profissionais com apenas alguns toques.';
 
   @override
-  String get onBoardingTitle3 => 'Apresentações simplificadas';
+  String get onBoardingTitle3 => 'Ferramentas PDF poderosas';
 
   @override
   String get onBoardingSubtitle3 =>
-      'Abra e navegue em diapositivos PPT e PPTX sem esforço para trabalho, estudo e apresentações.';
+      'Junte, divida, comprima e proteja os seus PDFs com ferramentas simples e poderosas.';
 
   @override
   String get onBoardingNext => 'Seguinte';

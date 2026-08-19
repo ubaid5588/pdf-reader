@@ -15,28 +15,28 @@ class AppLocalizationsIt extends AppLocalizations {
   String get splashAppTitle => 'Tutti i tuoi documenti a portata di tocco';
 
   @override
-  String get languageSelection => 'continue';
+  String get languageSelection => 'Continua';
 
   @override
-  String get onBoardingTitle1 => 'Leggi file PDF all\'istante';
+  String get onBoardingTitle1 => 'Tutti i tuoi PDF in un unico posto';
 
   @override
   String get onBoardingSubtitle1 =>
-      'Apri, visualizza e gestisci tutti i tuoi documenti PDF con un\'esperienza di lettura fluida e veloce.';
+      'Leggi, consulta e gestisci i tuoi documenti in modo rapido e semplice.';
 
   @override
-  String get onBoardingTitle2 => 'Accedi ai documenti Word';
+  String get onBoardingTitle2 => 'Converti file in PDF';
 
   @override
   String get onBoardingSubtitle2 =>
-      'Visualizza file DOC e DOCX in qualsiasi momento, tenendo i tuoi documenti importanti organizzati in un unico posto.';
+      'Trasforma i tuoi documenti e immagini in PDF professionali in pochi tocchi.';
 
   @override
-  String get onBoardingTitle3 => 'Presentazioni rese semplici';
+  String get onBoardingTitle3 => 'Potenti strumenti PDF';
 
   @override
   String get onBoardingSubtitle3 =>
-      'Apri ed esplora diapositive PPT e PPTX senza sforzo per lavoro, studio e presentazioni.';
+      'Unisci, dividi, comprimi e proteggi i tuoi PDF con strumenti semplici e potenti.';
 
   @override
   String get onBoardingNext => 'Avanti';

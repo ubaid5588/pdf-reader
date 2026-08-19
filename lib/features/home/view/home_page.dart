@@ -12,6 +12,7 @@ import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sharing_intent/flutter_sharing_intent.dart';
+import 'package:file_reader/services/recent_pdf_controller.dart';
 import 'package:file_reader/features/home/view/home_page_view.dart';
 import 'package:flutter_sharing_intent/model/sharing_file.dart';
 import 'package:get/get.dart';
@@ -27,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   final FileViewController _controller = Get.put(FileViewController());
   final NaviController naviController = Get.put(NaviController());
   final FilePageController fileController = Get.put(FilePageController());
+  final RecentPdfController recentPdfController = Get.put(RecentPdfController());
 
   StreamSubscription<List<SharedFile>>? _intentSub;
 

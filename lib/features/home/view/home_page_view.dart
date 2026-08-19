@@ -1,6 +1,15 @@
-import 'package:file_reader/l10n/app_localizations.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'package:file_reader/features/converter/view/selected_tool.dart';
+import 'package:file_reader/features/file/controller/file_page_controller.dart';
+import 'package:file_reader/features/home/controller/navi_controller.dart';
+import 'package:file_reader/features/pdf_viewer/view/pdf_viewer.dart';
+import 'package:file_reader/l10n/app_localizations.dart';
+import 'package:file_reader/services/recent_pdf_controller.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class HomePageView extends StatefulWidget {
   const HomePageView({super.key});
@@ -10,6 +19,26 @@ class HomePageView extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomePageView> {
+  late final NaviController naviController;
+  late final FilePageController fileController;
+  late final RecentPdfController recentController;
+
+  @override
+  void initState() {
+    super.initState();
+    naviController = Get.isRegistered<NaviController>()
+        ? Get.find<NaviController>()
+        : Get.put(NaviController());
+    fileController = Get.isRegistered<FilePageController>()
+        ? Get.find<FilePageController>()
+        : Get.put(FilePageController());
+    recentController = Get.isRegistered<RecentPdfController>()
+        ? Get.find<RecentPdfController>()
+        : Get.put(RecentPdfController());
+
+    recentController.loadRecentPdfs();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -17,7 +46,7 @@ class _HomeScreenState extends State<HomePageView> {
 
     final bool isSmallPhone = screenSize.width < 360;
     final double horizontalPadding = isSmallPhone ? 12 : 16;
-    final double sectionSpacing = isSmallPhone ? 24 : 32;
+    final double sectionSpacing = isSmallPhone ? 20 : 26;
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -26,6 +55,7 @@ class _HomeScreenState extends State<HomePageView> {
         children: [
           SizedBox(height: isSmallPhone ? 8 : 12),
 
+          // Convert to PDF Section
           buildSection(
             title: lang.convertToPdf,
             items: _convertToPdfItems(lang),
@@ -33,13 +63,20 @@ class _HomeScreenState extends State<HomePageView> {
             horizontalPadding: horizontalPadding,
           ),
 
-          // SizedBox(height: sectionSpacing),
+          SizedBox(height: sectionSpacing),
+
+          // Edit & Organize Section
           buildSection(
             title: lang.editAndOrganize,
             items: _editOrganizeItems(lang),
             crossAxisCount: 2,
             horizontalPadding: horizontalPadding,
           ),
+
+          SizedBox(height: sectionSpacing),
+
+          // All Files Count & Navigation Card
+          _buildAllFilesBanner(screenSize, lang, horizontalPadding),
 
           SizedBox(height: sectionSpacing),
 
@@ -52,6 +89,116 @@ class _HomeScreenState extends State<HomePageView> {
     );
   }
 
+  Widget _buildAllFilesBanner(
+    Size screenSize,
+    AppLocalizations lang,
+    double horizontalPadding,
+  ) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+      child: GestureDetector(
+        onTap: () => naviController.changePage(1),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF5B5CFF), Color(0xFF4A4FE8)],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF5B5CFF).withOpacity(0.3),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.folder_copy_rounded,
+                  color: Colors.white,
+                  size: 26,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'All Files',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Obx(() {
+                      final count = fileController.pdfFiles.length;
+                      return Text(
+                        fileController.isLoading.value
+                            ? 'Scanning files...'
+                            : '$count ${count == 1 ? 'PDF' : 'PDFs'} in your library',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white70,
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () => naviController.changePage(1),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.25),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'View all',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: Colors.white,
+                        size: 11,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildRecentFilesSection(
     Size screenSize,
     AppLocalizations lang,
@@ -59,63 +206,224 @@ class _HomeScreenState extends State<HomePageView> {
   ) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF5B5CFF), Color(0xFF4A4FE8)],
-          ),
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF5B5CFF).withOpacity(0.3),
-              blurRadius: 16,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Recent Files',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Recent Files',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF5B5CFF),
+                  letterSpacing: 0.5,
+                ),
+              ),
+              Obx(() {
+                if (recentController.recentPdfs.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                return GestureDetector(
+                  onTap: () => recentController.clearRecentPdfs(),
+                  child: const Text(
+                    'Clear',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF9CA3AF),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    '5 PDFs in your library',
-                    style: TextStyle(fontSize: 13, color: Colors.white70),
+                );
+              }),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Obx(() {
+            if (recentController.isLoading.value) {
+              return Container(
+                padding: const EdgeInsets.all(24),
+                alignment: Alignment.center,
+                child: const CupertinoActivityIndicator(),
+              );
+            }
+
+            if (recentController.recentPdfs.isEmpty) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 24,
+                  horizontal: 16,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: const Color(0xFFE5E7EB),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEFF6FF),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        Icons.history_rounded,
+                        color: Color(0xFF5B5CFF),
+                        size: 26,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'No Recent Files',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1A1A2E),
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    const Text(
+                      'PDF files you open will appear here',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF9CA3AF),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            final items = recentController.recentPdfs.take(5).toList();
+
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: const Color(0xFFE5E7EB),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.25),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Text(
-                'View all',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                itemCount: items.length,
+                separatorBuilder: (_, __) => const Divider(
+                  height: 1,
+                  indent: 68,
+                  endIndent: 16,
+                  color: Color(0xFFF3F4F6),
                 ),
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  final String name = item['name'] ?? 'Untitled.pdf';
+                  final String path = item['path'] ?? '';
+                  final int size = (item['size'] is int)
+                      ? item['size'] as int
+                      : (int.tryParse(item['size']?.toString() ?? '0') ?? 0);
+                  final String dateStr = item['lastOpened'] ?? '';
+                  final DateTime? date = DateTime.tryParse(dateStr);
+
+                  String formattedSubtitle = '';
+                  if (size > 0) {
+                    formattedSubtitle += RecentPdfController.formatBytes(size);
+                  }
+                  if (date != null) {
+                    final dateFormatted = DateFormat('MMM d, yyyy').format(date);
+                    if (formattedSubtitle.isNotEmpty) {
+                      formattedSubtitle += ' • $dateFormatted';
+                    } else {
+                      formattedSubtitle = dateFormatted;
+                    }
+                  }
+
+                  return ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 2,
+                    ),
+                    leading: Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEBEE),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.picture_as_pdf_rounded,
+                        color: Color(0xFFEF5350),
+                        size: 22,
+                      ),
+                    ),
+                    title: Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1A1A2E),
+                      ),
+                    ),
+                    subtitle: formattedSubtitle.isNotEmpty
+                        ? Text(
+                            formattedSubtitle,
+                            style: const TextStyle(
+                              fontSize: 11.5,
+                              color: Color(0xFF9CA3AF),
+                            ),
+                          )
+                        : null,
+                    trailing: const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 13,
+                      color: Color(0xFFD1D5DB),
+                    ),
+                    onTap: () async {
+                      final file = File(path);
+                      if (await file.exists()) {
+                        await recentController.addRecentPdf(path, name);
+                        Get.to(() => PdfViewer(filePath: file));
+                      } else {
+                        Get.snackbar(
+                          'File Not Found',
+                          'This file may have been moved or deleted.',
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
+                        recentController.removeRecentPdf(path);
+                      }
+                    },
+                  );
+                },
               ),
-            ),
-          ],
-        ),
+            );
+          }),
+        ],
       ),
     );
   }
@@ -195,7 +503,6 @@ class _HomeScreenState extends State<HomePageView> {
             const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 6),
-
               child: Text(
                 item.label,
                 textAlign: TextAlign.center,

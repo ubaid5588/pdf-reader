@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_reader/services/recent_pdf_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -207,6 +208,12 @@ class FilePageController extends GetxController {
         pdfFiles.refresh();
       }
 
+      if (Get.isRegistered<RecentPdfController>()) {
+        final recent = Get.find<RecentPdfController>();
+        await recent.removeRecentPdf(file.path);
+        await recent.addRecentPdf(newPath, sanitized);
+      }
+
       Get.snackbar('Success', 'File renamed');
       return true;
     } catch (e) {
@@ -221,6 +228,9 @@ class FilePageController extends GetxController {
         await file.delete();
       }
       pdfFiles.removeWhere((f) => f.path == file.path);
+      if (Get.isRegistered<RecentPdfController>()) {
+        await Get.find<RecentPdfController>().removeRecentPdf(file.path);
+      }
       return true;
     } catch (e) {
       Get.snackbar('Error', 'Failed to delete: $e');

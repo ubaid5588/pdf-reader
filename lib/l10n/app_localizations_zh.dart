@@ -15,25 +15,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get splashAppTitle => '轻点一下，所有文档尽在掌握';
 
   @override
-  String get languageSelection => 'continue';
+  String get languageSelection => '继续';
 
   @override
-  String get onBoardingTitle1 => '即时阅读 PDF 文件';
+  String get onBoardingTitle1 => '所有 PDF 汇聚一处';
 
   @override
-  String get onBoardingSubtitle1 => '流畅快速地打开、查看和管理您的所有 PDF 文档。';
+  String get onBoardingSubtitle1 => '快速轻松地阅读、访问和管理您的文档。';
 
   @override
-  String get onBoardingTitle2 => '访问 Word 文档';
+  String get onBoardingTitle2 => '将文件转换为 PDF';
 
   @override
-  String get onBoardingSubtitle2 => '随时查看 DOC 和 DOCX 文件，集中整理重要文档。';
+  String get onBoardingSubtitle2 => '只需轻点几下，即可将文档和图片转换为专业的 PDF。';
 
   @override
-  String get onBoardingTitle3 => '简报演示更轻松';
+  String get onBoardingTitle3 => '强大的 PDF 工具';
 
   @override
-  String get onBoardingSubtitle3 => '轻松打开并浏览 PPT 和 PPTX 幻灯片，适用于工作、学习和演示。';
+  String get onBoardingSubtitle3 => '使用简单而强大的工具合并、拆分、压缩和保护您的 PDF。';
 
   @override
   String get onBoardingNext => '下一步';
