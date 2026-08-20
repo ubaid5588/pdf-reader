@@ -220,11 +220,6 @@ class _FilePageState extends State<FilePage>
             : isTablet
             ? 52
             : 48;
-        final double iconSize = isSmall
-            ? 42
-            : isTablet
-            ? 58
-            : 50;
         final double titleFontSize = isSmall
             ? 13
             : isTablet
@@ -401,7 +396,7 @@ class _FilePageState extends State<FilePage>
                   color: colors.primary,
                   backgroundColor: colors.surfaceElevated,
                   onRefresh: controller.loadPdfs,
-                  child: ListView.separated(
+                  child: ListView.builder(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: EdgeInsets.only(
                       left: horizontalPadding,
@@ -409,154 +404,154 @@ class _FilePageState extends State<FilePage>
                       top: 12,
                       bottom: keyboardHeight + 100,
                     ),
-                    itemCount: files.length,
-                    separatorBuilder: (context, index) {
-                      return Divider(
-                        height: 1,
-                        indent: 8,
-                        endIndent: 8,
-                        color: colors.divider,
-                      );
-                    },
-                    itemBuilder: (context, index) {
-                      final file = files[index];
-
-                      return Obx(() {
-                        final isSelected = selectedFiles.contains(file.path);
-
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? colors.primary.withOpacity(0.12)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
+                    itemCount: 1,
+                    itemBuilder: (context, _) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: colors.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: colors.border,
+                            width: 1,
                           ),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: isSmall ? 6 : 10,
-                              vertical: isSmall ? 4 : 6,
+                          boxShadow: [
+                            BoxShadow(
+                              color: colors.cardShadow,
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
                             ),
-                            minVerticalPadding: 4,
-                            leading: SizedBox(
-                              width: iconSize,
-                              height: iconSize,
-                              child: GestureDetector(
-                                onTap: () {
-                                  _toggleFileSelection(file.path);
-                                },
-                                child: AnimatedScale(
-                                  duration: const Duration(milliseconds: 200),
-                                  scale: isSelected ? 1.1 : 1.0,
-                                  child: Container(
-                                    padding: EdgeInsets.all(isSmall ? 5 : 6),
-                                    decoration: BoxDecoration(
-                                      color: isSelected
-                                          ? colors.primary
-                                          : (colors.isDark
-                                              ? const Color(0xFF3B1E1E)
-                                              : const Color(0xFFFFEBEE)),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: isSelected
-                                            ? colors.primary
-                                            : (colors.isDark
-                                                ? const Color(0xFF5A2525)
-                                                : const Color(0xFFFFCDD2)),
-                                        width: 1,
+                          ],
+                        ),
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          itemCount: files.length,
+                          separatorBuilder: (context, index) => Divider(
+                            height: 1,
+                            indent: 68,
+                            endIndent: 16,
+                            color: colors.divider,
+                          ),
+                          itemBuilder: (context, index) {
+                            final file = files[index];
+
+                            return Obx(() {
+                              final isSelected =
+                                  selectedFiles.contains(file.path);
+
+                              return AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? colors.primary.withOpacity(0.10)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: isSmall ? 10 : 14,
+                                    vertical: isSmall ? 2 : 4,
+                                  ),
+                                  minVerticalPadding: 4,
+                                  leading: GestureDetector(
+                                    onTap: () =>
+                                        _toggleFileSelection(file.path),
+                                    child: AnimatedScale(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      scale: isSelected ? 1.1 : 1.0,
+                                      child: Container(
+                                        width: 42,
+                                        height: 42,
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? colors.primary
+                                              : (colors.isDark
+                                                  ? const Color(0xFF3B1E1E)
+                                                  : const Color(0xFFFFEBEE)),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: isSelected
+                                            ? const Icon(
+                                                Icons.check,
+                                                color: Colors.white,
+                                                size: 22,
+                                              )
+                                            : Icon(
+                                                Icons.picture_as_pdf_rounded,
+                                                color: colors.isDark
+                                                    ? const Color(0xFFF87171)
+                                                    : const Color(0xFFEF5350),
+                                                size: 22,
+                                              ),
                                       ),
                                     ),
-                                    child: isSelected
-                                        ? const Icon(
-                                            Icons.check,
-                                            color: Colors.white,
-                                          )
-                                        : Icon(
-                                            Icons.picture_as_pdf_rounded,
-                                            color: colors.isDark
-                                                ? const Color(0xFFF87171)
-                                                : const Color(0xFFEF5350),
-                                            size: 26,
-                                          ),
                                   ),
-                                ),
-                              ),
-                            ),
-                            title: Text(
-                              file.path.split(Platform.pathSeparator).last,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: titleFontSize,
-                                fontWeight: FontWeight.w600,
-                                color: isSelected
-                                    ? colors.primary
-                                    : colors.textPrimary,
-                              ),
-                            ),
-                            subtitle: FutureBuilder<DateTime>(
-                              future: getDate(file),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return Text(
-                                    'Loading date...',
-                                    style: TextStyle(
-                                      fontSize: subtitleFontSize,
-                                      color: colors.textSecondary,
-                                    ),
-                                  );
-                                }
-
-                                if (snapshot.hasError) {
-                                  return Text(
-                                    'Error loading date',
-                                    style: TextStyle(
-                                      fontSize: subtitleFontSize,
-                                      color: colors.textSecondary,
-                                    ),
-                                  );
-                                }
-
-                                if (snapshot.hasData) {
-                                  return Text(
-                                    DateFormat(
-                                      'dd-MM-yyyy hh:mm a',
-                                    ).format(snapshot.data!),
+                                  title: Text(
+                                    file.path
+                                        .split(Platform.pathSeparator)
+                                        .last,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      fontSize: subtitleFontSize,
-                                      color: colors.textSecondary,
+                                      fontSize: titleFontSize,
+                                      fontWeight: FontWeight.w600,
+                                      color: isSelected
+                                          ? colors.primary
+                                          : colors.textPrimary,
                                     ),
-                                  );
-                                }
-
-                                return Text(
-                                  'No date found',
-                                  style: TextStyle(
-                                    fontSize: subtitleFontSize,
-                                    color: colors.textSecondary,
                                   ),
-                                );
-                              },
-                            ),
-                            trailing: selectedFiles.isEmpty
-                                ? _buildPremiumPopupMenu(context, file, isSmall)
-                                : null,
-                            onTap: selectedFiles.isEmpty
-                                ? () {
-                                    Get.to(() => PdfViewer(filePath: file));
-                                  }
-                                : () {
-                                    _toggleFileSelection(file.path);
-                                  },
-                            onLongPress: () {
-                              _toggleFileSelection(file.path);
-                            },
-                          ),
-                        );
-                      });
+                                  subtitle: FutureBuilder<FileStat>(
+                                    future: file.stat(),
+                                    builder: (context, snapshot) {
+                                      if (!snapshot.hasData) {
+                                        return Text(
+                                          '—',
+                                          style: TextStyle(
+                                            fontSize: subtitleFontSize,
+                                            color: colors.textSecondary,
+                                          ),
+                                        );
+                                      }
+                                      final stat = snapshot.data!;
+                                      final sizeBytes = stat.size;
+                                      final modified = stat.modified;
+                                      final sizeStr = _formatBytes(sizeBytes);
+                                      final dateStr = DateFormat('MMM d, yyyy')
+                                          .format(modified);
+                                      return Text(
+                                        '$sizeStr • $dateStr',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: subtitleFontSize,
+                                          color: colors.textSecondary,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  trailing: selectedFiles.isEmpty
+                                      ? _buildPremiumPopupMenu(
+                                          context, file, isSmall)
+                                      : null,
+                                  onTap: selectedFiles.isEmpty
+                                      ? () {
+                                          Get.to(
+                                              () => PdfViewer(filePath: file));
+                                        }
+                                      : () {
+                                          _toggleFileSelection(file.path);
+                                        },
+                                  onLongPress: () =>
+                                      _toggleFileSelection(file.path),
+                                ),
+                              );
+                            });
+                          },
+                        ),
+                      );
                     },
                   ),
                 );
@@ -566,6 +561,16 @@ class _FilePageState extends State<FilePage>
         );
       },
     );
+  }
+
+  String _formatBytes(int bytes) {
+    if (bytes <= 0) return '0 B';
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    if (bytes < 1024 * 1024 * 1024) {
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
+    return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
   Widget _buildPremiumPopupMenu(BuildContext context, File file, bool isSmall) {
