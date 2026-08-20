@@ -43,7 +43,7 @@
   "wordToPdfSubtitle": "Convertissez vos documents Word (.doc, .docx) en fichiers PDF de haute qualité.",
   "imageToPdfSubtitle": "Convertissez vos images (.jpg, .png, .webp) en fichiers PDF de haute qualité.",
   "pptToPdfSubtitle": "Convertissez vos présentations (.ppt, .pptx) en fichiers PDF de haute qualité.",
-  "excelToPdfSubtitle": "Convertissez vos feuilles de calcul (.xls, .xlsx) en fichiers PDF de haute qualité.",
+  "excelToPdfSubtitle": "Convertissez vos feuilles de calcul (.xlsx) en fichiers PDF de haute qualité.",
   "pdfToWordSubtitle": "Convertissez vos fichiers PDF en documents Word modifiables (.docx).",
   "pdfToImageSubtitle": "Convertissez vos pages PDF en images de haute qualité (.jpg, .png).",
   "pdfToPptSubtitle": "Convertissez vos fichiers PDF en présentations modifiables (.pptx).",
@@ -55,6 +55,8 @@
   "signOnPdfSubtitle": "Ajoutez votre signature numérique à tout document PDF.",
   "ocrPdfSubtitle": "Extrayez le texte des PDF numérisés grâce à la reconnaissance optique de caractères.",
   "organizePdfSubtitle": "Réorganisez, faites pivoter ou supprimez des pages dans votre document PDF.",
+  "editPdf": "Modifier le PDF",
+  "editPdfSubtitle": "Modifiez le texte, ajoutez des annotations et personnalisez vos documents PDF.",
   "defaultToolSubtitle": "Convertissez votre fichier en un PDF de haute qualité.",
 
   "selectWordFile": "Sélectionner un fichier Word",
@@ -63,6 +65,7 @@
   "selectExcelFile": "Sélectionner un fichier Excel",
   "selectPdfFile": "Sélectionner un fichier PDF",
   "selectPdfFiles": "Sélectionner des fichiers PDF",
+  "selectPdfToEdit": "Sélectionner un PDF à modifier",
   "selectFile": "Sélectionner un fichier",
 
   "convertTool": "Convertir {toolName}",
@@ -128,5 +131,15 @@
   "systemTheme": "Système",
   "lightTheme": "Clair",
   "darkTheme": "Sombre",
-  "chooseTheme": "Choisir le thème"
+  "chooseTheme": "Choisir le thème",
+
+  "unsupportedXlsTitle": "Format de fichier non pris en charge",
+  "unsupportedXlsMessage": "Les fichiers Excel .xls ne sont pas pris en charge. Veuillez sélectionner un fichier .xlsx.",
+  "pdfCantBeEditedTitle": "Ce PDF ne peut pas être modifié",
+  "pdfCantBeEditedMessage": "Ce fichier contient des images ou du contenu non pris en charge qui ne peut pas être modifié. Veuillez choisir un PDF modifiable.",
+  "unableToOpenPdfTitle": "Impossible d'ouvrir le PDF",
+  "unableToOpenPdfMessage": "Ce fichier PDF semble invalide ou corrompu.",
+  "unableToSavePdfTitle": "Impossible d'enregistrer le PDF",
+  "unableToSavePdfMessage": "Une erreur s'est produite lors de l'enregistrement de vos modifications. Veuillez réessayer.",
+  "savePdf": "Enregistrer le PDF"
 }

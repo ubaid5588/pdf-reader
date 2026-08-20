@@ -125,7 +125,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get excelToPdfSubtitle =>
-      'Convert your spreadsheets (.xls, .xlsx) to high-quality PDF files.';
+      'Convert your spreadsheets (.xlsx) to high-quality PDF files.';
 
   @override
   String get pdfToWordSubtitle =>
@@ -172,6 +172,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reorder, rotate, or delete pages in your PDF document.';
 
   @override
+  String get editPdf => 'Edit PDF';
+
+  @override
+  String get editPdfSubtitle =>
+      'Edit text, annotate, and customize your PDF documents.';
+
+  @override
   String get defaultToolSubtitle => 'Convert your file to a high-quality PDF.';
 
   @override
@@ -191,6 +198,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectPdfFiles => 'Select PDF Files';
+
+  @override
+  String get selectPdfToEdit => 'Select PDF to Edit';
 
   @override
   String get selectFile => 'Select File';
@@ -339,4 +349,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chooseTheme => 'Choose Theme';
+
+  @override
+  String get unsupportedXlsTitle => 'Unsupported file format';
+
+  @override
+  String get unsupportedXlsMessage =>
+      'Excel .xls files are not supported. Please select an .xlsx file.';
+
+  @override
+  String get pdfCantBeEditedTitle => 'This PDF can\'t be edited';
+
+  @override
+  String get pdfCantBeEditedMessage =>
+      'This file contains image-based or unsupported content that cannot be edited. Please choose an editable PDF.';
+
+  @override
+  String get unableToOpenPdfTitle => 'Unable to open PDF';
+
+  @override
+  String get unableToOpenPdfMessage =>
+      'This PDF appears to be invalid or corrupted.';
+
+  @override
+  String get unableToSavePdfTitle => 'Unable to save PDF';
+
+  @override
+  String get unableToSavePdfMessage =>
+      'Something went wrong while saving your changes. Please try again.';
+
+  @override
+  String get savePdf => 'Save PDF';
 }

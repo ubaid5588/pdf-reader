@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:file_reader/features/home/view/home_page.dart';
 import 'package:file_reader/features/language_selection/model/language.dart';
 import 'package:file_reader/features/onboarding/view/onboarding.dart';
-import 'package:file_reader/features/setting/view/setting_page.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 

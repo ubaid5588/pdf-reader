@@ -124,11 +124,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get excelToPdfSubtitle =>
-      'حوّل جداول البيانات الخاصة بك (.xls, .xlsx) إلى ملفات PDF عالية الجودة.';
+      'حوّل جداول البيانات الخاصة بك (.xlsx) إلى ملفات PDF عالية الجودة.';
 
   @override
   String get pdfToWordSubtitle =>
-      'حوّل ملفات PDF الخاصة بك إلى مستندات Word قابلة للتعديل (.docx).';
+      'حوّل ملفات PDF إلى مستندات Word قابلة للتعديل (.docx).';
 
   @override
   String get pdfToImageSubtitle =>
@@ -147,33 +147,39 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get splitPdfSubtitle =>
-      'قسّم ملف PDF إلى صفحات منفصلة أو نطاقات صفحات مخصصة.';
+      'قسّم ملف PDF إلى صفحات منفصلة أو نطاقات مخصصة.';
 
   @override
   String get compressPdfSubtitle => 'قلل حجم ملف PDF دون فقدان الجودة.';
 
   @override
-  String get protectPdfSubtitle => 'شفّر مستندات PDF واحمِها بكلمة مرور.';
+  String get protectPdfSubtitle => 'شفّر ملفات PDF واحمها بكلمة مرور.';
 
   @override
   String get signOnPdfSubtitle => 'أضف توقيعك الرقمي إلى أي مستند PDF.';
 
   @override
-  String get ocrPdfSubtitle =>
-      'استخرج النصوص من ملفات PDF الممسوحة ضوئيًا باستخدام التعرف الضوئي على الحروف.';
+  String get ocrPdfSubtitle => 'استخرج النص من ملفات PDF الممسوحة ضوئياً.';
 
   @override
   String get organizePdfSubtitle =>
-      'أعد ترتيب الصفحات أو تدويرها أو حذفها في مستند PDF الخاص بك.';
+      'أعد ترتيب الصفحات أو تدويرها أو حذفها في مستند PDF.';
 
   @override
-  String get defaultToolSubtitle => 'حوّل ملفك إلى PDF عالي الجودة.';
+  String get editPdf => 'تعديل PDF';
+
+  @override
+  String get editPdfSubtitle =>
+      'عدّل النصوص وأضف التعليقات ونظّم مستندات PDF الخاصة بك.';
+
+  @override
+  String get defaultToolSubtitle => 'حوّل ملفك إلى ملف PDF عالي الجودة.';
 
   @override
   String get selectWordFile => 'اختر ملف Word';
 
   @override
-  String get selectImageFile => 'اختر ملف صورة';
+  String get selectImageFile => 'اختر صورة';
 
   @override
   String get selectPptFile => 'اختر ملف PPT';
@@ -188,7 +194,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get selectPdfFiles => 'اختر ملفات PDF';
 
   @override
-  String get selectFile => 'اختر ملف';
+  String get selectPdfToEdit => 'اختر ملف PDF للتعديل';
+
+  @override
+  String get selectFile => 'اختر ملفاً';
 
   @override
   String convertTool(String toolName) {
@@ -196,7 +205,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get almostDone => 'اكتمل تقريبًا!';
+  String get almostDone => 'أوشكنا على الانتهاء!';
 
   @override
   String get finalizingFileMessage =>
@@ -230,7 +239,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get upgradeProTitle => 'الترقية إلى Pro';
 
   @override
-  String get upgradeProSubtitle => 'افتح جميع الميزات واستمتع بوصول غير محدود.';
+  String get upgradeProSubtitle =>
+      'افتح جميع الميزات واستمتع بالوصول غير المحدود.';
 
   @override
   String get upgrade => 'ترقية';
@@ -239,7 +249,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get languageOptions => 'خيارات اللغة';
 
   @override
-  String get feedback => 'الملاحظات';
+  String get feedback => 'ملاحظات';
 
   @override
   String get helpSupport => 'المساعدة والدعم';
@@ -334,4 +344,34 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get chooseTheme => 'اختر المظهر';
+
+  @override
+  String get unsupportedXlsTitle => 'تنسيق ملف غير مدعوم';
+
+  @override
+  String get unsupportedXlsMessage =>
+      'ملفات Excel بتنسيق .xls غير مدعومة. يرجى اختيار ملف .xlsx.';
+
+  @override
+  String get pdfCantBeEditedTitle => 'لا يمكن تعديل هذا الـ PDF';
+
+  @override
+  String get pdfCantBeEditedMessage =>
+      'يحتوي هذا الملف على محتوى صور أو محتوى غير مدعوم لا يمكن تعديله. يرجى اختيار ملف PDF قابل للتعديل.';
+
+  @override
+  String get unableToOpenPdfTitle => 'تعذر فتح PDF';
+
+  @override
+  String get unableToOpenPdfMessage => 'يبدو أن ملف PDF هذا غير صالح أو تالف.';
+
+  @override
+  String get unableToSavePdfTitle => 'تعذر حفظ PDF';
+
+  @override
+  String get unableToSavePdfMessage =>
+      'حدث خطأ أثناء حفظ تغييراتك. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get savePdf => 'حفظ PDF';
 }

@@ -117,7 +117,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pptToPdfSubtitle => '将您的演示文稿 (.ppt, .pptx) 转换为高质量的 PDF 文件。';
 
   @override
-  String get excelToPdfSubtitle => '将您的电子表格 (.xls, .xlsx) 转换为高质量的 PDF 文件。';
+  String get excelToPdfSubtitle => '将您的电子表格 (.xlsx) 转换为高质量的 PDF 文件。';
 
   @override
   String get pdfToWordSubtitle => '将您的 PDF 文件转换为可编辑的 Word 文档 (.docx)。';
@@ -153,6 +153,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get organizePdfSubtitle => '在 PDF 文档中重新排序、旋转或删除页面。';
 
   @override
+  String get editPdf => '编辑 PDF';
+
+  @override
+  String get editPdfSubtitle => '编辑文本、添加注释并自定义您的 PDF 文档。';
+
+  @override
   String get defaultToolSubtitle => '将您的文件转换为高质量的 PDF。';
 
   @override
@@ -172,6 +178,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get selectPdfFiles => '选择多个 PDF 文件';
+
+  @override
+  String get selectPdfToEdit => '选择要编辑的 PDF';
 
   @override
   String get selectFile => '选择文件';
@@ -318,4 +327,31 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get chooseTheme => '选择主题';
+
+  @override
+  String get unsupportedXlsTitle => '不支持的文件格式';
+
+  @override
+  String get unsupportedXlsMessage => '不支持 Excel .xls 文件。请选择 .xlsx 文件。';
+
+  @override
+  String get pdfCantBeEditedTitle => '无法编辑此 PDF';
+
+  @override
+  String get pdfCantBeEditedMessage => '此文件包含无法编辑的图片或不受支持的内容。请选择可编辑的 PDF。';
+
+  @override
+  String get unableToOpenPdfTitle => '无法打开 PDF';
+
+  @override
+  String get unableToOpenPdfMessage => '此 PDF 文件无效或已损坏。';
+
+  @override
+  String get unableToSavePdfTitle => '无法保存 PDF';
+
+  @override
+  String get unableToSavePdfMessage => '保存更改时出现问题。请重试。';
+
+  @override
+  String get savePdf => '保存 PDF';
 }

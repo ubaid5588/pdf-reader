@@ -125,7 +125,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get excelToPdfSubtitle =>
-      'Convierte tus hojas de cálculo (.xls, .xlsx) en archivos PDF de alta calidad.';
+      'Convierte tus hojas de cálculo (.xlsx) en archivos PDF de alta calidad.';
 
   @override
   String get pdfToWordSubtitle =>
@@ -172,6 +172,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Reordena, rota o elimina páginas en tu documento PDF.';
 
   @override
+  String get editPdf => 'Editar PDF';
+
+  @override
+  String get editPdfSubtitle =>
+      'Edita texto, añade anotaciones y personaliza tus documentos PDF.';
+
+  @override
   String get defaultToolSubtitle =>
       'Convierte tu archivo en un PDF de alta calidad.';
 
@@ -192,6 +199,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get selectPdfFiles => 'Seleccionar archivos PDF';
+
+  @override
+  String get selectPdfToEdit => 'Seleccionar PDF para editar';
 
   @override
   String get selectFile => 'Seleccionar archivo';
@@ -342,4 +352,35 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get chooseTheme => 'Elegir tema';
+
+  @override
+  String get unsupportedXlsTitle => 'Formato de archivo no compatible';
+
+  @override
+  String get unsupportedXlsMessage =>
+      'Los archivos de Excel .xls no son compatibles. Por favor, selecciona un archivo .xlsx.';
+
+  @override
+  String get pdfCantBeEditedTitle => 'Este PDF no se puede editar';
+
+  @override
+  String get pdfCantBeEditedMessage =>
+      'Este archivo contiene contenido basado en imágenes o no compatible que no se puede editar. Por favor, elige un PDF editable.';
+
+  @override
+  String get unableToOpenPdfTitle => 'No se puede abrir el PDF';
+
+  @override
+  String get unableToOpenPdfMessage =>
+      'Este PDF parece no ser válido o estar dañado.';
+
+  @override
+  String get unableToSavePdfTitle => 'No se puede guardar el PDF';
+
+  @override
+  String get unableToSavePdfMessage =>
+      'Ocurrió un error al guardar los cambios. Por favor, inténtalo de nuevo.';
+
+  @override
+  String get savePdf => 'Guardar PDF';
 }

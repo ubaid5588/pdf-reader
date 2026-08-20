@@ -32,7 +32,24 @@ class FileToPdfController extends GetxController {
       );
 
       if (result == null || result.files.isEmpty) return null;
-      return result.files.single.path;
+      final selectedPath = result.files.single.path;
+      if (selectedPath == null) return null;
+
+      // Strict validation for Excel files: reject .xls
+      if (type == OfficeFileType.excel) {
+        final lowerPath = selectedPath.toLowerCase();
+        if (lowerPath.endsWith('.xls') && !lowerPath.endsWith('.xlsx')) {
+          Get.snackbar(
+            'Unsupported file format',
+            'Excel .xls files are not supported. Please select an .xlsx file.',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 4),
+          );
+          return null;
+        }
+      }
+
+      return selectedPath;
     } catch (e) {
       Get.snackbar('Error', 'Failed to pick file: $e');
       return null;
@@ -44,6 +61,22 @@ class FileToPdfController extends GetxController {
     OfficeFileType type, {
     void Function(double progress, String status)? onProgress,
   }) async {
+    // Pre-conversion validation
+    if (type == OfficeFileType.excel) {
+      final lowerPath = path.toLowerCase();
+      if (lowerPath.endsWith('.xls') && !lowerPath.endsWith('.xlsx')) {
+        Get.snackbar(
+          'Unsupported file format',
+          'Excel .xls files are not supported. Please select an .xlsx file.',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 4),
+        );
+        throw Exception(
+          'Excel .xls files are not supported. Please select an .xlsx file.',
+        );
+      }
+    }
+
     isLoading.value = true;
     filePath.value = path;
 
@@ -68,12 +101,10 @@ class FileToPdfController extends GetxController {
 
       onProgress?.call(0.85, 'Saving PDF to device storage...');
       final pdfBytes = await tempPdfFile.readAsBytes();
-      final baseName = File(path).path
-          .split(Platform.pathSeparator)
-          .last
-          .replaceAll(RegExp(r'\.[a-zA-Z0-9]+$'), '');
-      final fileName =
-          '${baseName}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      final fileName = PdfStorageService.generateConversionFileName(
+        officeFileType: type,
+        sourceFilePath: path,
+      );
 
       final savedPath = await PdfStorageService.savePdfToDownloads(
         pdfBytes: pdfBytes,
@@ -98,6 +129,13 @@ class FileToPdfController extends GetxController {
     String filePath, {
     void Function(double progress, String status)? onProgress,
   }) async {
+    final lowerPath = filePath.toLowerCase();
+    if (lowerPath.endsWith('.xls') && !lowerPath.endsWith('.xlsx')) {
+      throw Exception(
+        'Excel .xls files are not supported. Please select an .xlsx file.',
+      );
+    }
+
     try {
       onProgress?.call(0.35, 'Decoding spreadsheet data...');
       final bytes = await File(filePath).readAsBytes();
@@ -106,11 +144,13 @@ class FileToPdfController extends GetxController {
       try {
         excel = Excel.decodeBytes(bytes);
       } catch (e) {
-        throw 'Failed to decode Excel file. Please ensure it\'s a valid .xlsx file. Error: $e';
+        throw Exception(
+          'Failed to decode Excel file. Please ensure it\'s a valid .xlsx file.',
+        );
       }
 
       if (excel.tables.isEmpty) {
-        throw 'Excel file contains no sheets or data.';
+        throw Exception('Excel file contains no sheets or data.');
       }
 
       final pdf = pw.Document();

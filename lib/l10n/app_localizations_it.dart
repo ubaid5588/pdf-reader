@@ -125,7 +125,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get excelToPdfSubtitle =>
-      'Converti i tuoi fogli di calcolo (.xls, .xlsx) in file PDF di alta qualità.';
+      'Converti i tuoi fogli di calcolo (.xlsx) in file PDF di alta qualità.';
 
   @override
   String get pdfToWordSubtitle =>
@@ -171,6 +171,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Riordina, ruota o elimina pagine nel tuo documento PDF.';
 
   @override
+  String get editPdf => 'Modifica PDF';
+
+  @override
+  String get editPdfSubtitle =>
+      'Modifica testo, aggiungi annotazioni e personalizza i tuoi documenti PDF.';
+
+  @override
   String get defaultToolSubtitle =>
       'Converti il tuo file in un PDF di alta qualità.';
 
@@ -191,6 +198,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get selectPdfFiles => 'Seleziona file PDF';
+
+  @override
+  String get selectPdfToEdit => 'Seleziona PDF da modificare';
 
   @override
   String get selectFile => 'Seleziona file';
@@ -340,4 +350,35 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get chooseTheme => 'Scegli tema';
+
+  @override
+  String get unsupportedXlsTitle => 'Formato file non supportato';
+
+  @override
+  String get unsupportedXlsMessage =>
+      'I file Excel .xls non sono supportati. Seleziona un file .xlsx.';
+
+  @override
+  String get pdfCantBeEditedTitle => 'Questo PDF non può essere modificato';
+
+  @override
+  String get pdfCantBeEditedMessage =>
+      'Questo file contiene immagini o contenuti non supportati che non possono essere modificati. Scegli un PDF modificabile.';
+
+  @override
+  String get unableToOpenPdfTitle => 'Impossibile aprire il PDF';
+
+  @override
+  String get unableToOpenPdfMessage =>
+      'Questo PDF sembra non valido o danneggiato.';
+
+  @override
+  String get unableToSavePdfTitle => 'Impossibile salvare il PDF';
+
+  @override
+  String get unableToSavePdfMessage =>
+      'Si è verificato un errore durante il salvataggio delle modifiche. Riprova.';
+
+  @override
+  String get savePdf => 'Salva PDF';
 }

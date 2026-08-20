@@ -43,7 +43,7 @@
   "wordToPdfSubtitle": "Converta os seus documentos Word (.doc, .docx) em ficheiros PDF de alta qualidade.",
   "imageToPdfSubtitle": "Converta as suas imagens (.jpg, .png, .webp) em ficheiros PDF de alta qualidade.",
   "pptToPdfSubtitle": "Converta as suas apresentações (.ppt, .pptx) em ficheiros PDF de alta qualidade.",
-  "excelToPdfSubtitle": "Converta as suas folhas de cálculo (.xls, .xlsx) em ficheiros PDF de alta qualidade.",
+  "excelToPdfSubtitle": "Converta as suas folhas de cálculo (.xlsx) em ficheiros PDF de alta qualidade.",
   "pdfToWordSubtitle": "Converta os seus ficheiros PDF em documentos editáveis do Word (.docx).",
   "pdfToImageSubtitle": "Converta as suas páginas PDF em imagens de alta qualidade (.jpg, .png).",
   "pdfToPptSubtitle": "Converta os seus ficheiros PDF em apresentações editáveis (.pptx).",
@@ -55,6 +55,8 @@
   "signOnPdfSubtitle": "Adicione a sua assinatura digital a qualquer documento PDF.",
   "ocrPdfSubtitle": "Extraia texto de PDFs digitalizados usando reconhecimento ótico de caracteres.",
   "organizePdfSubtitle": "Reordene, rode ou elimine páginas no seu documento PDF.",
+  "editPdf": "Editar PDF",
+  "editPdfSubtitle": "Edite texto, adicione anotações e personalize os seus documentos PDF.",
   "defaultToolSubtitle": "Converta o seu ficheiro num PDF de alta qualidade.",
 
   "selectWordFile": "Selecionar ficheiro Word",
@@ -63,6 +65,7 @@
   "selectExcelFile": "Selecionar ficheiro Excel",
   "selectPdfFile": "Selecionar ficheiro PDF",
   "selectPdfFiles": "Selecionar ficheiros PDF",
+  "selectPdfToEdit": "Selecionar PDF para editar",
   "selectFile": "Selecionar ficheiro",
 
   "convertTool": "Converter {toolName}",
@@ -128,5 +131,15 @@
   "systemTheme": "Sistema",
   "lightTheme": "Claro",
   "darkTheme": "Escuro",
-  "chooseTheme": "Escolher tema"
+  "chooseTheme": "Escolher tema",
+
+  "unsupportedXlsTitle": "Formato de ficheiro não suportado",
+  "unsupportedXlsMessage": "Os ficheiros Excel .xls não são suportados. Por favor, selecione um ficheiro .xlsx.",
+  "pdfCantBeEditedTitle": "Este PDF não pode ser editado",
+  "pdfCantBeEditedMessage": "Este ficheiro contém conteúdo baseado em imagens ou não suportado que não pode ser editado. Por favor, escolha um PDF editável.",
+  "unableToOpenPdfTitle": "Não é possível abrir o PDF",
+  "unableToOpenPdfMessage": "Este ficheiro PDF parece ser inválido ou estar corrompido.",
+  "unableToSavePdfTitle": "Não é possível guardar o PDF",
+  "unableToSavePdfMessage": "Ocorreu um erro ao guardar as suas alterações. Por favor, tente novamente.",
+  "savePdf": "Guardar PDF"
 }

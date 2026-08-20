@@ -43,7 +43,7 @@
   "wordToPdfSubtitle": "Converti i tuoi documenti Word (.doc, .docx) in file PDF di alta qualità.",
   "imageToPdfSubtitle": "Converti le tue immagini (.jpg, .png, .webp) in file PDF di alta qualità.",
   "pptToPdfSubtitle": "Converti le tue presentazioni (.ppt, .pptx) in file PDF di alta qualità.",
-  "excelToPdfSubtitle": "Converti i tuoi fogli di calcolo (.xls, .xlsx) in file PDF di alta qualità.",
+  "excelToPdfSubtitle": "Converti i tuoi fogli di calcolo (.xlsx) in file PDF di alta qualità.",
   "pdfToWordSubtitle": "Converti i tuoi file PDF in documenti Word modificabili (.docx).",
   "pdfToImageSubtitle": "Converti le tue pagine PDF in immagini di alta qualità (.jpg, .png).",
   "pdfToPptSubtitle": "Converti i tuoi file PDF in presentazioni modificabili (.pptx).",
@@ -55,6 +55,8 @@
   "signOnPdfSubtitle": "Aggiungi la tua firma digitale a qualsiasi documento PDF.",
   "ocrPdfSubtitle": "Estrai testo dai PDF scansionati utilizzando il riconoscimento ottico dei caratteri.",
   "organizePdfSubtitle": "Riordina, ruota o elimina pagine nel tuo documento PDF.",
+  "editPdf": "Modifica PDF",
+  "editPdfSubtitle": "Modifica testo, aggiungi annotazioni e personalizza i tuoi documenti PDF.",
   "defaultToolSubtitle": "Converti il tuo file in un PDF di alta qualità.",
 
   "selectWordFile": "Seleziona file Word",
@@ -63,6 +65,7 @@
   "selectExcelFile": "Seleziona file Excel",
   "selectPdfFile": "Seleziona file PDF",
   "selectPdfFiles": "Seleziona file PDF",
+  "selectPdfToEdit": "Seleziona PDF da modificare",
   "selectFile": "Seleziona file",
 
   "convertTool": "Converti {toolName}",
@@ -128,5 +131,15 @@
   "systemTheme": "Sistema",
   "lightTheme": "Chiaro",
   "darkTheme": "Scuro",
-  "chooseTheme": "Scegli tema"
+  "chooseTheme": "Scegli tema",
+
+  "unsupportedXlsTitle": "Formato file non supportato",
+  "unsupportedXlsMessage": "I file Excel .xls non sono supportati. Seleziona un file .xlsx.",
+  "pdfCantBeEditedTitle": "Questo PDF non può essere modificato",
+  "pdfCantBeEditedMessage": "Questo file contiene immagini o contenuti non supportati che non possono essere modificati. Scegli un PDF modificabile.",
+  "unableToOpenPdfTitle": "Impossibile aprire il PDF",
+  "unableToOpenPdfMessage": "Questo PDF sembra non valido o danneggiato.",
+  "unableToSavePdfTitle": "Impossibile salvare il PDF",
+  "unableToSavePdfMessage": "Si è verificato un errore durante il salvataggio delle modifiche. Riprova.",
+  "savePdf": "Salva PDF"
 }

@@ -43,7 +43,7 @@
   "wordToPdfSubtitle": "Word文書（.doc, .docx）を高画質なPDFファイルに変換します。",
   "imageToPdfSubtitle": "画像（.jpg, .png, .webp）を高画質なPDFファイルに変換します。",
   "pptToPdfSubtitle": "プレゼンテーション（.ppt, .pptx）を高画質なPDFファイルに変換します。",
-  "excelToPdfSubtitle": "スプレッドシート（.xls, .xlsx）を高画質なPDFファイルに変換します。",
+  "excelToPdfSubtitle": "スプレッドシート（.xlsx）を高画質なPDFファイルに変換します。",
   "pdfToWordSubtitle": "PDFファイルを編集可能なWord文書（.docx）に変換します。",
   "pdfToImageSubtitle": "PDFページを高画質画像（.jpg, .png）に変換します。",
   "pdfToPptSubtitle": "PDFファイルを編集可能なプレゼンテーション（.pptx）に変換します。",
@@ -55,6 +55,8 @@
   "signOnPdfSubtitle": "任意のPDFドキュメントにデジタル署名を追加します。",
   "ocrPdfSubtitle": "光学文字認識（OCR）を使用して、スキャンしたPDFからテキストを抽出します。",
   "organizePdfSubtitle": "PDFドキュメントのページの並べ替え、回転、削除を行います。",
+  "editPdf": "PDFを編集",
+  "editPdfSubtitle": "テキストの編集、注釈の追加、PDFドキュメントのカスタマイズを行います。",
   "defaultToolSubtitle": "ファイルを高品質なPDFに変換します。",
 
   "selectWordFile": "Wordファイルを選択",
@@ -63,6 +65,7 @@
   "selectExcelFile": "Excelファイルを選択",
   "selectPdfFile": "PDFファイルを選択",
   "selectPdfFiles": "PDFファイルを選択",
+  "selectPdfToEdit": "編集するPDFを選択",
   "selectFile": "ファイルを選択",
 
   "convertTool": "{toolName}を変換",
@@ -128,5 +131,15 @@
   "systemTheme": "システム",
   "lightTheme": "ライト",
   "darkTheme": "ダーク",
-  "chooseTheme": "テーマを選択"
+  "chooseTheme": "テーマを選択",
+
+  "unsupportedXlsTitle": "未対応のファイル形式",
+  "unsupportedXlsMessage": "Excelの.xlsファイルには対応していません。.xlsxファイルを選択してください。",
+  "pdfCantBeEditedTitle": "このPDFは編集できません",
+  "pdfCantBeEditedMessage": "このファイルには編集不可能な画像ベースまたは未対応のコンテンツが含まれています。編集可能なPDFを選択してください。",
+  "unableToOpenPdfTitle": "PDFを開けません",
+  "unableToOpenPdfMessage": "このPDFは無効であるか破損している可能性があります。",
+  "unableToSavePdfTitle": "PDFを保存できません",
+  "unableToSavePdfMessage": "変更の保存中にエラーが発生しました。もう一度お試しください。",
+  "savePdf": "PDFを保存"
 }

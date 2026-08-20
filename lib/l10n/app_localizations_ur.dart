@@ -125,7 +125,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get excelToPdfSubtitle =>
-      'اپنی اسپریڈ شیٹس (.xls, .xlsx) کو اعلیٰ معیار کی PDF فائلوں میں تبدیل کریں۔';
+      'اپنی اسپریڈ شیٹس (.xlsx) کو اعلیٰ معیار کی PDF فائلوں میں تبدیل کریں۔';
 
   @override
   String get pdfToWordSubtitle =>
@@ -172,6 +172,13 @@ class AppLocalizationsUr extends AppLocalizations {
       'اپنے PDF دستاویز میں صفحات کی ترتیب تبدیل کریں، گھمائیں یا حذف کریں۔';
 
   @override
+  String get editPdf => 'PDF ترمیم کریں';
+
+  @override
+  String get editPdfSubtitle =>
+      'متن میں ترمیم کریں، تشریحات شامل کریں اور اپنے PDF دستاویزات کو اپنی مرضی کے مطابق بنائیں۔';
+
+  @override
   String get defaultToolSubtitle =>
       'اپنی فائل کو اعلیٰ معیار کی PDF میں تبدیل کریں۔';
 
@@ -192,6 +199,9 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get selectPdfFiles => 'PDF فائلیں منتخب کریں';
+
+  @override
+  String get selectPdfToEdit => 'ترمیم کے لیے PDF منتخب کریں';
 
   @override
   String get selectFile => 'فائل منتخب کریں';
@@ -342,4 +352,34 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get chooseTheme => 'تھیم منتخب کریں';
+
+  @override
+  String get unsupportedXlsTitle => 'غیر معاون فائل فارمیٹ';
+
+  @override
+  String get unsupportedXlsMessage =>
+      'Excel کی .xls فائلیں معاون نہیں ہیں۔ براہ کرم .xlsx فائل منتخب کریں۔';
+
+  @override
+  String get pdfCantBeEditedTitle => 'اس PDF میں ترمیم نہیں کی جا سکتی';
+
+  @override
+  String get pdfCantBeEditedMessage =>
+      'اس فائل میں تصویر پر مبنی یا غیر معاون مواد ہے جس میں ترمیم نہیں کی جا سکتی۔ براہ کرم قابل ترمیم PDF منتخب کریں۔';
+
+  @override
+  String get unableToOpenPdfTitle => 'PDF کھولنے سے قاصر';
+
+  @override
+  String get unableToOpenPdfMessage => 'یہ PDF غلط یا خراب معلوم ہوتی ہے۔';
+
+  @override
+  String get unableToSavePdfTitle => 'PDF محفوظ کرنے سے قاصر';
+
+  @override
+  String get unableToSavePdfMessage =>
+      'آپ کی تبدیلیاں محفوظ کرتے وقت کوئی مسئلہ پیش آیا۔ براہ کرم دوبارہ کوشش کریں۔';
+
+  @override
+  String get savePdf => 'PDF محفوظ کریں';
 }

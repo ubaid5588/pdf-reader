@@ -335,7 +335,7 @@ abstract class AppLocalizations {
   /// No description provided for @excelToPdfSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Convert your spreadsheets (.xls, .xlsx) to high-quality PDF files.'**
+  /// **'Convert your spreadsheets (.xlsx) to high-quality PDF files.'**
   String get excelToPdfSubtitle;
 
   /// No description provided for @pdfToWordSubtitle.
@@ -404,6 +404,18 @@ abstract class AppLocalizations {
   /// **'Reorder, rotate, or delete pages in your PDF document.'**
   String get organizePdfSubtitle;
 
+  /// No description provided for @editPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit PDF'**
+  String get editPdf;
+
+  /// No description provided for @editPdfSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit text, annotate, and customize your PDF documents.'**
+  String get editPdfSubtitle;
+
   /// No description provided for @defaultToolSubtitle.
   ///
   /// In en, this message translates to:
@@ -445,6 +457,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select PDF Files'**
   String get selectPdfFiles;
+
+  /// No description provided for @selectPdfToEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Select PDF to Edit'**
+  String get selectPdfToEdit;
 
   /// No description provided for @selectFile.
   ///
@@ -733,6 +751,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose Theme'**
   String get chooseTheme;
+
+  /// No description provided for @unsupportedXlsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported file format'**
+  String get unsupportedXlsTitle;
+
+  /// No description provided for @unsupportedXlsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Excel .xls files are not supported. Please select an .xlsx file.'**
+  String get unsupportedXlsMessage;
+
+  /// No description provided for @pdfCantBeEditedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This PDF can\'t be edited'**
+  String get pdfCantBeEditedTitle;
+
+  /// No description provided for @pdfCantBeEditedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This file contains image-based or unsupported content that cannot be edited. Please choose an editable PDF.'**
+  String get pdfCantBeEditedMessage;
+
+  /// No description provided for @unableToOpenPdfTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open PDF'**
+  String get unableToOpenPdfTitle;
+
+  /// No description provided for @unableToOpenPdfMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This PDF appears to be invalid or corrupted.'**
+  String get unableToOpenPdfMessage;
+
+  /// No description provided for @unableToSavePdfTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to save PDF'**
+  String get unableToSavePdfTitle;
+
+  /// No description provided for @unableToSavePdfMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong while saving your changes. Please try again.'**
+  String get unableToSavePdfMessage;
+
+  /// No description provided for @savePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Save PDF'**
+  String get savePdf;
 }
 
 class _AppLocalizationsDelegate

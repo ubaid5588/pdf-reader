@@ -582,6 +582,13 @@ class _HomeScreenState extends State<HomePageView> {
 
   List<ToolItem> _editOrganizeItems(AppLocalizations lang, bool isDark) => [
     ToolItem(
+      icon: Icons.edit_document,
+      iconColor: isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB),
+      bgColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFEFF6FF),
+      label: lang.editPdf,
+      toolType: ToolType.editPdf,
+    ),
+    ToolItem(
       icon: Icons.merge_type_rounded,
       iconColor: isDark ? const Color(0xFFFBBF24) : const Color(0xFFFFA000),
       bgColor: isDark ? const Color(0xFF382614) : const Color(0xFFFFF3E0),

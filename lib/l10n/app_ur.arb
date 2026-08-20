@@ -43,7 +43,7 @@
   "wordToPdfSubtitle": "اپنے ورڈ دستاویزات (.doc, .docx) کو اعلیٰ معیار کی PDF فائلوں میں تبدیل کریں۔",
   "imageToPdfSubtitle": "اپنی تصاویر (.jpg, .png, .webp) کو اعلیٰ معیار کی PDF فائلوں میں تبدیل کریں۔",
   "pptToPdfSubtitle": "اپنی پریزنٹیشنز (.ppt, .pptx) کو اعلیٰ معیار کی PDF فائلوں میں تبدیل کریں۔",
-  "excelToPdfSubtitle": "اپنی اسپریڈ شیٹس (.xls, .xlsx) کو اعلیٰ معیار کی PDF فائلوں میں تبدیل کریں۔",
+  "excelToPdfSubtitle": "اپنی اسپریڈ شیٹس (.xlsx) کو اعلیٰ معیار کی PDF فائلوں میں تبدیل کریں۔",
   "pdfToWordSubtitle": "اپنی PDF فائلوں کو قابل ترمیم ورڈ دستاویزات (.docx) میں تبدیل کریں۔",
   "pdfToImageSubtitle": "اپنے PDF صفحات کو اعلیٰ معیار کی تصاویر (.jpg, .png) میں تبدیل کریں۔",
   "pdfToPptSubtitle": "اپنی PDF فائلوں کو قابل ترمیم پریزنٹیشنز (.pptx) میں تبدیل کریں۔",
@@ -55,6 +55,8 @@
   "signOnPdfSubtitle": "کسی بھی PDF دستاویز میں اپنے ڈیجیٹل دستخط شامل کریں۔",
   "ocrPdfSubtitle": "آپٹیکل کریکٹر ریکگنیشن کا استعمال کرتے ہوئے اسکین کردہ PDFs سے متن نکالیں۔",
   "organizePdfSubtitle": "اپنے PDF دستاویز میں صفحات کی ترتیب تبدیل کریں، گھمائیں یا حذف کریں۔",
+  "editPdf": "PDF ترمیم کریں",
+  "editPdfSubtitle": "متن میں ترمیم کریں، تشریحات شامل کریں اور اپنے PDF دستاویزات کو اپنی مرضی کے مطابق بنائیں۔",
   "defaultToolSubtitle": "اپنی فائل کو اعلیٰ معیار کی PDF میں تبدیل کریں۔",
 
   "selectWordFile": "ورڈ فائل منتخب کریں",
@@ -63,6 +65,7 @@
   "selectExcelFile": "Excel فائل منتخب کریں",
   "selectPdfFile": "PDF فائل منتخب کریں",
   "selectPdfFiles": "PDF فائلیں منتخب کریں",
+  "selectPdfToEdit": "ترمیم کے لیے PDF منتخب کریں",
   "selectFile": "فائل منتخب کریں",
 
   "convertTool": "{toolName} تبدیل کریں",
@@ -128,5 +131,15 @@
   "systemTheme": "سسٹم",
   "lightTheme": "لائٹ",
   "darkTheme": "ڈارک",
-  "chooseTheme": "تھیم منتخب کریں"
+  "chooseTheme": "تھیم منتخب کریں",
+
+  "unsupportedXlsTitle": "غیر معاون فائل فارمیٹ",
+  "unsupportedXlsMessage": "Excel کی .xls فائلیں معاون نہیں ہیں۔ براہ کرم .xlsx فائل منتخب کریں۔",
+  "pdfCantBeEditedTitle": "اس PDF میں ترمیم نہیں کی جا سکتی",
+  "pdfCantBeEditedMessage": "اس فائل میں تصویر پر مبنی یا غیر معاون مواد ہے جس میں ترمیم نہیں کی جا سکتی۔ براہ کرم قابل ترمیم PDF منتخب کریں۔",
+  "unableToOpenPdfTitle": "PDF کھولنے سے قاصر",
+  "unableToOpenPdfMessage": "یہ PDF غلط یا خراب معلوم ہوتی ہے۔",
+  "unableToSavePdfTitle": "PDF محفوظ کرنے سے قاصر",
+  "unableToSavePdfMessage": "آپ کی تبدیلیاں محفوظ کرتے وقت کوئی مسئلہ پیش آیا۔ براہ کرم دوبارہ کوشش کریں۔",
+  "savePdf": "PDF محفوظ کریں"
 }

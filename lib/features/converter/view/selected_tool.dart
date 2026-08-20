@@ -6,6 +6,7 @@ import 'package:file_reader/features/converter/controller/image_to_pdf_controlle
 import 'package:file_reader/features/converter/controller/protect_pdf_controller.dart';
 import 'package:file_reader/features/converter/controller/split_pdf_controller.dart';
 import 'package:file_reader/features/converter/view/conversion_processing_page.dart';
+import 'package:file_reader/features/edit_pdf/controller/edit_pdf_controller.dart';
 import 'package:file_reader/features/merge_pdf/view/merge_pdf_page.dart';
 import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ enum ToolType {
   pdfToImage,
   pdfToPpt,
   pdfToExcel,
+  editPdf,
   mergePdf,
   splitPdf,
   compressPdf,
@@ -55,6 +57,9 @@ class SelectedTool extends StatelessWidget {
   final SplitPdfController splitPdfController = Get.put(SplitPdfController());
   final ProtectPdfController protectPdfController = Get.put(
     ProtectPdfController(),
+  );
+  final EditPdfController editPdfController = Get.put(
+    EditPdfController(),
   );
 
   @override
@@ -338,6 +343,10 @@ class SelectedTool extends StatelessWidget {
                     }
                     break;
 
+                  case ToolType.editPdf:
+                    await editPdfController.pickAndInspectPdf(context);
+                    break;
+
                   default:
                     Get.snackbar(
                       meta.title,
@@ -417,7 +426,7 @@ ToolMeta _resolveMeta(AppLocalizations l10n, ToolType type) {
     case ToolType.excelToPdf:
       return ToolMeta(
         title: l10n.excelToPdf,
-        fromLabel: 'XLS',
+        fromLabel: 'XLSX',
         fromColor: excelGreen,
         toLabel: 'PDF',
         toColor: pdfRed,
@@ -459,10 +468,20 @@ ToolMeta _resolveMeta(AppLocalizations l10n, ToolType type) {
         title: l10n.pdfToExcel,
         fromLabel: 'PDF',
         fromColor: pdfRed,
-        toLabel: 'XLS',
+        toLabel: 'XLSX',
         toColor: excelGreen,
         subtitle: l10n.pdfToExcelSubtitle,
         buttonLabel: l10n.selectPdfFile,
+      );
+    case ToolType.editPdf:
+      return ToolMeta(
+        title: l10n.editPdf,
+        fromLabel: 'PDF',
+        fromColor: pdfRed,
+        toLabel: 'EDIT',
+        toColor: const Color(0xFF2563EB),
+        subtitle: l10n.editPdfSubtitle,
+        buttonLabel: l10n.selectPdfToEdit,
       );
     case ToolType.mergePdf:
       return ToolMeta(

@@ -1,9 +1,85 @@
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 
 class PdfStorageService {
-  /// Saves a PDF file to device Downloads folder
+  /// Generates standardized output filename: `<source-format>-to-pdf-<date>.pdf`
+  /// Examples:
+  /// - Word -> `word-to-pdf-2026-08-20.pdf`
+  /// - PowerPoint -> `powerpoint-to-pdf-2026-08-20.pdf`
+  /// - Excel -> `excel-to-pdf-2026-08-20.pdf`
+  /// - JPG -> `jpg-to-pdf-2026-08-20.pdf`
+  /// - PNG -> `png-to-pdf-2026-08-20.pdf`
+  static String generateConversionFileName({
+    String? sourceExtension,
+    dynamic officeFileType,
+    List<String>? imagePaths,
+    String? sourceFilePath,
+    DateTime? date,
+  }) {
+    final now = date ?? DateTime.now();
+    final dateStr = DateFormat('yyyy-MM-dd').format(now);
+
+    String prefix = 'file';
+
+    if (officeFileType != null) {
+      final typeStr = officeFileType.toString().toLowerCase();
+      if (typeStr.contains('word')) {
+        prefix = 'word';
+      } else if (typeStr.contains('powerpoint') || typeStr.contains('ppt')) {
+        prefix = 'powerpoint';
+      } else if (typeStr.contains('excel')) {
+        prefix = 'excel';
+      }
+    } else if (imagePaths != null && imagePaths.isNotEmpty) {
+      final ext = imagePaths.first
+          .split('.')
+          .last
+          .toLowerCase()
+          .replaceAll('.', '');
+      if (ext == 'jpg' || ext == 'jpeg') {
+        prefix = 'jpg';
+      } else if (ext == 'png') {
+        prefix = 'png';
+      } else if (ext == 'webp') {
+        prefix = 'webp';
+      } else if (ext.isNotEmpty) {
+        prefix = ext;
+      } else {
+        prefix = 'image';
+      }
+    } else {
+      final extToParse = sourceExtension ??
+          (sourceFilePath != null ? sourceFilePath.split('.').last : null);
+      if (extToParse != null && extToParse.isNotEmpty) {
+        final clean = extToParse.replaceAll('.', '').toLowerCase().trim();
+        if (clean == 'doc' || clean == 'docx') {
+          prefix = 'word';
+        } else if (clean == 'ppt' || clean == 'pptx') {
+          prefix = 'powerpoint';
+        } else if (clean == 'xls' || clean == 'xlsx') {
+          prefix = 'excel';
+        } else if (clean == 'jpg' || clean == 'jpeg') {
+          prefix = 'jpg';
+        } else if (clean == 'png') {
+          prefix = 'png';
+        } else if (clean == 'webp') {
+          prefix = 'webp';
+        } else {
+          prefix = clean;
+        }
+      }
+    }
+
+    // Sanitize prefix for Windows, macOS, Linux (alphanumeric and dashes only)
+    prefix = prefix.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '').toLowerCase();
+    if (prefix.isEmpty) prefix = 'file';
+
+    return '$prefix-to-pdf-$dateStr.pdf';
+  }
+
+  /// Saves a PDF file to device Downloads folder (with fallback to app documents)
   /// Returns the path if successful, null if failed
   static Future<String?> savePdfToDownloads({
     required List<int> pdfBytes,
@@ -18,6 +94,10 @@ class PdfStorageService {
       }
 
       var sanitizedName = fileName.trim();
+      // Remove invalid OS characters: < > : " / \ | ? * \0
+      sanitizedName = sanitizedName.replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '');
+      sanitizedName = sanitizedName.trim().replaceAll(RegExp(r'^\.+|\.+$'), '');
+
       if (sanitizedName.isEmpty) {
         sanitizedName = 'Document_${DateTime.now().millisecondsSinceEpoch}';
       }
@@ -27,21 +107,25 @@ class PdfStorageService {
         sanitizedName = '$sanitizedName.pdf';
       }
 
-      // Get Downloads directory
-      final downloadsDir = Directory('/storage/emulated/0/Download');
+      // Get Downloads directory or fallback
+      Directory downloadsDir = Directory('/storage/emulated/0/Download');
 
       if (!await downloadsDir.exists()) {
-        print('❌ Downloads folder does not exist');
-        throw Exception('Downloads folder not found');
+        try {
+          downloadsDir = await getApplicationDocumentsDirectory();
+        } catch (_) {
+          // If path_provider also fails, try temp dir
+          downloadsDir = await getTemporaryDirectory();
+        }
       }
 
-      // Create unique filename if file exists
+      // Create unique filename if file exists: format -2.pdf, -3.pdf
       String finalPath = '${downloadsDir.path}/$sanitizedName';
-      int counter = 1;
+      int counter = 2;
 
       while (await File(finalPath).exists()) {
-        final nameWithoutExt = sanitizedName.replaceAll('.pdf', '');
-        final newName = '${nameWithoutExt}_(${counter}).pdf';
+        final nameWithoutExt = sanitizedName.replaceAll(RegExp(r'\.pdf$', caseSensitive: false), '');
+        final newName = '$nameWithoutExt-$counter.pdf';
         finalPath = '${downloadsDir.path}/$newName';
         counter++;
       }

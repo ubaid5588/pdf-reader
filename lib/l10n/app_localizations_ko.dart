@@ -117,7 +117,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pptToPdfSubtitle => '프레젠테이션(.ppt, .pptx)을 고품질 PDF 파일로 변환합니다.';
 
   @override
-  String get excelToPdfSubtitle => '스프레드시트(.xls, .xlsx)를 고품질 PDF 파일로 변환합니다.';
+  String get excelToPdfSubtitle => '스프레드시트(.xlsx)를 고품질 PDF 파일로 변환합니다.';
 
   @override
   String get pdfToWordSubtitle => 'PDF 파일을 편집 가능한 Word 문서(.docx)로 변환합니다.';
@@ -153,6 +153,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get organizePdfSubtitle => 'PDF 문서의 페이지 순서를 변경하거나 회전 또는 삭제합니다.';
 
   @override
+  String get editPdf => 'PDF 편집';
+
+  @override
+  String get editPdfSubtitle => '텍스트를 편집하고 주석을 추가하며 PDF 문서를 사용자 지정합니다.';
+
+  @override
   String get defaultToolSubtitle => '파일을 고품질 PDF로 변환합니다.';
 
   @override
@@ -172,6 +178,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get selectPdfFiles => 'PDF 파일 선택';
+
+  @override
+  String get selectPdfToEdit => '편집할 PDF 선택';
 
   @override
   String get selectFile => '파일 선택';
@@ -318,4 +327,33 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get chooseTheme => '테마 선택';
+
+  @override
+  String get unsupportedXlsTitle => '지원되지 않는 파일 형식';
+
+  @override
+  String get unsupportedXlsMessage =>
+      'Excel .xls 파일은 지원되지 않습니다. .xlsx 파일을 선택해 주세요.';
+
+  @override
+  String get pdfCantBeEditedTitle => '이 PDF는 편집할 수 없습니다';
+
+  @override
+  String get pdfCantBeEditedMessage =>
+      '이 파일에는 편집할 수 없는 이미지 기반 또는 지원되지 않는 콘텐츠가 포함되어 있습니다. 편집 가능한 PDF를 선택해 주세요.';
+
+  @override
+  String get unableToOpenPdfTitle => 'PDF를 열 수 없음';
+
+  @override
+  String get unableToOpenPdfMessage => '이 PDF 파일이 잘못되었거나 손상되었습니다.';
+
+  @override
+  String get unableToSavePdfTitle => 'PDF를 저장할 수 없음';
+
+  @override
+  String get unableToSavePdfMessage => '변경 사항을 저장하는 동안 오류가 발생했습니다. 다시 시도해 주세요.';
+
+  @override
+  String get savePdf => 'PDF 저장';
 }

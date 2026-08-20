@@ -43,7 +43,7 @@
   "wordToPdfSubtitle": "Convierte tus documentos de Word (.doc, .docx) en archivos PDF de alta calidad.",
   "imageToPdfSubtitle": "Convierte tus imágenes (.jpg, .png, .webp) en archivos PDF de alta calidad.",
   "pptToPdfSubtitle": "Convierte tus presentaciones (.ppt, .pptx) en archivos PDF de alta calidad.",
-  "excelToPdfSubtitle": "Convierte tus hojas de cálculo (.xls, .xlsx) en archivos PDF de alta calidad.",
+  "excelToPdfSubtitle": "Convierte tus hojas de cálculo (.xlsx) en archivos PDF de alta calidad.",
   "pdfToWordSubtitle": "Convierte tus archivos PDF en documentos editables de Word (.docx).",
   "pdfToImageSubtitle": "Convierte las páginas de tu PDF en imágenes de alta calidad (.jpg, .png).",
   "pdfToPptSubtitle": "Convierte tus archivos PDF en presentaciones editables (.pptx).",
@@ -55,6 +55,8 @@
   "signOnPdfSubtitle": "Añade tu firma digital a cualquier documento PDF.",
   "ocrPdfSubtitle": "Extrae texto de archivos PDF escaneados mediante reconocimiento óptico de caracteres.",
   "organizePdfSubtitle": "Reordena, rota o elimina páginas en tu documento PDF.",
+  "editPdf": "Editar PDF",
+  "editPdfSubtitle": "Edita texto, añade anotaciones y personaliza tus documentos PDF.",
   "defaultToolSubtitle": "Convierte tu archivo en un PDF de alta calidad.",
 
   "selectWordFile": "Seleccionar archivo Word",
@@ -63,6 +65,7 @@
   "selectExcelFile": "Seleccionar archivo Excel",
   "selectPdfFile": "Seleccionar archivo PDF",
   "selectPdfFiles": "Seleccionar archivos PDF",
+  "selectPdfToEdit": "Seleccionar PDF para editar",
   "selectFile": "Seleccionar archivo",
 
   "convertTool": "Convertir {toolName}",
@@ -128,5 +131,15 @@
   "systemTheme": "Sistema",
   "lightTheme": "Claro",
   "darkTheme": "Oscuro",
-  "chooseTheme": "Elegir tema"
+  "chooseTheme": "Elegir tema",
+
+  "unsupportedXlsTitle": "Formato de archivo no compatible",
+  "unsupportedXlsMessage": "Los archivos de Excel .xls no son compatibles. Por favor, selecciona un archivo .xlsx.",
+  "pdfCantBeEditedTitle": "Este PDF no se puede editar",
+  "pdfCantBeEditedMessage": "Este archivo contiene contenido basado en imágenes o no compatible que no se puede editar. Por favor, elige un PDF editable.",
+  "unableToOpenPdfTitle": "No se puede abrir el PDF",
+  "unableToOpenPdfMessage": "Este PDF parece no ser válido o estar dañado.",
+  "unableToSavePdfTitle": "No se puede guardar el PDF",
+  "unableToSavePdfMessage": "Ocurrió un error al guardar los cambios. Por favor, inténtalo de nuevo.",
+  "savePdf": "Guardar PDF"
 }

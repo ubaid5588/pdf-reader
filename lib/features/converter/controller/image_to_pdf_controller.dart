@@ -67,8 +67,9 @@ class ImageToPdfController extends GetxController {
       document.dispose();
 
       onProgress?.call(0.92, 'Saving to device Downloads...');
-      final fileName =
-          'images_to_pdf_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      final fileName = PdfStorageService.generateConversionFileName(
+        imagePaths: paths,
+      );
 
       final savedPath = await PdfStorageService.savePdfToDownloads(
         pdfBytes: pdfBytes,

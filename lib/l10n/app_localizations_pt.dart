@@ -126,7 +126,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get excelToPdfSubtitle =>
-      'Converta as suas folhas de cálculo (.xls, .xlsx) em ficheiros PDF de alta qualidade.';
+      'Converta as suas folhas de cálculo (.xlsx) em ficheiros PDF de alta qualidade.';
 
   @override
   String get pdfToWordSubtitle =>
@@ -173,6 +173,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'Reordene, rode ou elimine páginas no seu documento PDF.';
 
   @override
+  String get editPdf => 'Editar PDF';
+
+  @override
+  String get editPdfSubtitle =>
+      'Edite texto, adicione anotações e personalize os seus documentos PDF.';
+
+  @override
   String get defaultToolSubtitle =>
       'Converta o seu ficheiro num PDF de alta qualidade.';
 
@@ -193,6 +200,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get selectPdfFiles => 'Selecionar ficheiros PDF';
+
+  @override
+  String get selectPdfToEdit => 'Selecionar PDF para editar';
 
   @override
   String get selectFile => 'Selecionar ficheiro';
@@ -344,4 +354,35 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get chooseTheme => 'Escolher tema';
+
+  @override
+  String get unsupportedXlsTitle => 'Formato de ficheiro não suportado';
+
+  @override
+  String get unsupportedXlsMessage =>
+      'Os ficheiros Excel .xls não são suportados. Por favor, selecione um ficheiro .xlsx.';
+
+  @override
+  String get pdfCantBeEditedTitle => 'Este PDF não pode ser editado';
+
+  @override
+  String get pdfCantBeEditedMessage =>
+      'Este ficheiro contém conteúdo baseado em imagens ou não suportado que não pode ser editado. Por favor, escolha um PDF editável.';
+
+  @override
+  String get unableToOpenPdfTitle => 'Não é possível abrir o PDF';
+
+  @override
+  String get unableToOpenPdfMessage =>
+      'Este ficheiro PDF parece ser inválido ou estar corrompido.';
+
+  @override
+  String get unableToSavePdfTitle => 'Não é possível guardar o PDF';
+
+  @override
+  String get unableToSavePdfMessage =>
+      'Ocorreu um erro ao guardar as suas alterações. Por favor, tente novamente.';
+
+  @override
+  String get savePdf => 'Guardar PDF';
 }

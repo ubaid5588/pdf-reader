@@ -43,7 +43,7 @@
   "wordToPdfSubtitle": "将您的 Word 文档 (.doc, .docx) 转换为高质量的 PDF 文件。",
   "imageToPdfSubtitle": "将您的图片 (.jpg, .png, .webp) 转换为高质量的 PDF 文件。",
   "pptToPdfSubtitle": "将您的演示文稿 (.ppt, .pptx) 转换为高质量的 PDF 文件。",
-  "excelToPdfSubtitle": "将您的电子表格 (.xls, .xlsx) 转换为高质量的 PDF 文件。",
+  "excelToPdfSubtitle": "将您的电子表格 (.xlsx) 转换为高质量的 PDF 文件。",
   "pdfToWordSubtitle": "将您的 PDF 文件转换为可编辑的 Word 文档 (.docx)。",
   "pdfToImageSubtitle": "将您的 PDF 页面转换为高质量图片 (.jpg, .png)。",
   "pdfToPptSubtitle": "将您的 PDF 文件转换为可编辑的演示文稿 (.pptx)。",
@@ -55,6 +55,8 @@
   "signOnPdfSubtitle": "在任何 PDF 文档中添加您的数字签名。",
   "ocrPdfSubtitle": "使用光学字符识别从扫描的 PDF 中提取文本。",
   "organizePdfSubtitle": "在 PDF 文档中重新排序、旋转或删除页面。",
+  "editPdf": "编辑 PDF",
+  "editPdfSubtitle": "编辑文本、添加注释并自定义您的 PDF 文档。",
   "defaultToolSubtitle": "将您的文件转换为高质量的 PDF。",
 
   "selectWordFile": "选择 Word 文件",
@@ -63,6 +65,7 @@
   "selectExcelFile": "选择 Excel 文件",
   "selectPdfFile": "选择 PDF 文件",
   "selectPdfFiles": "选择多个 PDF 文件",
+  "selectPdfToEdit": "选择要编辑的 PDF",
   "selectFile": "选择文件",
 
   "convertTool": "转换 {toolName}",
@@ -128,5 +131,15 @@
   "systemTheme": "跟随系统",
   "lightTheme": "浅色",
   "darkTheme": "深色",
-  "chooseTheme": "选择主题"
+  "chooseTheme": "选择主题",
+
+  "unsupportedXlsTitle": "不支持的文件格式",
+  "unsupportedXlsMessage": "不支持 Excel .xls 文件。请选择 .xlsx 文件。",
+  "pdfCantBeEditedTitle": "无法编辑此 PDF",
+  "pdfCantBeEditedMessage": "此文件包含无法编辑的图片或不受支持的内容。请选择可编辑的 PDF。",
+  "unableToOpenPdfTitle": "无法打开 PDF",
+  "unableToOpenPdfMessage": "此 PDF 文件无效或已损坏。",
+  "unableToSavePdfTitle": "无法保存 PDF",
+  "unableToSavePdfMessage": "保存更改时出现问题。请重试。",
+  "savePdf": "保存 PDF"
 }

@@ -43,7 +43,7 @@
   "wordToPdfSubtitle": "Convert your Word documents (.doc, .docx) to high-quality PDF files.",
   "imageToPdfSubtitle": "Convert your images (.jpg, .png, .webp) to high-quality PDF files.",
   "pptToPdfSubtitle": "Convert your presentations (.ppt, .pptx) to high-quality PDF files.",
-  "excelToPdfSubtitle": "Convert your spreadsheets (.xls, .xlsx) to high-quality PDF files.",
+  "excelToPdfSubtitle": "Convert your spreadsheets (.xlsx) to high-quality PDF files.",
   "pdfToWordSubtitle": "Convert your PDF files to editable Word documents (.docx).",
   "pdfToImageSubtitle": "Convert your PDF pages to high-quality images (.jpg, .png).",
   "pdfToPptSubtitle": "Convert your PDF files to editable presentations (.pptx).",
@@ -55,6 +55,8 @@
   "signOnPdfSubtitle": "Add your digital signature to any PDF document.",
   "ocrPdfSubtitle": "Extract text from scanned PDFs using optical character recognition.",
   "organizePdfSubtitle": "Reorder, rotate, or delete pages in your PDF document.",
+  "editPdf": "Edit PDF",
+  "editPdfSubtitle": "Edit text, annotate, and customize your PDF documents.",
   "defaultToolSubtitle": "Convert your file to a high-quality PDF.",
 
   "selectWordFile": "Select Word File",
@@ -63,6 +65,7 @@
   "selectExcelFile": "Select Excel File",
   "selectPdfFile": "Select PDF File",
   "selectPdfFiles": "Select PDF Files",
+  "selectPdfToEdit": "Select PDF to Edit",
   "selectFile": "Select File",
 
   "convertTool": "Convert {toolName}",
@@ -128,5 +131,15 @@
   "systemTheme": "System",
   "lightTheme": "Light",
   "darkTheme": "Dark",
-  "chooseTheme": "Choose Theme"
+  "chooseTheme": "Choose Theme",
+
+  "unsupportedXlsTitle": "Unsupported file format",
+  "unsupportedXlsMessage": "Excel .xls files are not supported. Please select an .xlsx file.",
+  "pdfCantBeEditedTitle": "This PDF can't be edited",
+  "pdfCantBeEditedMessage": "This file contains image-based or unsupported content that cannot be edited. Please choose an editable PDF.",
+  "unableToOpenPdfTitle": "Unable to open PDF",
+  "unableToOpenPdfMessage": "This PDF appears to be invalid or corrupted.",
+  "unableToSavePdfTitle": "Unable to save PDF",
+  "unableToSavePdfMessage": "Something went wrong while saving your changes. Please try again.",
+  "savePdf": "Save PDF"
 }

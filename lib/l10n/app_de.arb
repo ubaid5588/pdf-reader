@@ -43,7 +43,7 @@
   "wordToPdfSubtitle": "Konvertieren Sie Ihre Word-Dokumente (.doc, .docx) in hochwertige PDF-Dateien.",
   "imageToPdfSubtitle": "Konvertieren Sie Ihre Bilder (.jpg, .png, .webp) in hochwertige PDF-Dateien.",
   "pptToPdfSubtitle": "Konvertieren Sie Ihre Präsentationen (.ppt, .pptx) in hochwertige PDF-Dateien.",
-  "excelToPdfSubtitle": "Konvertieren Sie Ihre Tabellen (.xls, .xlsx) in hochwertige PDF-Dateien.",
+  "excelToPdfSubtitle": "Konvertieren Sie Ihre Tabellen (.xlsx) in hochwertige PDF-Dateien.",
   "pdfToWordSubtitle": "Konvertieren Sie Ihre PDF-Dateien in bearbeitbare Word-Dokumente (.docx).",
   "pdfToImageSubtitle": "Konvertieren Sie Ihre PDF-Seiten in hochwertige Bilder (.jpg, .png).",
   "pdfToPptSubtitle": "Konvertieren Sie Ihre PDF-Dateien in bearbeitbare Präsentationen (.pptx).",
@@ -55,6 +55,8 @@
   "signOnPdfSubtitle": "Fügen Sie Ihre digitale Unterschrift zu jedem PDF-Dokument hinzu.",
   "ocrPdfSubtitle": "Extrahieren Sie Text aus gescannten PDFs mithilfe optischer Zeichenerkennung.",
   "organizePdfSubtitle": "Seiten in Ihrem PDF-Dokument neu anordnen, drehen oder löschen.",
+  "editPdf": "PDF bearbeiten",
+  "editPdfSubtitle": "Bearbeiten Sie Text, fügen Sie Anmerkungen hinzu und passen Sie Ihre PDF-Dokumente an.",
   "defaultToolSubtitle": "Konvertieren Sie Ihre Datei in ein hochwertiges PDF.",
 
   "selectWordFile": "Word-Datei auswählen",
@@ -63,6 +65,7 @@
   "selectExcelFile": "Excel-Datei auswählen",
   "selectPdfFile": "PDF-Datei auswählen",
   "selectPdfFiles": "PDF-Dateien auswählen",
+  "selectPdfToEdit": "PDF zum Bearbeiten auswählen",
   "selectFile": "Datei auswählen",
 
   "convertTool": "{toolName} konvertieren",
@@ -128,5 +131,15 @@
   "systemTheme": "System",
   "lightTheme": "Hell",
   "darkTheme": "Dunkel",
-  "chooseTheme": "Design auswählen"
+  "chooseTheme": "Design auswählen",
+
+  "unsupportedXlsTitle": "Nicht unterstütztes Dateiformat",
+  "unsupportedXlsMessage": "Excel .xls-Dateien werden nicht unterstützt. Bitte wählen Sie eine .xlsx-Datei aus.",
+  "pdfCantBeEditedTitle": "Dieses PDF kann nicht bearbeitet werden",
+  "pdfCantBeEditedMessage": "Diese Datei enthält bildbasierte oder nicht unterstützte Inhalte, die nicht bearbeitet werden können. Bitte wählen Sie ein bearbeitbares PDF.",
+  "unableToOpenPdfTitle": "PDF kann nicht geöffnet werden",
+  "unableToOpenPdfMessage": "Dieses PDF scheint ungültig oder beschädigt zu sein.",
+  "unableToSavePdfTitle": "PDF kann nicht gespeichert werden",
+  "unableToSavePdfMessage": "Beim Speichern Ihrer Änderungen ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+  "savePdf": "PDF speichern"
 }

@@ -125,7 +125,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get excelToPdfSubtitle =>
-      'Convertissez vos feuilles de calcul (.xls, .xlsx) en fichiers PDF de haute qualité.';
+      'Convertissez vos feuilles de calcul (.xlsx) en fichiers PDF de haute qualité.';
 
   @override
   String get pdfToWordSubtitle =>
@@ -172,6 +172,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Réorganisez, faites pivoter ou supprimez des pages dans votre document PDF.';
 
   @override
+  String get editPdf => 'Modifier le PDF';
+
+  @override
+  String get editPdfSubtitle =>
+      'Modifiez le texte, ajoutez des annotations et personnalisez vos documents PDF.';
+
+  @override
   String get defaultToolSubtitle =>
       'Convertissez votre fichier en un PDF de haute qualité.';
 
@@ -192,6 +199,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get selectPdfFiles => 'Sélectionner des fichiers PDF';
+
+  @override
+  String get selectPdfToEdit => 'Sélectionner un PDF à modifier';
 
   @override
   String get selectFile => 'Sélectionner un fichier';
@@ -343,4 +353,35 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get chooseTheme => 'Choisir le thème';
+
+  @override
+  String get unsupportedXlsTitle => 'Format de fichier non pris en charge';
+
+  @override
+  String get unsupportedXlsMessage =>
+      'Les fichiers Excel .xls ne sont pas pris en charge. Veuillez sélectionner un fichier .xlsx.';
+
+  @override
+  String get pdfCantBeEditedTitle => 'Ce PDF ne peut pas être modifié';
+
+  @override
+  String get pdfCantBeEditedMessage =>
+      'Ce fichier contient des images ou du contenu non pris en charge qui ne peut pas être modifié. Veuillez choisir un PDF modifiable.';
+
+  @override
+  String get unableToOpenPdfTitle => 'Impossible d\'ouvrir le PDF';
+
+  @override
+  String get unableToOpenPdfMessage =>
+      'Ce fichier PDF semble invalide ou corrompu.';
+
+  @override
+  String get unableToSavePdfTitle => 'Impossible d\'enregistrer le PDF';
+
+  @override
+  String get unableToSavePdfMessage =>
+      'Une erreur s\'est produite lors de l\'enregistrement de vos modifications. Veuillez réessayer.';
+
+  @override
+  String get savePdf => 'Enregistrer le PDF';
 }

@@ -125,7 +125,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get excelToPdfSubtitle =>
-      'Konvertieren Sie Ihre Tabellen (.xls, .xlsx) in hochwertige PDF-Dateien.';
+      'Konvertieren Sie Ihre Tabellen (.xlsx) in hochwertige PDF-Dateien.';
 
   @override
   String get pdfToWordSubtitle =>
@@ -172,6 +172,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Seiten in Ihrem PDF-Dokument neu anordnen, drehen oder löschen.';
 
   @override
+  String get editPdf => 'PDF bearbeiten';
+
+  @override
+  String get editPdfSubtitle =>
+      'Bearbeiten Sie Text, fügen Sie Anmerkungen hinzu und passen Sie Ihre PDF-Dokumente an.';
+
+  @override
   String get defaultToolSubtitle =>
       'Konvertieren Sie Ihre Datei in ein hochwertiges PDF.';
 
@@ -192,6 +199,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get selectPdfFiles => 'PDF-Dateien auswählen';
+
+  @override
+  String get selectPdfToEdit => 'PDF zum Bearbeiten auswählen';
 
   @override
   String get selectFile => 'Datei auswählen';
@@ -343,4 +353,35 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get chooseTheme => 'Design auswählen';
+
+  @override
+  String get unsupportedXlsTitle => 'Nicht unterstütztes Dateiformat';
+
+  @override
+  String get unsupportedXlsMessage =>
+      'Excel .xls-Dateien werden nicht unterstützt. Bitte wählen Sie eine .xlsx-Datei aus.';
+
+  @override
+  String get pdfCantBeEditedTitle => 'Dieses PDF kann nicht bearbeitet werden';
+
+  @override
+  String get pdfCantBeEditedMessage =>
+      'Diese Datei enthält bildbasierte oder nicht unterstützte Inhalte, die nicht bearbeitet werden können. Bitte wählen Sie ein bearbeitbares PDF.';
+
+  @override
+  String get unableToOpenPdfTitle => 'PDF kann nicht geöffnet werden';
+
+  @override
+  String get unableToOpenPdfMessage =>
+      'Dieses PDF scheint ungültig oder beschädigt zu sein.';
+
+  @override
+  String get unableToSavePdfTitle => 'PDF kann nicht gespeichert werden';
+
+  @override
+  String get unableToSavePdfMessage =>
+      'Beim Speichern Ihrer Änderungen ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.';
+
+  @override
+  String get savePdf => 'PDF speichern';
 }

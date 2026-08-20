@@ -1,13 +1,18 @@
 enum ToolType {
-  imageToPdf,
-
-  mergePdf,
-
-  splitPdf,
-
-  compressPdf,
-
   wordToPdf,
-
+  imageToPdf,
+  pptToPdf,
+  excelToPdf,
   pdfToWord,
+  pdfToImage,
+  pdfToPpt,
+  pdfToExcel,
+  editPdf,
+  mergePdf,
+  splitPdf,
+  compressPdf,
+  protectPdf,
+  signOnPdf,
+  ocrPdf,
+  organizePdf,
 }
