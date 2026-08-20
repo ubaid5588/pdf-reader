@@ -127,7 +127,10 @@ class _FilePageState extends State<FilePage>
       builder: (dialogContext) {
         return AlertDialog(
           backgroundColor: colors.surfaceElevated,
-          title: Text('Rename PDF', style: TextStyle(color: colors.textPrimary)),
+          title: Text(
+            'Rename PDF',
+            style: TextStyle(color: colors.textPrimary),
+          ),
           content: TextField(
             controller: nameController,
             autofocus: true,
@@ -148,7 +151,10 @@ class _FilePageState extends State<FilePage>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: colors.textSecondary),
+              ),
             ),
             TextButton(
               onPressed: () =>
@@ -174,7 +180,10 @@ class _FilePageState extends State<FilePage>
       builder: (dialogContext) {
         return AlertDialog(
           backgroundColor: colors.surfaceElevated,
-          title: Text('Delete PDF', style: TextStyle(color: colors.textPrimary)),
+          title: Text(
+            'Delete PDF',
+            style: TextStyle(color: colors.textPrimary),
+          ),
           content: Text(
             'Delete "$fileName"? This cannot be undone.',
             style: TextStyle(color: colors.textSecondary),
@@ -182,7 +191,10 @@ class _FilePageState extends State<FilePage>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: colors.textSecondary),
+              ),
             ),
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, true),
@@ -234,7 +246,7 @@ class _FilePageState extends State<FilePage>
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 20, left: 22, right: 22),
+              padding: const EdgeInsets.only(top: 20, left: 17, right: 17),
               child: Obx(
                 () => AnimatedCrossFade(
                   firstChild: SizedBox(
@@ -276,15 +288,24 @@ class _FilePageState extends State<FilePage>
                         contentPadding: EdgeInsets.zero,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide(color: colors.border, width: 1),
+                          borderSide: BorderSide(
+                            color: colors.border,
+                            width: 1,
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide(color: colors.border, width: 1),
+                          borderSide: BorderSide(
+                            color: colors.border,
+                            width: 1,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide(color: colors.primary, width: 1.5),
+                          borderSide: BorderSide(
+                            color: colors.primary,
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
@@ -410,10 +431,7 @@ class _FilePageState extends State<FilePage>
                         decoration: BoxDecoration(
                           color: colors.surface,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: colors.border,
-                            width: 1,
-                          ),
+                          border: Border.all(color: colors.border, width: 1),
                           boxShadow: [
                             BoxShadow(
                               color: colors.cardShadow,
@@ -437,8 +455,9 @@ class _FilePageState extends State<FilePage>
                             final file = files[index];
 
                             return Obx(() {
-                              final isSelected =
-                                  selectedFiles.contains(file.path);
+                              final isSelected = selectedFiles.contains(
+                                file.path,
+                              );
 
                               return AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
@@ -458,8 +477,9 @@ class _FilePageState extends State<FilePage>
                                     onTap: () =>
                                         _toggleFileSelection(file.path),
                                     child: AnimatedScale(
-                                      duration:
-                                          const Duration(milliseconds: 200),
+                                      duration: const Duration(
+                                        milliseconds: 200,
+                                      ),
                                       scale: isSelected ? 1.1 : 1.0,
                                       child: Container(
                                         width: 42,
@@ -468,10 +488,11 @@ class _FilePageState extends State<FilePage>
                                           color: isSelected
                                               ? colors.primary
                                               : (colors.isDark
-                                                  ? const Color(0xFF3B1E1E)
-                                                  : const Color(0xFFFFEBEE)),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                                                    ? const Color(0xFF3B1E1E)
+                                                    : const Color(0xFFFFEBEE)),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                         child: isSelected
                                             ? const Icon(
@@ -519,8 +540,9 @@ class _FilePageState extends State<FilePage>
                                       final sizeBytes = stat.size;
                                       final modified = stat.modified;
                                       final sizeStr = _formatBytes(sizeBytes);
-                                      final dateStr = DateFormat('MMM d, yyyy')
-                                          .format(modified);
+                                      final dateStr = DateFormat(
+                                        'MMM d, yyyy',
+                                      ).format(modified);
                                       return Text(
                                         '$sizeStr • $dateStr',
                                         maxLines: 1,
@@ -534,12 +556,16 @@ class _FilePageState extends State<FilePage>
                                   ),
                                   trailing: selectedFiles.isEmpty
                                       ? _buildPremiumPopupMenu(
-                                          context, file, isSmall)
+                                          context,
+                                          file,
+                                          isSmall,
+                                        )
                                       : null,
                                   onTap: selectedFiles.isEmpty
                                       ? () {
                                           Get.to(
-                                              () => PdfViewer(filePath: file));
+                                            () => PdfViewer(filePath: file),
+                                          );
                                         }
                                       : () {
                                           _toggleFileSelection(file.path);

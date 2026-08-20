@@ -28,7 +28,9 @@ class _HomePageState extends State<HomePage> {
   final FileViewController _controller = Get.put(FileViewController());
   final NaviController naviController = Get.put(NaviController());
   final FilePageController fileController = Get.put(FilePageController());
-  final RecentPdfController recentPdfController = Get.put(RecentPdfController());
+  final RecentPdfController recentPdfController = Get.put(
+    RecentPdfController(),
+  );
 
   StreamSubscription<List<SharedFile>>? _intentSub;
 
@@ -225,11 +227,8 @@ class _HomePageState extends State<HomePage> {
           ),
           decoration: BoxDecoration(
             color: colors.bottomNavBg,
-            borderRadius: BorderRadius.circular(isSmallPhone ? 24 : 28),
-            border: Border.all(
-              color: colors.bottomNavBorder,
-              width: 1.2,
-            ),
+            borderRadius: BorderRadius.circular(isSmallPhone ? 24 : 50),
+            border: Border.all(color: colors.bottomNavBorder, width: 1.2),
             boxShadow: [
               BoxShadow(
                 color: colors.cardShadow,
