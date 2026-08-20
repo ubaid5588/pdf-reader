@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart' as fp;
 import 'package:file_reader/features/converter/services/pdf_storage_service.dart';
@@ -15,7 +16,7 @@ class FileToPdfController extends GetxController {
   static const Map<OfficeFileType, List<String>> _extension = {
     OfficeFileType.word: ['doc', 'docx'],
     OfficeFileType.powerpoint: ['ppt', 'pptx'],
-    OfficeFileType.excel: ['xls', 'xlsx'],
+    OfficeFileType.excel: ['xlsx'], // Only .xlsx supported by excel package
   };
 
   RxString filePath = ''.obs;
@@ -67,10 +68,10 @@ class FileToPdfController extends GetxController {
 
       onProgress?.call(0.85, 'Saving PDF to device storage...');
       final pdfBytes = await tempPdfFile.readAsBytes();
-      final baseName = File(path).path.split(Platform.pathSeparator).last.replaceAll(
-        RegExp(r'\.[a-zA-Z0-9]+$'),
-        '',
-      );
+      final baseName = File(path).path
+          .split(Platform.pathSeparator)
+          .last
+          .replaceAll(RegExp(r'\.[a-zA-Z0-9]+$'), '');
       final fileName =
           '${baseName}_${DateTime.now().millisecondsSinceEpoch}.pdf';
 
@@ -85,6 +86,9 @@ class FileToPdfController extends GetxController {
         return File(savedPath);
       }
       return tempPdfFile;
+    } catch (e) {
+      Get.snackbar('Error', 'Conversion failed: $e');
+      rethrow;
     } finally {
       isLoading.value = false;
     }
@@ -97,7 +101,17 @@ class FileToPdfController extends GetxController {
     try {
       onProgress?.call(0.35, 'Decoding spreadsheet data...');
       final bytes = await File(filePath).readAsBytes();
-      final excel = Excel.decodeBytes(bytes);
+
+      Excel excel;
+      try {
+        excel = Excel.decodeBytes(bytes);
+      } catch (e) {
+        throw 'Failed to decode Excel file. Please ensure it\'s a valid .xlsx file. Error: $e';
+      }
+
+      if (excel.tables.isEmpty) {
+        throw 'Excel file contains no sheets or data.';
+      }
 
       final pdf = pw.Document();
       final fileName = File(filePath).path.split(Platform.pathSeparator).last;
@@ -174,6 +188,7 @@ class FileToPdfController extends GetxController {
         'excel_${DateTime.now().millisecondsSinceEpoch}.pdf',
       );
     } catch (e) {
+      Get.snackbar('Error', 'Excel conversion failed: $e');
       rethrow;
     }
   }
@@ -186,8 +201,10 @@ class FileToPdfController extends GetxController {
       onProgress?.call(0.4, 'Extracting Word document contents...');
       final fileName = File(filePath).path.split(Platform.pathSeparator).last;
       final bytes = await File(filePath).readAsBytes();
+
+      // Run text extraction on an isolate to prevent blocking
       String content =
-          _extractTextFromDocx(bytes) ??
+          await _runOnIsolate(_extractTextFromDocxIsolate, bytes) ??
           'Unable to fully parse DOCX. Showing raw content.';
 
       onProgress?.call(0.7, 'Formatting vector pages & typography...');
@@ -224,6 +241,7 @@ class FileToPdfController extends GetxController {
         'word_${DateTime.now().millisecondsSinceEpoch}.pdf',
       );
     } catch (e) {
+      Get.snackbar('Error', 'Word conversion failed: $e');
       rethrow;
     }
   }
@@ -236,8 +254,10 @@ class FileToPdfController extends GetxController {
       onProgress?.call(0.4, 'Extracting presentation slides...');
       final fileName = File(filePath).path.split(Platform.pathSeparator).last;
       final bytes = await File(filePath).readAsBytes();
+
+      // Run text extraction on an isolate to prevent blocking
       final content =
-          _extractTextFromPptx(bytes) ??
+          await _runOnIsolate(_extractTextFromPptxIsolate, bytes) ??
           'Unable to extract slides. The file may be too complex.';
 
       onProgress?.call(0.7, 'Generating PDF slide layout...');
@@ -278,11 +298,13 @@ class FileToPdfController extends GetxController {
         'powerpoint_${DateTime.now().millisecondsSinceEpoch}.pdf',
       );
     } catch (e) {
+      Get.snackbar('Error', 'PowerPoint conversion failed: $e');
       rethrow;
     }
   }
 
-  String? _extractTextFromDocx(List<int> bytes) {
+  // Isolate-compatible text extraction for DOCX
+  static String? _extractTextFromDocxIsolate(List<int> bytes) {
     try {
       final content = utf8.decode(bytes, allowMalformed: true);
       final regex = RegExp(r'<w:t[^>]*>([^<]*)</w:t>');
@@ -296,7 +318,8 @@ class FileToPdfController extends GetxController {
     }
   }
 
-  String? _extractTextFromPptx(List<int> bytes) {
+  // Isolate-compatible text extraction for PPTX
+  static String? _extractTextFromPptxIsolate(List<int> bytes) {
     try {
       final content = utf8.decode(bytes, allowMalformed: true);
       final regex = RegExp(r'<a:t>([^<]*)</a:t>');
@@ -315,6 +338,38 @@ class FileToPdfController extends GetxController {
       return textList.join('\n');
     } catch (e) {
       return null;
+    }
+  }
+
+  // Run heavy computation on an isolate
+  Future<String?> _runOnIsolate(
+    Function isolateFunction,
+    List<int> bytes,
+  ) async {
+    try {
+      final ReceivePort receivePort = ReceivePort();
+      await Isolate.spawn(_isolateEntryPoint, [
+        receivePort.sendPort,
+        isolateFunction,
+        bytes,
+      ]);
+      return await receivePort.first as String?;
+    } catch (e) {
+      print('Isolate error: $e');
+      return null;
+    }
+  }
+
+  static void _isolateEntryPoint(List<dynamic> args) {
+    final SendPort sendPort = args[0] as SendPort;
+    final Function function = args[1] as Function;
+    final List<int> bytes = args[2] as List<int>;
+
+    try {
+      final result = Function.apply(function, [bytes]);
+      sendPort.send(result);
+    } catch (e) {
+      sendPort.send(null);
     }
   }
 
