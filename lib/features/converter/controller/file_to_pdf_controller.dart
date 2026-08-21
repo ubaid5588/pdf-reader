@@ -4,7 +4,6 @@ import 'dart:isolate';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart' as fp;
 import 'package:file_reader/features/converter/services/pdf_storage_service.dart';
-import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';

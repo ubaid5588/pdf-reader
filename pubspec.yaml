@@ -51,7 +51,20 @@ dependencies:
   permission_handler: ^11.4.0
   pdf: ^3.10.4  
   excel: 
-  
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.0.0
+
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/playstore.png"
+  # adaptive_icon_background: "#FFFFFF"
+  # adaptive_icon_foreground: "assets/images/playstore.png"
+
+flutter_native_splash:
+  color: "#ffffff"  # or remove this section entirely
+  # Leave empty to remove splash screen
   
 
 dev_dependencies:
