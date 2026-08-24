@@ -173,11 +173,25 @@ class AppLocalizationsPt extends AppLocalizations {
       'Reordene, rode ou elimine páginas no seu documento PDF.';
 
   @override
+  String get createPdf => 'Create PDF';
+
+  @override
+  String get createPdfSubtitle =>
+      'Create and design a new PDF document from scratch.';
+
+  @override
   String get editPdf => 'Editar PDF';
 
   @override
   String get editPdfSubtitle =>
       'Edite texto, adicione anotações e personalize os seus documentos PDF.';
+
+  @override
+  String get unlockPdf => 'Unlock PDF';
+
+  @override
+  String get unlockPdfSubtitle =>
+      'Remove password protection from encrypted PDF files.';
 
   @override
   String get defaultToolSubtitle =>
@@ -205,6 +219,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get selectPdfToEdit => 'Selecionar PDF para editar';
 
   @override
+  String get selectPdfToUnlock => 'Select PDF to Unlock';
+
+  @override
   String get selectFile => 'Selecionar ficheiro';
 
   @override
@@ -230,6 +247,49 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get label3 => 'Seguro e privado';
+
+  @override
+  String get editOrganizeLabel1 => 'Edit text, annotate & customize pages';
+
+  @override
+  String get editOrganizeLabel2 => 'Organize, split, merge & remove pages';
+
+  @override
+  String get editOrganizeLabel3 => '100% secure, offline & lossless quality';
+
+  @override
+  String get selectPdfToSplit => 'Select PDF to Split';
+
+  @override
+  String get selectPdfToProtect => 'Select PDF to Protect';
+
+  @override
+  String get selectPdfToCompress => 'Select PDF to Compress';
+
+  @override
+  String get editText => 'Edit Text';
+
+  @override
+  String get selectTextToEdit => 'Select text to edit';
+
+  @override
+  String get tapTextToEdit => 'Tap any text on the page to edit it';
+
+  @override
+  String get originalText => 'Original Text';
+
+  @override
+  String get modifiedText => 'Modified Text';
+
+  @override
+  String get deleteText => 'Delete Text';
+
+  @override
+  String get detectedTextOnPage => 'Text on this page';
+
+  @override
+  String get noTextDetectedOnPage =>
+      'No selectable text detected on this page. You can use \'Add Text\' to add new text or whiteout.';
 
   @override
   String get home => 'Início';
@@ -307,10 +367,38 @@ class AppLocalizationsPt extends AppLocalizations {
       'Escolha o seu idioma de preferência para continuar';
 
   @override
+  String get removePages => 'Remove Pages';
+
+  @override
+  String get removePagesSubtitle => 'Delete unwanted pages from PDF document';
+
+  @override
+  String get selectPdfToRemovePages => 'Select PDF to Remove Pages';
+
+  @override
   String get conversionComplete => 'Conversão concluída!';
 
   @override
   String get yourPdfIsReady => 'O seu PDF está pronto';
+
+  @override
+  String get pdfReady => 'PDF Ready';
+
+  @override
+  String get pdfReadySubtitle => 'Your PDF is ready to edit and organize.';
+
+  @override
+  String get preparingPdf => 'Preparing PDF';
+
+  @override
+  String get preparingPdfSubtitle =>
+      'Getting your PDF ready for editing and organizing.';
+
+  @override
+  String get convertingToPdf => 'Converting to PDF';
+
+  @override
+  String get convertingToPdfSubtitle => 'Your file is being converted to PDF.';
 
   @override
   String get openPdf => 'Abrir PDF';

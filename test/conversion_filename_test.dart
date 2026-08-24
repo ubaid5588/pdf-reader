@@ -117,6 +117,58 @@ void main() {
       }
     });
 
+    test('Create PDF generates created-pdf-YYYY-MM-DD.pdf', () {
+      final name = PdfStorageService.generateCreatedPdfFileName(date: fixedDate);
+      expect(name, 'created-pdf-2026-08-20.pdf');
+    });
+
+    test('Unlock PDF generates unlocked-pdf-YYYY-MM-DD.pdf', () {
+      final name = PdfStorageService.generateUnlockedPdfFileName(date: fixedDate);
+      expect(name, 'unlocked-pdf-2026-08-20.pdf');
+    });
+
+    test('Edited PDF generates edited-pdf-YYYY-MM-DD.pdf or with base name', () {
+      final name = PdfStorageService.generateEditedPdfFileName(date: fixedDate);
+      expect(name, 'edited-pdf-2026-08-20.pdf');
+
+      final nameWithBase = PdfStorageService.generateEditedPdfFileName(
+        originalFileName: 'contract.pdf',
+        date: fixedDate,
+      );
+      expect(nameWithBase, 'contract_edited_2026-08-20.pdf');
+    });
+
+    test('Split PDF generates correct range and individual page filenames', () {
+      final rangeName = PdfStorageService.generateSplitPdfFileName(
+        originalFileName: 'document.pdf',
+        selectedPages: [2, 3, 4],
+        date: fixedDate,
+      );
+      expect(rangeName, 'document-split-2-4-2026-08-20.pdf');
+
+      final discreteName = PdfStorageService.generateSplitPdfFileName(
+        originalFileName: 'document.pdf',
+        selectedPages: [2, 5, 8],
+        date: fixedDate,
+      );
+      expect(discreteName, 'document-split-pages-2-5-8-2026-08-20.pdf');
+
+      final singleName = PdfStorageService.generateSplitPdfFileName(
+        originalFileName: 'document.pdf',
+        selectedPages: [3],
+        date: fixedDate,
+      );
+      expect(singleName, 'document-split-page-3-2026-08-20.pdf');
+    });
+
+    test('Remove Pages PDF generates document-remove-pages-YYYY-MM-DD.pdf', () {
+      final name = PdfStorageService.generateRemovePagesPdfFileName(
+        originalFileName: 'document.pdf',
+        date: fixedDate,
+      );
+      expect(name, 'document-remove-pages-2026-08-20.pdf');
+    });
+
     test('Sanitization strips illegal OS characters', () {
       final nameWithInvalidChars = PdfStorageService.generateConversionFileName(
         sourceExtension: 'doc/x:?<|>',

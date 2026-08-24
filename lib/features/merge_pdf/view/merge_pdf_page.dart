@@ -136,6 +136,7 @@ class MergePdfPage extends StatelessWidget {
               () => ConversionProcessingPage(
                 title: 'Merge PDF',
                 initialMessage: 'Merging $count documents into one...',
+                isEditOrganize: true,
                 processOperation: (onProgress) async {
                   return await controller.mergeSelectedPdfs(
                     onProgress: onProgress,

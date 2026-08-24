@@ -153,10 +153,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get organizePdfSubtitle => '在 PDF 文档中重新排序、旋转或删除页面。';
 
   @override
+  String get createPdf => 'Create PDF';
+
+  @override
+  String get createPdfSubtitle =>
+      'Create and design a new PDF document from scratch.';
+
+  @override
   String get editPdf => '编辑 PDF';
 
   @override
   String get editPdfSubtitle => '编辑文本、添加注释并自定义您的 PDF 文档。';
+
+  @override
+  String get unlockPdf => 'Unlock PDF';
+
+  @override
+  String get unlockPdfSubtitle =>
+      'Remove password protection from encrypted PDF files.';
 
   @override
   String get defaultToolSubtitle => '将您的文件转换为高质量的 PDF。';
@@ -183,6 +197,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectPdfToEdit => '选择要编辑的 PDF';
 
   @override
+  String get selectPdfToUnlock => 'Select PDF to Unlock';
+
+  @override
   String get selectFile => '选择文件';
 
   @override
@@ -207,6 +224,49 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get label3 => '安全且私密';
+
+  @override
+  String get editOrganizeLabel1 => 'Edit text, annotate & customize pages';
+
+  @override
+  String get editOrganizeLabel2 => 'Organize, split, merge & remove pages';
+
+  @override
+  String get editOrganizeLabel3 => '100% secure, offline & lossless quality';
+
+  @override
+  String get selectPdfToSplit => 'Select PDF to Split';
+
+  @override
+  String get selectPdfToProtect => 'Select PDF to Protect';
+
+  @override
+  String get selectPdfToCompress => 'Select PDF to Compress';
+
+  @override
+  String get editText => 'Edit Text';
+
+  @override
+  String get selectTextToEdit => 'Select text to edit';
+
+  @override
+  String get tapTextToEdit => 'Tap any text on the page to edit it';
+
+  @override
+  String get originalText => 'Original Text';
+
+  @override
+  String get modifiedText => 'Modified Text';
+
+  @override
+  String get deleteText => 'Delete Text';
+
+  @override
+  String get detectedTextOnPage => 'Text on this page';
+
+  @override
+  String get noTextDetectedOnPage =>
+      'No selectable text detected on this page. You can use \'Add Text\' to add new text or whiteout.';
 
   @override
   String get home => '首页';
@@ -281,10 +341,38 @@ class AppLocalizationsZh extends AppLocalizations {
   String get preferredLangauge => '选择您的首选语言以继续';
 
   @override
+  String get removePages => 'Remove Pages';
+
+  @override
+  String get removePagesSubtitle => 'Delete unwanted pages from PDF document';
+
+  @override
+  String get selectPdfToRemovePages => 'Select PDF to Remove Pages';
+
+  @override
   String get conversionComplete => '转换完成！';
 
   @override
   String get yourPdfIsReady => '您的 PDF 已准备就绪';
+
+  @override
+  String get pdfReady => 'PDF Ready';
+
+  @override
+  String get pdfReadySubtitle => 'Your PDF is ready to edit and organize.';
+
+  @override
+  String get preparingPdf => 'Preparing PDF';
+
+  @override
+  String get preparingPdfSubtitle =>
+      'Getting your PDF ready for editing and organizing.';
+
+  @override
+  String get convertingToPdf => 'Converting to PDF';
+
+  @override
+  String get convertingToPdfSubtitle => 'Your file is being converted to PDF.';
 
   @override
   String get openPdf => '打开 PDF';

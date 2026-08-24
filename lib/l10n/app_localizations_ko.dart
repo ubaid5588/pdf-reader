@@ -153,10 +153,24 @@ class AppLocalizationsKo extends AppLocalizations {
   String get organizePdfSubtitle => 'PDF 문서의 페이지 순서를 변경하거나 회전 또는 삭제합니다.';
 
   @override
+  String get createPdf => 'Create PDF';
+
+  @override
+  String get createPdfSubtitle =>
+      'Create and design a new PDF document from scratch.';
+
+  @override
   String get editPdf => 'PDF 편집';
 
   @override
   String get editPdfSubtitle => '텍스트를 편집하고 주석을 추가하며 PDF 문서를 사용자 지정합니다.';
+
+  @override
+  String get unlockPdf => 'Unlock PDF';
+
+  @override
+  String get unlockPdfSubtitle =>
+      'Remove password protection from encrypted PDF files.';
 
   @override
   String get defaultToolSubtitle => '파일을 고품질 PDF로 변환합니다.';
@@ -183,6 +197,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get selectPdfToEdit => '편집할 PDF 선택';
 
   @override
+  String get selectPdfToUnlock => 'Select PDF to Unlock';
+
+  @override
   String get selectFile => '파일 선택';
 
   @override
@@ -207,6 +224,49 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get label3 => '안전 및 비공개';
+
+  @override
+  String get editOrganizeLabel1 => 'Edit text, annotate & customize pages';
+
+  @override
+  String get editOrganizeLabel2 => 'Organize, split, merge & remove pages';
+
+  @override
+  String get editOrganizeLabel3 => '100% secure, offline & lossless quality';
+
+  @override
+  String get selectPdfToSplit => 'Select PDF to Split';
+
+  @override
+  String get selectPdfToProtect => 'Select PDF to Protect';
+
+  @override
+  String get selectPdfToCompress => 'Select PDF to Compress';
+
+  @override
+  String get editText => 'Edit Text';
+
+  @override
+  String get selectTextToEdit => 'Select text to edit';
+
+  @override
+  String get tapTextToEdit => 'Tap any text on the page to edit it';
+
+  @override
+  String get originalText => 'Original Text';
+
+  @override
+  String get modifiedText => 'Modified Text';
+
+  @override
+  String get deleteText => 'Delete Text';
+
+  @override
+  String get detectedTextOnPage => 'Text on this page';
+
+  @override
+  String get noTextDetectedOnPage =>
+      'No selectable text detected on this page. You can use \'Add Text\' to add new text or whiteout.';
 
   @override
   String get home => '홈';
@@ -281,10 +341,38 @@ class AppLocalizationsKo extends AppLocalizations {
   String get preferredLangauge => '계속하려면 원하는 언어를 선택하세요';
 
   @override
+  String get removePages => 'Remove Pages';
+
+  @override
+  String get removePagesSubtitle => 'Delete unwanted pages from PDF document';
+
+  @override
+  String get selectPdfToRemovePages => 'Select PDF to Remove Pages';
+
+  @override
   String get conversionComplete => '변환이 완료되었습니다!';
 
   @override
   String get yourPdfIsReady => 'PDF가 준비되었습니다';
+
+  @override
+  String get pdfReady => 'PDF Ready';
+
+  @override
+  String get pdfReadySubtitle => 'Your PDF is ready to edit and organize.';
+
+  @override
+  String get preparingPdf => 'Preparing PDF';
+
+  @override
+  String get preparingPdfSubtitle =>
+      'Getting your PDF ready for editing and organizing.';
+
+  @override
+  String get convertingToPdf => 'Converting to PDF';
+
+  @override
+  String get convertingToPdfSubtitle => 'Your file is being converted to PDF.';
 
   @override
   String get openPdf => 'PDF 열기';

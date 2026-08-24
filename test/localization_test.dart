@@ -59,6 +59,12 @@ void main() {
           expect(localizations.settings.isNotEmpty, isTrue);
           expect(localizations.selectLanguage.isNotEmpty, isTrue);
           expect(localizations.preferredLangauge.isNotEmpty, isTrue);
+          expect(localizations.editOrganizeLabel1.isNotEmpty, isTrue);
+          expect(localizations.editOrganizeLabel2.isNotEmpty, isTrue);
+          expect(localizations.editOrganizeLabel3.isNotEmpty, isTrue);
+          expect(localizations.selectPdfToSplit.isNotEmpty, isTrue);
+          expect(localizations.selectPdfToProtect.isNotEmpty, isTrue);
+          expect(localizations.selectPdfToCompress.isNotEmpty, isTrue);
           expect(
             localizations.convertTool('Test').isNotEmpty,
             isTrue,

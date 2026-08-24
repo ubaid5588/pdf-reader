@@ -1,15 +1,18 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:file_picker/file_picker.dart' as fp;
 import 'package:file_reader/features/converter/services/pdf_storage_service.dart';
 import 'package:file_reader/features/file/controller/file_page_controller.dart';
+import 'package:file_reader/services/recent_pdf_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
-class ProtectPdfController extends GetxController {
+class UnlockPdfController extends GetxController {
   RxBool isLoading = false.obs;
 
+  /// Pick a PDF file
   Future<File?> pickPdfFile() async {
     try {
       final result = await fp.FilePicker.platform.pickFiles(
@@ -28,20 +31,37 @@ class ProtectPdfController extends GetxController {
     }
   }
 
-  Future<String?> promptPassword() async {
+  /// Inspects whether the PDF requires a password to open.
+  /// Returns `true` if locked/encrypted, `false` if already openable.
+  Future<bool> isPdfPasswordProtected(File file) async {
+    try {
+      final bytes = await file.readAsBytes();
+      if (bytes.isEmpty) return false;
+      final doc = PdfDocument(inputBytes: bytes);
+      final pageCount = doc.pages.count;
+      doc.dispose();
+      return pageCount < 0; // If successfully opened, it's not locked
+    } catch (e) {
+      // Failed to open without password -> PDF requires password
+      return true;
+    }
+  }
+
+  /// Prompts user to enter the PDF password
+  Future<String?> promptPassword({String? errorMessage}) async {
     final passwordController = TextEditingController();
     final RxBool obscureText = true.obs;
 
-    final result = await Get.dialog<String>(
+    return await Get.dialog<String>(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
-            Icon(Icons.lock_outline_rounded, color: Color(0xFF5B5CFF), size: 24),
+            Icon(Icons.lock_open_rounded, color: Color(0xFF2563EB), size: 24),
             SizedBox(width: 10),
             Text(
-              'Set Password Protection',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              'Enter PDF Password',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -51,19 +71,19 @@ class ProtectPdfController extends GetxController {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Enter a password to encrypt and secure this PDF:',
+                'This document is password protected. Enter the password to unlock it:',
                 style: TextStyle(fontSize: 13, color: Colors.black54),
               ),
               const SizedBox(height: 14),
               Obx(
                 () => TextField(
                   controller: passwordController,
-                  autofocus: true,
                   obscureText: obscureText.value,
+                  autofocus: true,
                   textInputAction: TextInputAction.done,
                   decoration: InputDecoration(
-                    hintText: 'Enter password',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    hintText: 'Password',
+                    prefixIcon: const Icon(Icons.key_rounded),
                     suffixIcon: IconButton(
                       icon: Icon(
                         obscureText.value
@@ -89,6 +109,13 @@ class ProtectPdfController extends GetxController {
                   },
                 ),
               ),
+              if (errorMessage != null && errorMessage.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Text(
+                  errorMessage,
+                  style: const TextStyle(color: Colors.red, fontSize: 12),
+                ),
+              ],
             ],
           ),
         ),
@@ -99,85 +126,95 @@ class ProtectPdfController extends GetxController {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF5B5CFF),
+              backgroundColor: const Color(0xFF2563EB),
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
             ),
             onPressed: () {
-              final password = passwordController.text.trim();
-
-              if (password.isEmpty) {
-                Get.snackbar(
-                  'Password required',
-                  'Please enter a password',
-                  snackPosition: SnackPosition.BOTTOM,
-                );
-                return;
+              final text = passwordController.text.trim();
+              if (text.isNotEmpty) {
+                Get.back(result: text);
               }
-
-              Get.back(result: password);
             },
-            child: const Text('Protect'),
+            child: const Text(
+              'Unlock',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
       barrierDismissible: false,
     );
-
-    return result;
   }
 
-  Future<File> protectPdf(
+  /// Verifies password and decrypts PDF, generating an unlocked copy
+  Future<File> unlockPdf(
     File sourceFile, {
-    required String userPassword,
-    String? ownerPassword,
+    required String password,
     void Function(double progress, String status)? onProgress,
   }) async {
+    isLoading.value = true;
     try {
-      isLoading.value = true;
-      onProgress?.call(0.2, 'Loading PDF document...');
+      onProgress?.call(0.2, 'Verifying password...');
       final bytes = await sourceFile.readAsBytes();
-      final PdfDocument document = PdfDocument(inputBytes: bytes);
 
-      onProgress?.call(0.5, 'Applying 256-bit AES encryption...');
-      final PdfSecurity security = document.security;
-
-      if (userPassword.isNotEmpty) {
-        security.userPassword = userPassword;
-      }
-      if (ownerPassword != null && ownerPassword.isNotEmpty) {
-        security.ownerPassword = ownerPassword;
-      } else {
-        security.ownerPassword = userPassword;
+      PdfDocument sourceDoc;
+      try {
+        sourceDoc = PdfDocument(inputBytes: bytes, password: password);
+      } catch (e) {
+        throw Exception('Incorrect password. Please try again.');
       }
 
-      security.algorithm = PdfEncryptionAlgorithm.aesx256Bit;
+      onProgress?.call(0.5, 'Decrypting and removing lock...');
+      final PdfDocument unlockedDoc = PdfDocument();
 
-      onProgress?.call(0.75, 'Saving protected PDF...');
-      final List<int> protectedBytes = await document.save();
-      document.dispose();
+      final int pageCount = sourceDoc.pages.count;
+      for (int i = 0; i < pageCount; i++) {
+        final PdfPage sourcePage = sourceDoc.pages[i];
+        final ui.Size size = sourcePage.size;
 
-      onProgress?.call(0.9, 'Saving to device storage...');
-      final baseName = sourceFile.path
-          .split(Platform.pathSeparator)
-          .last
-          .replaceAll('.pdf', '');
-      final fileName = '${baseName}_protected.pdf';
+        unlockedDoc.pageSettings.size = size;
+        unlockedDoc.pageSettings.margins.all = 0;
+
+        final PdfPage newPage = unlockedDoc.pages.add();
+        final PdfTemplate template = sourcePage.createTemplate();
+        newPage.graphics.drawPdfTemplate(
+          template,
+          const ui.Offset(0, 0),
+          size,
+        );
+      }
+
+      onProgress?.call(0.8, 'Encoding unlocked document...');
+      final List<int> unlockedBytes = await unlockedDoc.save();
+
+      unlockedDoc.dispose();
+      sourceDoc.dispose();
+
+      onProgress?.call(0.9, 'Saving unlocked PDF...');
+      final fileName = PdfStorageService.generateUnlockedPdfFileName();
 
       final savedPath = await PdfStorageService.savePdfToDownloads(
-        pdfBytes: protectedBytes,
+        pdfBytes: unlockedBytes,
         fileName: fileName,
       );
 
       onProgress?.call(1.0, 'Finalizing...');
 
       if (savedPath == null) {
-        throw Exception('Failed to save protected PDF to storage');
+        throw Exception('Failed to save unlocked PDF to storage');
       }
 
+      // Record in recent
       try {
+        final recentController = Get.isRegistered<RecentPdfController>()
+            ? Get.find<RecentPdfController>()
+            : Get.put(RecentPdfController());
+        await recentController.addRecentPdf(savedPath, fileName);
+
         if (Get.isRegistered<FilePageController>()) {
           await Get.find<FilePageController>().refreshPdfs();
         }

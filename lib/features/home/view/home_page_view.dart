@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:file_reader/core/theme/app_colors.dart';
+import 'package:file_reader/features/converter/model/tool_type.dart';
 import 'package:file_reader/features/converter/view/selected_tool.dart';
 import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:file_reader/features/home/controller/navi_controller.dart';
@@ -85,7 +86,12 @@ class _HomeScreenState extends State<HomePageView> {
           SizedBox(height: sectionSpacing),
 
           // Recent Files Section
-          _buildRecentFilesSection(context, screenSize, lang, horizontalPadding),
+          _buildRecentFilesSection(
+            context,
+            screenSize,
+            lang,
+            horizontalPadding,
+          ),
 
           SizedBox(height: isSmallPhone ? 60 : 80),
         ],
@@ -112,10 +118,7 @@ class _HomeScreenState extends State<HomePageView> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                colors.primaryGradientStart,
-                colors.primaryGradientEnd,
-              ],
+              colors: [colors.primaryGradientStart, colors.primaryGradientEnd],
             ),
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
@@ -269,10 +272,7 @@ class _HomeScreenState extends State<HomePageView> {
                 decoration: BoxDecoration(
                   color: colors.surface,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: colors.border,
-                    width: 1,
-                  ),
+                  border: Border.all(color: colors.border, width: 1),
                   boxShadow: [
                     BoxShadow(
                       color: colors.cardShadow,
@@ -328,10 +328,7 @@ class _HomeScreenState extends State<HomePageView> {
               decoration: BoxDecoration(
                 color: colors.surface,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: colors.border,
-                  width: 1,
-                ),
+                border: Border.all(color: colors.border, width: 1),
                 boxShadow: [
                   BoxShadow(
                     color: colors.cardShadow,
@@ -366,7 +363,9 @@ class _HomeScreenState extends State<HomePageView> {
                     formattedSubtitle += RecentPdfController.formatBytes(size);
                   }
                   if (date != null) {
-                    final dateFormatted = DateFormat('MMM d, yyyy').format(date);
+                    final dateFormatted = DateFormat(
+                      'MMM d, yyyy',
+                    ).format(date);
                     if (formattedSubtitle.isNotEmpty) {
                       formattedSubtitle += ' • $dateFormatted';
                     } else {
@@ -503,10 +502,7 @@ class _HomeScreenState extends State<HomePageView> {
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: colors.border,
-            width: 1,
-          ),
+          border: Border.all(color: colors.border, width: 1),
           boxShadow: [
             BoxShadow(
               color: colors.cardShadow,
@@ -582,9 +578,16 @@ class _HomeScreenState extends State<HomePageView> {
 
   List<ToolItem> _editOrganizeItems(AppLocalizations lang, bool isDark) => [
     ToolItem(
-      icon: Icons.edit_document,
+      icon: Icons.note_add_rounded,
       iconColor: isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB),
       bgColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFEFF6FF),
+      label: lang.createPdf,
+      toolType: ToolType.createPdf,
+    ),
+    ToolItem(
+      icon: Icons.edit_document,
+      iconColor: isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5),
+      bgColor: isDark ? const Color(0xFF222044) : const Color(0xFFEEF2FF),
       label: lang.editPdf,
       toolType: ToolType.editPdf,
     ),
@@ -615,6 +618,20 @@ class _HomeScreenState extends State<HomePageView> {
       bgColor: isDark ? const Color(0xFF163326) : const Color(0xFFE8F5E9),
       label: lang.protectPdf,
       toolType: ToolType.protectPdf,
+    ),
+    ToolItem(
+      icon: Icons.lock_open_rounded,
+      iconColor: isDark ? const Color(0xFF34D399) : const Color(0xFF16A34A),
+      bgColor: isDark ? const Color(0xFF163326) : const Color(0xFFF0FDF4),
+      label: lang.unlockPdf,
+      toolType: ToolType.unlockPdf,
+    ),
+    ToolItem(
+      icon: Icons.delete_sweep_rounded,
+      iconColor: isDark ? const Color(0xFFF87171) : const Color(0xFFEF4444),
+      bgColor: isDark ? const Color(0xFF381B1B) : const Color(0xFFFFF1F2),
+      label: lang.removePages,
+      toolType: ToolType.removePages,
     ),
   ];
 }

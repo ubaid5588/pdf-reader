@@ -79,6 +79,96 @@ class PdfStorageService {
     return '$prefix-to-pdf-$dateStr.pdf';
   }
 
+  /// Generates filename for newly created PDFs: `created-pdf-YYYY-MM-DD.pdf`
+  static String generateCreatedPdfFileName({DateTime? date}) {
+    final now = date ?? DateTime.now();
+    final dateStr = DateFormat('yyyy-MM-dd').format(now);
+    return 'created-pdf-$dateStr.pdf';
+  }
+
+  /// Generates filename for unlocked PDFs: `unlocked-pdf-YYYY-MM-DD.pdf`
+  static String generateUnlockedPdfFileName({DateTime? date}) {
+    final now = date ?? DateTime.now();
+    final dateStr = DateFormat('yyyy-MM-dd').format(now);
+    return 'unlocked-pdf-$dateStr.pdf';
+  }
+
+  /// Generates filename for edited PDFs: `edited-pdf-YYYY-MM-DD.pdf`
+  static String generateEditedPdfFileName({DateTime? date, String? originalFileName}) {
+    final now = date ?? DateTime.now();
+    final dateStr = DateFormat('yyyy-MM-dd').format(now);
+    if (originalFileName != null && originalFileName.isNotEmpty) {
+      final cleanBase = originalFileName
+          .replaceAll(RegExp(r'\.pdf$', caseSensitive: false), '')
+          .replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
+      return '${cleanBase}_edited_$dateStr.pdf';
+    }
+    return 'edited-pdf-$dateStr.pdf';
+  }
+
+  /// Generates filename for split PDFs:
+  /// Continuous range (e.g. 2, 3, 4) -> `document-split-2-4-2026-08-21.pdf`
+  /// Individual pages (e.g. 2, 5, 8) -> `document-split-pages-2-5-8-2026-08-21.pdf`
+  /// Single page (e.g. 3) -> `document-split-page-3-2026-08-21.pdf`
+  static String generateSplitPdfFileName({
+    String? originalFileName,
+    required List<int> selectedPages,
+    DateTime? date,
+  }) {
+    final now = date ?? DateTime.now();
+    final dateStr = DateFormat('yyyy-MM-dd').format(now);
+
+    String baseName = 'document';
+    if (originalFileName != null && originalFileName.trim().isNotEmpty) {
+      baseName = originalFileName
+          .replaceAll(RegExp(r'\.pdf$', caseSensitive: false), '')
+          .replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
+      if (baseName.isEmpty) baseName = 'document';
+    }
+
+    final sorted = List<int>.from(selectedPages)..sort();
+    String pagePart;
+    if (sorted.isEmpty) {
+      pagePart = 'split';
+    } else if (sorted.length == 1) {
+      pagePart = 'split-page-${sorted.first}';
+    } else {
+      bool isContinuous = true;
+      for (int i = 0; i < sorted.length - 1; i++) {
+        if (sorted[i + 1] != sorted[i] + 1) {
+          isContinuous = false;
+          break;
+        }
+      }
+      if (isContinuous) {
+        pagePart = 'split-${sorted.first}-${sorted.last}';
+      } else {
+        pagePart = 'split-pages-${sorted.join('-')}';
+      }
+    }
+
+    return '$baseName-$pagePart-$dateStr.pdf';
+  }
+
+  /// Generates filename for remove pages PDFs: `document-remove-pages-2026-08-21.pdf`
+  static String generateRemovePagesPdfFileName({
+    String? originalFileName,
+    DateTime? date,
+  }) {
+    final now = date ?? DateTime.now();
+    final dateStr = DateFormat('yyyy-MM-dd').format(now);
+
+    String baseName = 'document';
+    if (originalFileName != null && originalFileName.trim().isNotEmpty) {
+      baseName = originalFileName
+          .replaceAll(RegExp(r'\.pdf$', caseSensitive: false), '')
+          .replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
+      if (baseName.isEmpty) baseName = 'document';
+    }
+
+    return '$baseName-remove-pages-$dateStr.pdf';
+  }
+
   /// Saves a PDF file to device Downloads folder (with fallback to app documents)
   /// Returns the path if successful, null if failed
   static Future<String?> savePdfToDownloads({

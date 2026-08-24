@@ -404,6 +404,18 @@ abstract class AppLocalizations {
   /// **'Reorder, rotate, or delete pages in your PDF document.'**
   String get organizePdfSubtitle;
 
+  /// No description provided for @createPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Create PDF'**
+  String get createPdf;
+
+  /// No description provided for @createPdfSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create and design a new PDF document from scratch.'**
+  String get createPdfSubtitle;
+
   /// No description provided for @editPdf.
   ///
   /// In en, this message translates to:
@@ -415,6 +427,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit text, annotate, and customize your PDF documents.'**
   String get editPdfSubtitle;
+
+  /// No description provided for @unlockPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock PDF'**
+  String get unlockPdf;
+
+  /// No description provided for @unlockPdfSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove password protection from encrypted PDF files.'**
+  String get unlockPdfSubtitle;
 
   /// No description provided for @defaultToolSubtitle.
   ///
@@ -464,6 +488,12 @@ abstract class AppLocalizations {
   /// **'Select PDF to Edit'**
   String get selectPdfToEdit;
 
+  /// No description provided for @selectPdfToUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Select PDF to Unlock'**
+  String get selectPdfToUnlock;
+
   /// No description provided for @selectFile.
   ///
   /// In en, this message translates to:
@@ -511,6 +541,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Secure & Private'**
   String get label3;
+
+  /// No description provided for @editOrganizeLabel1.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit text, annotate & customize pages'**
+  String get editOrganizeLabel1;
+
+  /// No description provided for @editOrganizeLabel2.
+  ///
+  /// In en, this message translates to:
+  /// **'Organize, split, merge & remove pages'**
+  String get editOrganizeLabel2;
+
+  /// No description provided for @editOrganizeLabel3.
+  ///
+  /// In en, this message translates to:
+  /// **'100% secure, offline & lossless quality'**
+  String get editOrganizeLabel3;
+
+  /// No description provided for @selectPdfToSplit.
+  ///
+  /// In en, this message translates to:
+  /// **'Select PDF to Split'**
+  String get selectPdfToSplit;
+
+  /// No description provided for @selectPdfToProtect.
+  ///
+  /// In en, this message translates to:
+  /// **'Select PDF to Protect'**
+  String get selectPdfToProtect;
+
+  /// No description provided for @selectPdfToCompress.
+  ///
+  /// In en, this message translates to:
+  /// **'Select PDF to Compress'**
+  String get selectPdfToCompress;
+
+  /// No description provided for @editText.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Text'**
+  String get editText;
+
+  /// No description provided for @selectTextToEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Select text to edit'**
+  String get selectTextToEdit;
+
+  /// No description provided for @tapTextToEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap any text on the page to edit it'**
+  String get tapTextToEdit;
+
+  /// No description provided for @originalText.
+  ///
+  /// In en, this message translates to:
+  /// **'Original Text'**
+  String get originalText;
+
+  /// No description provided for @modifiedText.
+  ///
+  /// In en, this message translates to:
+  /// **'Modified Text'**
+  String get modifiedText;
+
+  /// No description provided for @deleteText.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Text'**
+  String get deleteText;
+
+  /// No description provided for @detectedTextOnPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Text on this page'**
+  String get detectedTextOnPage;
+
+  /// No description provided for @noTextDetectedOnPage.
+  ///
+  /// In en, this message translates to:
+  /// **'No selectable text detected on this page. You can use \'Add Text\' to add new text or whiteout.'**
+  String get noTextDetectedOnPage;
 
   /// No description provided for @home.
   ///
@@ -656,6 +770,24 @@ abstract class AppLocalizations {
   /// **'Choose your preferred language to continue'**
   String get preferredLangauge;
 
+  /// No description provided for @removePages.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Pages'**
+  String get removePages;
+
+  /// No description provided for @removePagesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete unwanted pages from PDF document'**
+  String get removePagesSubtitle;
+
+  /// No description provided for @selectPdfToRemovePages.
+  ///
+  /// In en, this message translates to:
+  /// **'Select PDF to Remove Pages'**
+  String get selectPdfToRemovePages;
+
   /// No description provided for @conversionComplete.
   ///
   /// In en, this message translates to:
@@ -667,6 +799,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your PDF is ready'**
   String get yourPdfIsReady;
+
+  /// No description provided for @pdfReady.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF Ready'**
+  String get pdfReady;
+
+  /// No description provided for @pdfReadySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your PDF is ready to edit and organize.'**
+  String get pdfReadySubtitle;
+
+  /// No description provided for @preparingPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing PDF'**
+  String get preparingPdf;
+
+  /// No description provided for @preparingPdfSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting your PDF ready for editing and organizing.'**
+  String get preparingPdfSubtitle;
+
+  /// No description provided for @convertingToPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Converting to PDF'**
+  String get convertingToPdf;
+
+  /// No description provided for @convertingToPdfSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your file is being converted to PDF.'**
+  String get convertingToPdfSubtitle;
 
   /// No description provided for @openPdf.
   ///

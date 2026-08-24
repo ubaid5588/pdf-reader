@@ -15,6 +15,11 @@ enum ConversionFlowState { processing, completed, error }
 class ConversionProcessingPage extends StatefulWidget {
   final String title;
   final String initialMessage;
+  final bool isEditOrganize;
+  final String? processingTitle;
+  final String? processingSubtitle;
+  final String? completedTitle;
+  final String? completedSubtitle;
   final Future<File?> Function(
     void Function(double progress, String status) onProgress,
   )
@@ -25,6 +30,11 @@ class ConversionProcessingPage extends StatefulWidget {
     super.key,
     required this.title,
     this.initialMessage = '',
+    this.isEditOrganize = false,
+    this.processingTitle,
+    this.processingSubtitle,
+    this.completedTitle,
+    this.completedSubtitle,
     required this.processOperation,
     this.onCancel,
   });
@@ -151,9 +161,18 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
   }
 
   String _getPhaseTitle(AppLocalizations lang, double pct) {
-    if (pct < 0.35) return lang.preparing;
-    if (pct < 0.80) return lang.converting;
-    return lang.almostDone;
+    if (widget.processingTitle != null && widget.processingTitle!.isNotEmpty) {
+      return widget.processingTitle!;
+    }
+    if (widget.isEditOrganize) {
+      if (pct < 0.35) return lang.preparingPdf;
+      if (pct < 0.80) return 'Processing...';
+      return lang.almostDone;
+    } else {
+      if (pct < 0.35) return lang.preparing;
+      if (pct < 0.80) return lang.converting;
+      return lang.almostDone;
+    }
   }
 
   @override
@@ -171,7 +190,9 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
               backgroundColor: colors.surfaceElevated,
               title: Text(lang.cancel, style: TextStyle(color: colors.textPrimary)),
               content: Text(
-                'A conversion is currently in progress. Are you sure you want to exit?',
+                widget.isEditOrganize
+                    ? 'Processing is currently underway. Are you sure you want to exit?'
+                    : 'A conversion is currently in progress. Are you sure you want to exit?',
                 style: TextStyle(color: colors.textSecondary),
               ),
               actions: [
@@ -373,7 +394,10 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
           child: Text(
             _statusMessage.isNotEmpty
                 ? _statusMessage
-                : lang.finalizingFileMessage,
+                : (widget.processingSubtitle ??
+                    (widget.isEditOrganize
+                        ? lang.preparingPdfSubtitle
+                        : lang.finalizingFileMessage)),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -414,6 +438,11 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
   Widget _buildCompletedView(BuildContext context, AppLocalizations lang) {
     final colors = context.colors;
 
+    final completedTitle = widget.completedTitle ??
+        (widget.isEditOrganize ? lang.pdfReady : lang.conversionComplete);
+    final completedSubtitle = widget.completedSubtitle ??
+        (widget.isEditOrganize ? lang.pdfReadySubtitle : lang.yourPdfIsReady);
+
     return Column(
       key: const ValueKey('completed_view'),
       mainAxisSize: MainAxisSize.min,
@@ -449,7 +478,7 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
         const SizedBox(height: 24),
 
         Text(
-          lang.conversionComplete,
+          completedTitle,
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -460,7 +489,7 @@ class _ConversionProcessingPageState extends State<ConversionProcessingPage>
         const SizedBox(height: 6),
 
         Text(
-          lang.yourPdfIsReady,
+          completedSubtitle,
           style: TextStyle(fontSize: 14, color: colors.textSecondary),
         ),
 

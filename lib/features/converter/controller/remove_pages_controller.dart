@@ -7,12 +7,14 @@ import 'package:file_reader/services/recent_pdf_controller.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
-class SplitPdfController extends GetxController {
+class RemovePagesController extends GetxController {
   RxBool isLoading = false.obs;
   Rx<File?> selectedFile = Rx<File?>(null);
   RxInt totalPages = 0.obs;
-  RxSet<int> selectedPages = <int>{}.obs; // 1-based page numbers
+  RxSet<int> pagesToRemove = <int>{}.obs; // 1-based page numbers
   String? pdfPassword;
+
+  int get remainingPagesCount => totalPages.value - pagesToRemove.length;
 
   /// Pick a PDF file
   Future<File?> pickPdfFile() async {
@@ -69,7 +71,7 @@ class SplitPdfController extends GetxController {
 
       selectedFile.value = file;
       totalPages.value = count;
-      selectedPages.clear();
+      pagesToRemove.clear();
       pdfPassword = password;
 
       return count;
@@ -78,37 +80,28 @@ class SplitPdfController extends GetxController {
     }
   }
 
-  void togglePageSelection(int pageNumber) {
-    if (selectedPages.contains(pageNumber)) {
-      selectedPages.remove(pageNumber);
+  void togglePageRemoval(int pageNumber) {
+    if (pagesToRemove.contains(pageNumber)) {
+      pagesToRemove.remove(pageNumber);
     } else {
-      selectedPages.add(pageNumber);
+      if (pagesToRemove.length >= totalPages.value - 1) {
+        Get.snackbar(
+          'Cannot Remove All Pages',
+          'At least one page must remain in the document.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+      pagesToRemove.add(pageNumber);
     }
   }
 
-  void selectAllPages() {
-    if (selectedPages.length == totalPages.value) {
-      selectedPages.clear();
-    } else {
-      selectedPages.assignAll(
-        List.generate(totalPages.value, (index) => index + 1),
-      );
-    }
+  void clearSelection() {
+    pagesToRemove.clear();
   }
 
-  void selectRange(int start, int end) {
-    final s = start.clamp(1, totalPages.value);
-    final e = end.clamp(1, totalPages.value);
-    final min = s < e ? s : e;
-    final max = s < e ? e : s;
-
-    for (int i = min; i <= max; i++) {
-      selectedPages.add(i);
-    }
-  }
-
-  /// Splits/extracts the selected pages into a new PDF
-  Future<File> splitSelectedPages({
+  /// Removes selected pages and creates a new PDF with the remaining pages
+  Future<File> generatePdfWithoutRemovedPages({
     void Function(double progress, String status)? onProgress,
   }) async {
     final file = selectedFile.value;
@@ -116,13 +109,17 @@ class SplitPdfController extends GetxController {
       throw Exception('Source PDF file not found.');
     }
 
-    if (selectedPages.isEmpty) {
-      throw Exception('Please select at least one page to split.');
+    if (pagesToRemove.isEmpty) {
+      throw Exception('Please select at least one page to remove.');
+    }
+
+    if (remainingPagesCount <= 0) {
+      throw Exception('Cannot remove all pages. At least one page must remain.');
     }
 
     try {
       isLoading.value = true;
-      onProgress?.call(0.15, 'Reading source PDF...');
+      onProgress?.call(0.15, 'Reading source PDF document...');
 
       final bytes = await file.readAsBytes();
       final PdfDocument sourceDoc = PdfDocument(
@@ -130,22 +127,26 @@ class SplitPdfController extends GetxController {
         password: pdfPassword,
       );
 
-      final sortedPages = selectedPages.toList()..sort();
       final PdfDocument newDoc = PdfDocument();
       newDoc.pageSettings.margins.all = 0;
 
-      final totalToExtract = sortedPages.length;
-      for (int i = 0; i < totalToExtract; i++) {
-        final pageNum = sortedPages[i];
-        final progressPct = 0.2 + (0.65 * ((i + 1) / totalToExtract));
+      final total = sourceDoc.pages.count;
+      int copiedCount = 0;
+
+      for (int i = 0; i < total; i++) {
+        final pageNum = i + 1;
+        if (pagesToRemove.contains(pageNum)) {
+          continue; // Skip removed pages
+        }
+
+        copiedCount++;
+        final progressPct = 0.2 + (0.65 * (copiedCount / remainingPagesCount));
         onProgress?.call(
           progressPct,
-          'Extracting page $pageNum (${i + 1} of $totalToExtract)...',
+          'Writing page $pageNum ($copiedCount of $remainingPagesCount)...',
         );
 
-        if (pageNum < 1 || pageNum > sourceDoc.pages.count) continue;
-
-        final PdfPage sourcePage = sourceDoc.pages[pageNum - 1];
+        final PdfPage sourcePage = sourceDoc.pages[i];
         final Size pageSize = sourcePage.size;
 
         final PdfPage newPage = newDoc.pages.add();
@@ -158,33 +159,32 @@ class SplitPdfController extends GetxController {
 
       sourceDoc.dispose();
 
-      onProgress?.call(0.88, 'Encoding split document...');
-      final splitBytes = await newDoc.save();
+      onProgress?.call(0.88, 'Encoding updated document...');
+      final resultBytes = await newDoc.save();
       newDoc.dispose();
 
       onProgress?.call(0.93, 'Saving to device storage...');
       final originalName = file.path.split(Platform.pathSeparator).last;
-      final splitFileName = PdfStorageService.generateSplitPdfFileName(
+      final fileName = PdfStorageService.generateRemovePagesPdfFileName(
         originalFileName: originalName,
-        selectedPages: sortedPages,
       );
 
       final savedPath = await PdfStorageService.savePdfToDownloads(
-        pdfBytes: splitBytes,
-        fileName: splitFileName,
+        pdfBytes: resultBytes,
+        fileName: fileName,
       );
 
       onProgress?.call(1.0, 'Finalizing...');
 
       if (savedPath == null) {
-        throw Exception('Failed to save split PDF to storage');
+        throw Exception('Failed to save PDF to storage');
       }
 
       try {
         final recentController = Get.isRegistered<RecentPdfController>()
             ? Get.find<RecentPdfController>()
             : Get.put(RecentPdfController());
-        await recentController.addRecentPdf(savedPath, splitFileName);
+        await recentController.addRecentPdf(savedPath, fileName);
 
         if (Get.isRegistered<FilePageController>()) {
           await Get.find<FilePageController>().refreshPdfs();

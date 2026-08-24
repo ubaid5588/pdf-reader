@@ -4,32 +4,20 @@ import 'package:file_reader/features/converter/controller/compress_pdf_controlle
 import 'package:file_reader/features/converter/controller/file_to_pdf_controller.dart';
 import 'package:file_reader/features/converter/controller/image_to_pdf_controller.dart';
 import 'package:file_reader/features/converter/controller/protect_pdf_controller.dart';
+import 'package:file_reader/features/converter/controller/remove_pages_controller.dart';
 import 'package:file_reader/features/converter/controller/split_pdf_controller.dart';
 import 'package:file_reader/features/converter/view/conversion_processing_page.dart';
+import 'package:file_reader/features/converter/view/remove_pages_page.dart';
+import 'package:file_reader/features/converter/view/split_pdf_page_selector.dart';
 import 'package:file_reader/features/edit_pdf/controller/edit_pdf_controller.dart';
+import 'package:file_reader/features/converter/controller/unlock_pdf_controller.dart';
+import 'package:file_reader/features/converter/model/tool_type.dart';
+import 'package:file_reader/features/create_pdf/view/create_pdf_page.dart';
+import 'package:file_reader/features/edit_pdf/view/pdf_editor_page.dart';
 import 'package:file_reader/features/merge_pdf/view/merge_pdf_page.dart';
 import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-enum ToolType {
-  wordToPdf,
-  imageToPdf,
-  pptToPdf,
-  excelToPdf,
-  pdfToWord,
-  pdfToImage,
-  pdfToPpt,
-  pdfToExcel,
-  editPdf,
-  mergePdf,
-  splitPdf,
-  compressPdf,
-  protectPdf,
-  signOnPdf,
-  ocrPdf,
-  organizePdf,
-}
 
 class SelectedTool extends StatelessWidget {
   final ToolType toolType;
@@ -55,12 +43,35 @@ class SelectedTool extends StatelessWidget {
   );
 
   final SplitPdfController splitPdfController = Get.put(SplitPdfController());
+  final RemovePagesController removePagesController = Get.put(
+    RemovePagesController(),
+  );
   final ProtectPdfController protectPdfController = Get.put(
     ProtectPdfController(),
   );
-  final EditPdfController editPdfController = Get.put(
-    EditPdfController(),
+  final UnlockPdfController unlockPdfController = Get.put(
+    UnlockPdfController(),
   );
+  final EditPdfController editPdfController = Get.put(EditPdfController());
+
+  bool get _isEditOrganizeTool {
+    switch (toolType) {
+      case ToolType.createPdf:
+      case ToolType.editPdf:
+      case ToolType.mergePdf:
+      case ToolType.splitPdf:
+      case ToolType.removePages:
+      case ToolType.compressPdf:
+      case ToolType.protectPdf:
+      case ToolType.unlockPdf:
+      case ToolType.signOnPdf:
+      case ToolType.ocrPdf:
+      case ToolType.organizePdf:
+        return true;
+      default:
+        return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,18 +99,23 @@ class SelectedTool extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
 
-            Container(
+                      Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(
-                vertical: 36,
-                horizontal: 24,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 24),
               decoration: BoxDecoration(
                 color: colors.isDark ? colors.surface : const Color(0xFFF0EFFE),
                 borderRadius: BorderRadius.circular(20),
@@ -120,10 +136,7 @@ class SelectedTool extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _DocIcon(
-                        label: meta.fromLabel,
-                        color: meta.fromColor,
-                      ),
+                      _DocIcon(label: meta.fromLabel, color: meta.fromColor),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Icon(
@@ -137,7 +150,9 @@ class SelectedTool extends StatelessWidget {
                   ),
                   const SizedBox(height: 28),
                   Text(
-                    l10n.convertTool(meta.title),
+                    _isEditOrganizeTool
+                        ? meta.title
+                        : l10n.convertTool(meta.title),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -162,10 +177,7 @@ class SelectedTool extends StatelessWidget {
 
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(
-                vertical: 20,
-                horizontal: 24,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
               decoration: BoxDecoration(
                 color: colors.isDark ? colors.surface : const Color(0xFFF0EFFE),
                 borderRadius: BorderRadius.circular(20),
@@ -184,11 +196,23 @@ class SelectedTool extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _FeatureRow(label: l10n.label1),
+                  _FeatureRow(
+                    label: _isEditOrganizeTool
+                        ? l10n.editOrganizeLabel1
+                        : l10n.label1,
+                  ),
                   const SizedBox(height: 14),
-                  _FeatureRow(label: l10n.label2),
+                  _FeatureRow(
+                    label: _isEditOrganizeTool
+                        ? l10n.editOrganizeLabel2
+                        : l10n.label2,
+                  ),
                   const SizedBox(height: 14),
-                  _FeatureRow(label: l10n.label3),
+                  _FeatureRow(
+                    label: _isEditOrganizeTool
+                        ? l10n.editOrganizeLabel3
+                        : l10n.label3,
+                  ),
                 ],
               ),
             ),
@@ -201,8 +225,8 @@ class SelectedTool extends StatelessWidget {
               onPressed: () async {
                 switch (toolType) {
                   case ToolType.imageToPdf:
-                    final imagePaths =
-                        await imageToPdfController.pickImageFiles();
+                    final imagePaths = await imageToPdfController
+                        .pickImageFiles();
                     if (imagePaths != null && imagePaths.isNotEmpty) {
                       Get.to(
                         () => ConversionProcessingPage(
@@ -211,9 +235,9 @@ class SelectedTool extends StatelessWidget {
                               'Converting ${imagePaths.length} image(s) to PDF...',
                           processOperation: (onProgress) =>
                               imageToPdfController.createPdfFromImages(
-                            imagePaths,
-                            onProgress: onProgress,
-                          ),
+                                imagePaths,
+                                onProgress: onProgress,
+                              ),
                         ),
                       );
                     }
@@ -230,10 +254,10 @@ class SelectedTool extends StatelessWidget {
                           initialMessage: 'Converting Word document to PDF...',
                           processOperation: (onProgress) =>
                               wordToPdfController.convertOfficeFile(
-                            path,
-                            OfficeFileType.word,
-                            onProgress: onProgress,
-                          ),
+                                path,
+                                OfficeFileType.word,
+                                onProgress: onProgress,
+                              ),
                         ),
                       );
                     }
@@ -251,10 +275,10 @@ class SelectedTool extends StatelessWidget {
                               'Converting PowerPoint presentation to PDF...',
                           processOperation: (onProgress) =>
                               wordToPdfController.convertOfficeFile(
-                            path,
-                            OfficeFileType.powerpoint,
-                            onProgress: onProgress,
-                          ),
+                                path,
+                                OfficeFileType.powerpoint,
+                                onProgress: onProgress,
+                              ),
                         ),
                       );
                     }
@@ -272,13 +296,17 @@ class SelectedTool extends StatelessWidget {
                               'Converting Excel spreadsheet to PDF...',
                           processOperation: (onProgress) =>
                               wordToPdfController.convertOfficeFile(
-                            path,
-                            OfficeFileType.excel,
-                            onProgress: onProgress,
-                          ),
+                                path,
+                                OfficeFileType.excel,
+                                onProgress: onProgress,
+                              ),
                         ),
                       );
                     }
+                    break;
+
+                  case ToolType.createPdf:
+                    Get.to(() => const CreatePdfPage());
                     break;
 
                   case ToolType.mergePdf:
@@ -286,19 +314,90 @@ class SelectedTool extends StatelessWidget {
                     break;
 
                   case ToolType.splitPdf:
-                    final file = await splitPdfController.pickPdfFile();
-                    if (file != null) {
-                      Get.to(
-                        () => ConversionProcessingPage(
-                          title: meta.title,
-                          initialMessage: 'Splitting PDF document pages...',
-                          processOperation: (onProgress) =>
-                              splitPdfController.splitPdf(
-                            file,
-                            onProgress: onProgress,
+                    final splitFile = await splitPdfController.pickPdfFile();
+                    if (splitFile != null) {
+                      try {
+                        final total = await splitPdfController.inspectPdf(
+                          splitFile,
+                        );
+                        Get.to(
+                          () => SplitPdfPageSelectorPage(
+                            file: splitFile,
+                            totalPages: total,
                           ),
-                        ),
-                      );
+                        );
+                      } catch (e) {
+                        if (e.toString().contains('PASSWORD_REQUIRED')) {
+                          final pwd = await unlockPdfController
+                              .promptPassword();
+                          if (pwd != null && pwd.isNotEmpty) {
+                            try {
+                              final total = await splitPdfController.inspectPdf(
+                                splitFile,
+                                password: pwd,
+                              );
+                              Get.to(
+                                () => SplitPdfPageSelectorPage(
+                                  file: splitFile,
+                                  totalPages: total,
+                                ),
+                              );
+                            } catch (err) {
+                              Get.snackbar(
+                                'Error',
+                                'Incorrect password or unable to open PDF.',
+                              );
+                            }
+                          }
+                        } else {
+                          Get.snackbar(
+                            'Error',
+                            e.toString().replaceAll('Exception:', '').trim(),
+                          );
+                        }
+                      }
+                    }
+                    break;
+
+                  case ToolType.removePages:
+                    final remFile = await removePagesController.pickPdfFile();
+                    if (remFile != null) {
+                      try {
+                        final total = await removePagesController.inspectPdf(
+                          remFile,
+                        );
+                        Get.to(
+                          () =>
+                              RemovePagesPage(file: remFile, totalPages: total),
+                        );
+                      } catch (e) {
+                        if (e.toString().contains('PASSWORD_REQUIRED')) {
+                          final pwd = await unlockPdfController
+                              .promptPassword();
+                          if (pwd != null && pwd.isNotEmpty) {
+                            try {
+                              final total = await removePagesController
+                                  .inspectPdf(remFile, password: pwd);
+                              Get.to(
+                                () => RemovePagesPage(
+                                  file: remFile,
+                                  totalPages: total,
+                                ),
+                              );
+                            } catch (err) {
+                              Get.snackbar(
+                                'Error',
+                                'Incorrect password or unable to open PDF.',
+                              );
+                            }
+                          }
+                        } else {
+                          Get.snackbar(
+                            'Error',
+                            e.toString().replaceAll('Exception:', '').trim(),
+                          );
+                        }
+                      }
                     }
                     break;
 
@@ -308,13 +407,13 @@ class SelectedTool extends StatelessWidget {
                       Get.to(
                         () => ConversionProcessingPage(
                           title: meta.title,
-                          initialMessage:
-                              'Compressing and optimizing PDF...',
+                          initialMessage: 'Compressing and optimizing PDF...',
+                          isEditOrganize: true,
                           processOperation: (onProgress) =>
                               compressPdfController.compressPdf(
-                            file,
-                            onProgress: onProgress,
-                          ),
+                                file,
+                                onProgress: onProgress,
+                              ),
                         ),
                       );
                     }
@@ -323,20 +422,89 @@ class SelectedTool extends StatelessWidget {
                   case ToolType.protectPdf:
                     final file = await protectPdfController.pickPdfFile();
                     if (file != null) {
-                      final password =
-                          await protectPdfController.promptPassword();
+                      final password = await protectPdfController
+                          .promptPassword();
                       if (password != null && password.isNotEmpty) {
                         Get.to(
                           () => ConversionProcessingPage(
                             title: meta.title,
-                            initialMessage:
-                                'Encrypting and protecting PDF...',
+                            initialMessage: 'Encrypting and protecting PDF...',
+                            isEditOrganize: true,
                             processOperation: (onProgress) =>
                                 protectPdfController.protectPdf(
-                              file,
-                              userPassword: password,
-                              onProgress: onProgress,
+                                  file,
+                                  userPassword: password,
+                                  onProgress: onProgress,
+                                ),
+                          ),
+                        );
+                      }
+                    }
+                    break;
+
+                  case ToolType.unlockPdf:
+                    final file = await unlockPdfController.pickPdfFile();
+                    if (file != null) {
+                      final isProtected = await unlockPdfController
+                          .isPdfPasswordProtected(file);
+                      if (!isProtected) {
+                        Get.dialog(
+                          AlertDialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
                             ),
+                            title: const Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline_rounded,
+                                  color: Color(0xFF2563EB),
+                                  size: 22,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  'PDF Not Locked',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            content: const Text(
+                              'This PDF is not password protected and does not require unlocking.',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Get.back(),
+                                child: const Text(
+                                  'OK',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                        break;
+                      }
+
+                      final password = await unlockPdfController
+                          .promptPassword();
+                      if (password != null && password.isNotEmpty) {
+                        Get.to(
+                          () => ConversionProcessingPage(
+                            title: meta.title,
+                            initialMessage: 'Decrypting and unlocking PDF...',
+                            isEditOrganize: true,
+                            completedTitle: 'PDF Ready',
+                            completedSubtitle:
+                                'Your unlocked PDF is ready to view.',
+                            processOperation: (onProgress) =>
+                                unlockPdfController.unlockPdf(
+                                  file,
+                                  password: password,
+                                  onProgress: onProgress,
+                                ),
                           ),
                         );
                       }
@@ -344,13 +512,18 @@ class SelectedTool extends StatelessWidget {
                     break;
 
                   case ToolType.editPdf:
-                    await editPdfController.pickAndInspectPdf(context);
+                    final success = await editPdfController.pickAndInspectPdf(
+                      context,
+                    );
+                    if (success) {
+                      Get.to(() => const PdfEditorPage());
+                    }
                     break;
 
                   default:
                     Get.snackbar(
                       meta.title,
-                      'This conversion tool will be available soon.',
+                      'This ${_isEditOrganizeTool ? "tool" : "conversion tool"} will be available soon.',
                       snackPosition: SnackPosition.BOTTOM,
                     );
                     break;
@@ -359,6 +532,11 @@ class SelectedTool extends StatelessWidget {
             ),
             const SizedBox(height: 28),
           ],
+        ),
+      ),
+    ),
+  );
+},
         ),
       ),
     );
@@ -473,6 +651,16 @@ ToolMeta _resolveMeta(AppLocalizations l10n, ToolType type) {
         subtitle: l10n.pdfToExcelSubtitle,
         buttonLabel: l10n.selectPdfFile,
       );
+    case ToolType.createPdf:
+      return ToolMeta(
+        title: l10n.createPdf,
+        fromLabel: 'DOC',
+        fromColor: const Color(0xFF2563EB),
+        toLabel: 'PDF',
+        toColor: pdfRed,
+        subtitle: l10n.createPdfSubtitle,
+        buttonLabel: l10n.createPdf,
+      );
     case ToolType.editPdf:
       return ToolMeta(
         title: l10n.editPdf,
@@ -482,6 +670,16 @@ ToolMeta _resolveMeta(AppLocalizations l10n, ToolType type) {
         toColor: const Color(0xFF2563EB),
         subtitle: l10n.editPdfSubtitle,
         buttonLabel: l10n.selectPdfToEdit,
+      );
+    case ToolType.unlockPdf:
+      return ToolMeta(
+        title: l10n.unlockPdf,
+        fromLabel: 'LOCK',
+        fromColor: const Color(0xFFE53935),
+        toLabel: 'PDF',
+        toColor: const Color(0xFF34A853),
+        subtitle: l10n.unlockPdfSubtitle,
+        buttonLabel: l10n.selectPdfToUnlock,
       );
     case ToolType.mergePdf:
       return ToolMeta(
@@ -501,7 +699,7 @@ ToolMeta _resolveMeta(AppLocalizations l10n, ToolType type) {
         toLabel: 'PDF',
         toColor: const Color(0xFFE53935),
         subtitle: l10n.splitPdfSubtitle,
-        buttonLabel: l10n.selectPdfFile,
+        buttonLabel: l10n.selectPdfToSplit,
       );
     case ToolType.compressPdf:
       return ToolMeta(
@@ -511,7 +709,7 @@ ToolMeta _resolveMeta(AppLocalizations l10n, ToolType type) {
         toLabel: 'PDF',
         toColor: const Color(0xFFFFA000),
         subtitle: l10n.compressPdfSubtitle,
-        buttonLabel: l10n.selectPdfFile,
+        buttonLabel: l10n.selectPdfToCompress,
       );
     case ToolType.protectPdf:
       return ToolMeta(
@@ -521,7 +719,7 @@ ToolMeta _resolveMeta(AppLocalizations l10n, ToolType type) {
         toLabel: 'PDF',
         toColor: const Color(0xFF43A047),
         subtitle: l10n.protectPdfSubtitle,
-        buttonLabel: l10n.protectPdf,
+        buttonLabel: l10n.selectPdfToProtect,
       );
     case ToolType.signOnPdf:
       return ToolMeta(
@@ -552,6 +750,16 @@ ToolMeta _resolveMeta(AppLocalizations l10n, ToolType type) {
         toColor: const Color(0xFF4285F4),
         subtitle: l10n.organizePdfSubtitle,
         buttonLabel: l10n.selectPdfFile,
+      );
+    case ToolType.removePages:
+      return ToolMeta(
+        title: l10n.removePages,
+        fromLabel: 'PDF',
+        fromColor: pdfRed,
+        toLabel: 'DEL',
+        toColor: const Color(0xFFEF4444),
+        subtitle: l10n.removePagesSubtitle,
+        buttonLabel: l10n.selectPdfToRemovePages,
       );
   }
 }
@@ -655,12 +863,14 @@ class _FeatureRow extends StatelessWidget {
           child: Icon(Icons.check, color: colors.primary, size: 13),
         ),
         const SizedBox(width: 12),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w500,
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: colors.textPrimary,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],
