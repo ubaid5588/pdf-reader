@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomePageView> {
             context: context,
             title: lang.convertToPdf.toUpperCase(),
             items: _convertToPdfItems(lang, colors.isDark),
-            crossAxisCount: 2,
+            crossAxisCount: 3,
             horizontalPadding: horizontalPadding,
           ),
 
@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomePageView> {
             context: context,
             title: lang.editAndOrganize.toUpperCase(),
             items: _editOrganizeItems(lang, colors.isDark),
-            crossAxisCount: 2,
+            crossAxisCount: 3,
             horizontalPadding: horizontalPadding,
           ),
 
@@ -471,9 +471,9 @@ class _HomeScreenState extends State<HomePageView> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: crossAxisCount,
-            childAspectRatio: 1.2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
+            childAspectRatio: 1,
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 5,
             children: items
                 .map((item) => _buildToolIcon(context, item))
                 .toList(),
@@ -501,7 +501,7 @@ class _HomeScreenState extends State<HomePageView> {
       child: Container(
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(15),
           border: Border.all(color: colors.border, width: 1),
           boxShadow: [
             BoxShadow(
