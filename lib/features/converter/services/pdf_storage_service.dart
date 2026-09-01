@@ -204,8 +204,11 @@ class PdfStorageService {
         try {
           downloadsDir = await getApplicationDocumentsDirectory();
         } catch (_) {
-          // If path_provider also fails, try temp dir
-          downloadsDir = await getTemporaryDirectory();
+          try {
+            downloadsDir = await getTemporaryDirectory();
+          } catch (_) {
+            downloadsDir = Directory.systemTemp;
+          }
         }
       }
 

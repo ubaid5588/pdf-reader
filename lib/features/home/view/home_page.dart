@@ -8,6 +8,7 @@ import 'package:file_reader/features/home/controller/navi_controller.dart';
 import 'package:file_reader/features/home/view/home_page_view.dart';
 import 'package:file_reader/features/pdf_viewer/controller/file_view_controller.dart';
 import 'package:file_reader/features/pdf_viewer/view/pdf_viewer.dart';
+import 'package:file_reader/features/scan_pdf/view/document_camera_page.dart';
 import 'package:file_reader/features/setting/view/setting_page.dart';
 import 'package:file_reader/l10n/app_localizations.dart';
 import 'package:file_reader/services/recent_pdf_controller.dart';
@@ -134,6 +135,7 @@ class _HomePageState extends State<HomePage> {
             : 68;
 
         return Scaffold(
+          extendBody: true,
           backgroundColor: colors.background,
           body: SafeArea(
             top: true,
@@ -199,20 +201,20 @@ class _HomePageState extends State<HomePage> {
     final bool isSmallPhone = width < 360;
     final bool isTablet = width >= 600;
 
-    final double navWidth = width * 0.7;
+    final double navWidth = width * 0.86;
 
     final double iconSize = isSmallPhone
-        ? 22
+        ? 20
         : isTablet
         ? 26
-        : 24;
+        : 23;
     final double fontSize = isSmallPhone
-        ? 9.5
+        ? 9.0
         : isTablet
         ? 11.5
-        : 10.5;
-    final double horizontalPadding = isSmallPhone ? 10 : 4;
-    final double verticalPadding = isSmallPhone ? 8 : 2;
+        : 10.0;
+    final double horizontalPadding = isSmallPhone ? 6 : 4;
+    final double verticalPadding = isSmallPhone ? 4 : 2;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(isSmallPhone ? 24 : 35),
@@ -262,6 +264,12 @@ class _HomePageState extends State<HomePage> {
                   isSmallPhone,
                 ),
               ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: _buildCenterScanButton(context, isSmallPhone),
+              ),
+
               Expanded(
                 child: navItem(
                   context,
@@ -274,6 +282,48 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCenterScanButton(BuildContext context, bool isSmallPhone) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        Get.to(() => const DocumentCameraPage());
+      },
+      child: Container(
+        width: isSmallPhone ? 42 : 60,
+        height: isSmallPhone ? 42 : 60,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              ui.Color.fromARGB(102, 37, 100, 235),
+              ui.Color.fromARGB(94, 29, 79, 216),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF2563EB).withOpacity(0.4),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+          border: Border.all(
+            color: const ui.Color.fromARGB(207, 37, 100, 235),
+            width: 1.5,
+          ),
+        ),
+        child: Center(
+          child: Icon(
+            Icons.camera_alt_rounded,
+            color: Colors.white,
+            size: isSmallPhone ? 21 : 23,
           ),
         ),
       ),

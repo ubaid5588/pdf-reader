@@ -428,7 +428,7 @@ class SelectedTool extends StatelessWidget {
                         Get.to(
                           () => ConversionProcessingPage(
                             title: meta.title,
-                            initialMessage: 'Encrypting and protecting PDF...',
+                            initialMessage: 'Encrypting and locking PDF...',
                             isEditOrganize: true,
                             processOperation: (onProgress) =>
                                 protectPdfController.protectPdf(
@@ -471,7 +471,7 @@ class SelectedTool extends StatelessWidget {
                               ],
                             ),
                             content: const Text(
-                              'This PDF is not password protected and does not require unlocking.',
+                              'This PDF is not locked with a password and does not require unlocking.',
                               style: TextStyle(fontSize: 14),
                             ),
                             actions: [

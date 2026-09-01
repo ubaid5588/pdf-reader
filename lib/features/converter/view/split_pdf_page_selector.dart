@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/features/converter/controller/split_pdf_controller.dart';
 import 'package:file_reader/features/converter/view/conversion_processing_page.dart';
+import 'package:file_reader/features/converter/view/pdf_page_thumbnail.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -234,109 +235,73 @@ class _SplitPdfPageSelectorPageState extends State<SplitPdfPageSelectorPage> {
                         borderRadius: BorderRadius.circular(14),
                         child: Stack(
                           children: [
-                            // Document Page Skeleton / Preview
+                            // Real PDF Page Thumbnail Content
                             Positioned.fill(
-                              child: Container(
-                                color: colors.isDark
-                                    ? const Color(0xFF1E2438)
-                                    : Colors.white,
-                                padding: const EdgeInsets.all(12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Simulated Header
-                                    Container(
-                                      width: 60,
-                                      height: 6,
-                                      decoration: BoxDecoration(
-                                        color: colors.textSecondary.withOpacity(0.35),
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    // Simulated Document Lines
-                                    for (int l = 0; l < 8; l++) ...[
-                                      Container(
-                                        width: double.infinity,
-                                        height: 4,
-                                        decoration: BoxDecoration(
-                                          color: (l % 2 == 0)
-                                              ? colors.textSecondary.withOpacity(0.18)
-                                              : colors.textSecondary.withOpacity(0.12),
-                                          borderRadius: BorderRadius.circular(2),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                    ],
-                                    const Spacer(),
-                                    // Simulated Table/Blocks
-                                    Container(
-                                      width: double.infinity,
-                                      height: 24,
-                                      decoration: BoxDecoration(
-                                        color: colors.textSecondary.withOpacity(0.08),
-                                        borderRadius: BorderRadius.circular(4),
-                                        border: Border.all(
-                                          color: colors.textSecondary.withOpacity(0.15),
-                                          width: 0.5,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 28),
-                                  ],
-                                ),
+                              child: PdfPageThumbnail(
+                                file: widget.file,
+                                pageNumber: pageNumber,
+                                password: controller.pdfPassword,
+                                isSelected: isSelected,
                               ),
                             ),
 
-                            // Bottom-Left Page Number Badge (Matching Reference Screenshot)
+                            // Bottom-Left Page Number Badge
                             Positioned(
-                              left: 10,
-                              bottom: 10,
+                              left: 8,
+                              bottom: 8,
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
+                                  horizontal: 9,
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: colors.isDark
-                                      ? const Color(0xFF334155)
-                                      : const Color(0xFF94A3B8),
+                                  color: isSelected
+                                      ? colors.primary
+                                      : Colors.black.withOpacity(0.65),
                                   borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 4,
+                                    ),
+                                  ],
                                 ),
                                 child: Text(
                                   '$pageNumber',
                                   style: const TextStyle(
                                     color: Colors.white,
-                                    fontSize: 13,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
                             ),
 
-                            // Bottom-Right Checkbox Indicator (Matching Reference Screenshot)
+                            // Bottom-Right Checkbox Indicator
                             Positioned(
-                              right: 10,
-                              bottom: 10,
+                              right: 8,
+                              bottom: 8,
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 180),
-                                width: 26,
-                                height: 26,
+                                width: 28,
+                                height: 28,
                                 decoration: BoxDecoration(
                                   color: isSelected
                                       ? colors.primary
-                                      : (colors.isDark
-                                          ? const Color(0xFF334155).withOpacity(0.8)
-                                          : const Color(0xFFCBD5E1)),
+                                      : Colors.black.withOpacity(0.4),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
                                     color: isSelected
                                         ? colors.primary
-                                        : (colors.isDark
-                                            ? Colors.white24
-                                            : Colors.black12),
+                                        : Colors.white38,
                                     width: 1,
                                   ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.15),
+                                      blurRadius: 4,
+                                    ),
+                                  ],
                                 ),
                                 child: isSelected
                                     ? const Icon(

@@ -51,9 +51,9 @@ void main() {
       // Verify no RenderFlex overflow exception was thrown
       expect(tester.takeException(), isNull);
 
-      // Verify Protect PDF title and action button are present
-      expect(find.text('Protect PDF'), findsWidgets);
-      expect(find.text('Select PDF to Protect'), findsOneWidget);
+      // Verify Lock PDF title and action button are present
+      expect(find.text('Lock PDF'), findsWidgets);
+      expect(find.text('Select PDF to Lock'), findsOneWidget);
     });
 
     testWidgets('Password prompt dialog renders properly without overflow with keyboard viewInsets',
@@ -79,12 +79,12 @@ void main() {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        title: const Text('Set Password Protection'),
+                        title: const Text('Lock PDF with Password'),
                         content: SingleChildScrollView(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text('Enter a password to encrypt and secure this PDF:'),
+                              const Text('Enter a password to encrypt and lock this PDF:'),
                               const SizedBox(height: 14),
                               TextField(
                                 controller: passwordController,
@@ -101,7 +101,7 @@ void main() {
                           ),
                           ElevatedButton(
                             onPressed: () => Navigator.of(ctx).pop(),
-                            child: const Text('Protect'),
+                            child: const Text('Lock'),
                           ),
                         ],
                       ),
@@ -127,7 +127,7 @@ void main() {
 
       // Ensure no overflow
       expect(tester.takeException(), isNull);
-      expect(find.text('Set Password Protection'), findsOneWidget);
+      expect(find.text('Lock PDF with Password'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
 
       // Enter password

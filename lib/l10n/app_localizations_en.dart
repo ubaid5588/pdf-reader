@@ -36,7 +36,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onBoardingSubtitle3 =>
-      'Merge, split, compress, and protect your PDFs with simple and powerful tools.';
+      'Merge, split, compress, and lock your PDFs with simple and powerful tools.';
 
   @override
   String get onBoardingNext => 'Next';
@@ -100,7 +100,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get compressPdf => 'Compress PDF';
 
   @override
-  String get protectPdf => 'Protect PDF';
+  String get protectPdf => 'Lock PDF';
 
   @override
   String get signOnPdf => 'Sign on PDF';
@@ -157,7 +157,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get protectPdfSubtitle =>
-      'Encrypt and password-protect your PDF documents.';
+      'Encrypt and lock your PDF documents with a password.';
 
   @override
   String get signOnPdfSubtitle =>
@@ -234,7 +234,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finalizingFileMessage => 'Please wait while we finalize your file';
 
   @override
-  String get protecting => 'Protecting...';
+  String get protecting => 'Locking...';
 
   @override
   String get label1 => 'Fast Conversion';
@@ -258,7 +258,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectPdfToSplit => 'Select PDF to Split';
 
   @override
-  String get selectPdfToProtect => 'Select PDF to Protect';
+  String get selectPdfToProtect => 'Select PDF to Lock';
 
   @override
   String get selectPdfToCompress => 'Select PDF to Compress';

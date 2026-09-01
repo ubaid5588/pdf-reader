@@ -261,7 +261,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get selectPdfToSplit => 'Select PDF to Split';
 
   @override
-  String get selectPdfToProtect => 'Select PDF to Protect';
+  String get selectPdfToProtect => 'Select PDF to Lock';
 
   @override
   String get selectPdfToCompress => 'Select PDF to Compress';

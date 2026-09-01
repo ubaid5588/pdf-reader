@@ -53,6 +53,7 @@ dependencies:
   excel: 
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.0.0
+  glass_liquid_navbar: ^0.2.0
 
 
 flutter_launcher_icons:

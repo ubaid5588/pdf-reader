@@ -167,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @onBoardingSubtitle3.
   ///
   /// In en, this message translates to:
-  /// **'Merge, split, compress, and protect your PDFs with simple and powerful tools.'**
+  /// **'Merge, split, compress, and lock your PDFs with simple and powerful tools.'**
   String get onBoardingSubtitle3;
 
   /// No description provided for @onBoardingNext.
@@ -293,7 +293,7 @@ abstract class AppLocalizations {
   /// No description provided for @protectPdf.
   ///
   /// In en, this message translates to:
-  /// **'Protect PDF'**
+  /// **'Lock PDF'**
   String get protectPdf;
 
   /// No description provided for @signOnPdf.
@@ -383,7 +383,7 @@ abstract class AppLocalizations {
   /// No description provided for @protectPdfSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Encrypt and password-protect your PDF documents.'**
+  /// **'Encrypt and lock your PDF documents with a password.'**
   String get protectPdfSubtitle;
 
   /// No description provided for @signOnPdfSubtitle.
@@ -521,7 +521,7 @@ abstract class AppLocalizations {
   /// No description provided for @protecting.
   ///
   /// In en, this message translates to:
-  /// **'Protecting...'**
+  /// **'Locking...'**
   String get protecting;
 
   /// No description provided for @label1.
@@ -569,7 +569,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectPdfToProtect.
   ///
   /// In en, this message translates to:
-  /// **'Select PDF to Protect'**
+  /// **'Select PDF to Lock'**
   String get selectPdfToProtect;
 
   /// No description provided for @selectPdfToCompress.

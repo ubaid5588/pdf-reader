@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/features/converter/controller/remove_pages_controller.dart';
 import 'package:file_reader/features/converter/view/conversion_processing_page.dart';
+import 'package:file_reader/features/converter/view/pdf_page_thumbnail.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -59,9 +60,9 @@ class _RemovePagesPageState extends State<RemovePagesPage> {
         initialMessage:
             'Removing $removeCount pages (keeping $remainCount pages)...',
         isEditOrganize: true,
-        completedTitle: 'PDF Ready',
+        completedTitle: 'PDF Updated',
         completedSubtitle:
-            'Your new PDF with removed pages is ready to view.',
+            'The selected pages have been removed from your PDF.',
         processOperation: (onProgress) =>
             controller.generatePdfWithoutRemovedPages(
           onProgress: onProgress,
@@ -194,139 +195,83 @@ class _RemovePagesPageState extends State<RemovePagesPage> {
                         borderRadius: BorderRadius.circular(14),
                         child: Stack(
                           children: [
-                            // Page Skeleton
+                            // Real PDF Page Thumbnail Content
                             Positioned.fill(
-                              child: Container(
-                                color: isMarkedForRemoval
-                                    ? (colors.isDark
-                                        ? const Color(0xFF2A1515)
-                                        : const Color(0xFFFFF1F2))
-                                    : (colors.isDark
-                                        ? const Color(0xFF1E2438)
-                                        : Colors.white),
-                                padding: const EdgeInsets.all(12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      width: 60,
-                                      height: 6,
-                                      decoration: BoxDecoration(
-                                        color: isMarkedForRemoval
-                                            ? const Color(0xFFEF4444)
-                                                .withOpacity(0.4)
-                                            : colors.textSecondary
-                                                .withOpacity(0.35),
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    for (int l = 0; l < 8; l++) ...[
-                                      Container(
-                                        width: double.infinity,
-                                        height: 4,
-                                        decoration: BoxDecoration(
-                                          color: isMarkedForRemoval
-                                              ? const Color(0xFFEF4444)
-                                                  .withOpacity(0.18)
-                                              : (l % 2 == 0)
-                                                  ? colors.textSecondary
-                                                      .withOpacity(0.18)
-                                                  : colors.textSecondary
-                                                      .withOpacity(0.12),
-                                          borderRadius:
-                                              BorderRadius.circular(2),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                    ],
-                                    const Spacer(),
-                                    Container(
-                                      width: double.infinity,
-                                      height: 24,
-                                      decoration: BoxDecoration(
-                                        color: isMarkedForRemoval
-                                            ? const Color(0xFFEF4444)
-                                                .withOpacity(0.1)
-                                            : colors.textSecondary
-                                                .withOpacity(0.08),
-                                        borderRadius: BorderRadius.circular(4),
-                                        border: Border.all(
-                                          color: isMarkedForRemoval
-                                              ? const Color(0xFFEF4444)
-                                                  .withOpacity(0.3)
-                                              : colors.textSecondary
-                                                  .withOpacity(0.15),
-                                          width: 0.5,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 28),
-                                  ],
-                                ),
+                              child: PdfPageThumbnail(
+                                file: widget.file,
+                                pageNumber: pageNumber,
+                                password: controller.pdfPassword,
+                                isMarkedForRemoval: isMarkedForRemoval,
                               ),
                             ),
 
                             // Bottom-Left Page Number Badge
                             Positioned(
-                              left: 10,
-                              bottom: 10,
+                              left: 8,
+                              bottom: 8,
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
+                                  horizontal: 9,
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
                                   color: isMarkedForRemoval
                                       ? const Color(0xFFEF4444)
-                                      : (colors.isDark
-                                          ? const Color(0xFF334155)
-                                          : const Color(0xFF94A3B8)),
+                                      : Colors.black.withOpacity(0.65),
                                   borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 4,
+                                    ),
+                                  ],
                                 ),
                                 child: Text(
                                   '$pageNumber',
                                   style: const TextStyle(
                                     color: Colors.white,
-                                    fontSize: 13,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
                             ),
 
-                            // Bottom-Right Trash/Check Indicator
+                            // Bottom-Right Trash/Removal Indicator
                             Positioned(
-                              right: 10,
-                              bottom: 10,
+                              right: 8,
+                              bottom: 8,
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 180),
-                                width: 26,
-                                height: 26,
+                                width: 28,
+                                height: 28,
                                 decoration: BoxDecoration(
                                   color: isMarkedForRemoval
                                       ? const Color(0xFFEF4444)
-                                      : (colors.isDark
-                                          ? const Color(0xFF334155)
-                                              .withOpacity(0.8)
-                                          : const Color(0xFFCBD5E1)),
+                                      : Colors.black.withOpacity(0.4),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
                                     color: isMarkedForRemoval
                                         ? const Color(0xFFEF4444)
-                                        : (colors.isDark
-                                            ? Colors.white24
-                                            : Colors.black12),
+                                        : Colors.white38,
                                     width: 1,
                                   ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.15),
+                                      blurRadius: 4,
+                                    ),
+                                  ],
                                 ),
-                                child: isMarkedForRemoval
-                                    ? const Icon(
-                                        Icons.delete_outline_rounded,
-                                        size: 18,
-                                        color: Colors.white,
-                                      )
-                                    : null,
+                                child: Icon(
+                                  isMarkedForRemoval
+                                      ? Icons.delete_outline_rounded
+                                      : Icons.check_rounded,
+                                  size: 17,
+                                  color: isMarkedForRemoval
+                                      ? Colors.white
+                                      : Colors.white70,
+                                ),
                               ),
                             ),
                           ],

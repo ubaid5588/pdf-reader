@@ -41,6 +41,7 @@ class ThemeController extends GetxController {
   Future<void> setThemeMode(ThemeMode mode) async {
     themeMode.value = mode;
     Get.changeThemeMode(mode);
+    update(); // notify GetBuilder in main.dart
 
     try {
       if (Hive.isBoxOpen(_boxName)) {

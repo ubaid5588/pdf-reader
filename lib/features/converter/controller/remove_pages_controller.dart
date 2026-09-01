@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:file_picker/file_picker.dart' as fp;
-import 'package:file_reader/features/converter/services/pdf_storage_service.dart';
 import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:file_reader/services/recent_pdf_controller.dart';
 import 'package:get/get.dart';
@@ -100,7 +99,7 @@ class RemovePagesController extends GetxController {
     pagesToRemove.clear();
   }
 
-  /// Removes selected pages and creates a new PDF with the remaining pages
+  /// Removes selected pages and updates the existing PDF file in-place.
   Future<File> generatePdfWithoutRemovedPages({
     void Function(double progress, String status)? onProgress,
   }) async {
@@ -163,36 +162,42 @@ class RemovePagesController extends GetxController {
       final resultBytes = await newDoc.save();
       newDoc.dispose();
 
-      onProgress?.call(0.93, 'Saving to device storage...');
-      final originalName = file.path.split(Platform.pathSeparator).last;
-      final fileName = PdfStorageService.generateRemovePagesPdfFileName(
-        originalFileName: originalName,
-      );
+      if (resultBytes.isEmpty) {
+        throw Exception('Failed to generate updated PDF data');
+      }
 
-      final savedPath = await PdfStorageService.savePdfToDownloads(
-        pdfBytes: resultBytes,
-        fileName: fileName,
-      );
+      // Write to a temp file first for safety, then atomically replace the original
+      onProgress?.call(0.93, 'Updating existing PDF file...');
+      final tempPath = '${file.path}.tmp_remove_pages';
+      final tempFile = File(tempPath);
+      await tempFile.writeAsBytes(resultBytes, flush: true);
+
+      // Atomically replace the original file
+      await tempFile.rename(file.path);
 
       onProgress?.call(1.0, 'Finalizing...');
 
-      if (savedPath == null) {
-        throw Exception('Failed to save PDF to storage');
-      }
-
+      // Refresh the file list and recent list so the updated file appears correctly
       try {
         final recentController = Get.isRegistered<RecentPdfController>()
             ? Get.find<RecentPdfController>()
             : Get.put(RecentPdfController());
-        await recentController.addRecentPdf(savedPath, fileName);
+        await recentController.addRecentPdf(file.path);
 
         if (Get.isRegistered<FilePageController>()) {
-          await Get.find<FilePageController>().refreshPdfs();
+          final fc = Get.find<FilePageController>();
+          fc.ensureFileInList(file);
+          fc.refreshPdfs();
         }
       } catch (_) {}
 
-      return File(savedPath);
+      return file;
     } catch (e) {
+      // Clean up temp file if it exists
+      try {
+        final tempFile = File('${file.path}.tmp_remove_pages');
+        if (await tempFile.exists()) await tempFile.delete();
+      } catch (_) {}
       rethrow;
     } finally {
       isLoading.value = false;

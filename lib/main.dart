@@ -19,27 +19,28 @@ void main() async {
 
 class Main extends StatelessWidget {
   final String languageCode;
-  Main({super.key, required this.languageCode});
-
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  final ThemeController themeController = Get.find<ThemeController>();
+  const Main({super.key, required this.languageCode});
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      return GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'File Reader',
-        locale: Locale(languageCode),
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: themeController.themeMode.value,
-        initialRoute: '/',
-        getPages: [GetPage(name: '/', page: () => SplashPage())],
-        unknownRoute: GetPage(name: '/', page: () => SplashPage()),
-      );
-    });
+    final ThemeController themeController = Get.find<ThemeController>();
+
+    return GetBuilder<ThemeController>(
+      builder: (controller) {
+        return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'File Reader',
+          locale: Locale(languageCode),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeController.themeMode.value,
+          initialRoute: '/',
+          getPages: [GetPage(name: '/', page: () => SplashPage())],
+          unknownRoute: GetPage(name: '/', page: () => SplashPage()),
+        );
+      },
+    );
   }
 }

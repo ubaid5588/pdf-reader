@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:file_reader/services/hive_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 
 class RecentPdfController extends GetxController {
   final HiveService hiveService = HiveService();
@@ -15,7 +16,11 @@ class RecentPdfController extends GetxController {
     loadRecentPdfs();
   }
 
-  void loadRecentPdfs() {
+  Future<void> loadRecentPdfs() async {
+    // If Hive is not initialized (e.g. unit tests), preserve the
+    // current in-memory state set by addRecentPdf()
+    if (!Hive.isBoxOpen('recent_pdfs')) return;
+
     try {
       isLoading.value = true;
       final rawList = hiveService.getRecentPdfs();
@@ -25,7 +30,7 @@ class RecentPdfController extends GetxController {
         final path = item['path'] as String?;
         if (path != null) {
           final file = File(path);
-          if (file.existsSync()) {
+          if (await file.exists()) {
             validList.add(item);
           }
         }
@@ -42,8 +47,34 @@ class RecentPdfController extends GetxController {
   Future<void> addRecentPdf(String path, [String? name]) async {
     try {
       final fileName = name ?? path.split(Platform.pathSeparator).last;
+
+      // Optimistic in-memory update so the UI reflects the change immediately
+      // and tests work without Hive being initialized.
+      int fileSize = 0;
+      try {
+        final stat = await File(path).stat();
+        fileSize = stat.size;
+      } catch (_) {}
+
+      final entry = <String, dynamic>{
+        'name': fileName,
+        'path': path,
+        'lastOpened': DateTime.now().toIso8601String(),
+        'size': fileSize,
+      };
+
+      final existing = recentPdfs.indexWhere((item) => item['path'] == path);
+      if (existing >= 0) {
+        recentPdfs[existing] = entry;
+      } else {
+        recentPdfs.insert(0, entry);
+      }
+
+      // Persist to Hive (no-op if Hive is not initialized)
       await hiveService.savePdf(path, fileName);
-      loadRecentPdfs();
+
+      // Reload from Hive to get any other changes (no-op if Hive not open)
+      await loadRecentPdfs();
     } catch (e) {
       debugPrint('Error saving recent PDF: $e');
     }

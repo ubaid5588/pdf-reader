@@ -232,9 +232,9 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
 
     final faqList = [
       {
-        'question': 'How do I protect a PDF with a password?',
+        'question': 'How do I lock a PDF with a password?',
         'answer':
-            'Navigate to "Edit & Organize" > "Protect PDF". Select your PDF file and set a strong password. The protected PDF will be saved automatically to your Files section.',
+            'Navigate to "Edit & Organize" > "Lock PDF". Select your PDF file and set a strong password. The locked PDF will be updated directly.',
       },
       {
         'question': 'Can I merge multiple PDFs?',
@@ -364,7 +364,7 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
             'Ensure the file is not corrupted. Try with a different PDF. Check if you have enough storage space.',
       },
       {
-        'issue': 'Can\'t open a protected PDF',
+        'issue': 'Can\'t open a locked PDF',
         'solution':
             'Make sure you\'re using the correct password. Passwords are case-sensitive.',
       },
@@ -515,7 +515,7 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
           context: context,
           title: '🔐 Strong Passwords',
           description:
-              'Use strong, unique passwords when protecting PDFs. Avoid simple words or birthdates.',
+              'Use strong, unique passwords when locking PDFs. Avoid simple words or birthdates.',
         ),
         const SizedBox(height: 12),
         _buildTipCard(

@@ -37,8 +37,8 @@ class _HomeScreenState extends State<HomePageView> {
     recentController = Get.isRegistered<RecentPdfController>()
         ? Get.find<RecentPdfController>()
         : Get.put(RecentPdfController());
-
-    recentController.loadRecentPdfs();
+    // Note: recentController.loadRecentPdfs() is NOT called here because
+    // RecentPdfController.onInit() already calls it once on initialization.
   }
 
   @override

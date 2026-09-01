@@ -198,9 +198,9 @@ class AboutScreen extends StatelessWidget {
                       _buildFeatureItem(
                         context: context,
                         icon: '🔒',
-                        title: 'Protect PDF',
+                        title: 'Lock PDF',
                         description:
-                            'Add password protection with AES-256 encryption',
+                            'Add password lock with AES-256 encryption',
                       ),
                     ],
                   ),

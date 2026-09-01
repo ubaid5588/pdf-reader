@@ -71,7 +71,7 @@ class UnlockPdfController extends GetxController {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'This document is password protected. Enter the password to unlock it:',
+                'This document is locked with a password. Enter the password to unlock it:',
                 style: TextStyle(fontSize: 13, color: Colors.black54),
               ),
               const SizedBox(height: 14),
@@ -194,33 +194,30 @@ class UnlockPdfController extends GetxController {
       unlockedDoc.dispose();
       sourceDoc.dispose();
 
-      onProgress?.call(0.9, 'Saving unlocked PDF...');
-      final fileName = PdfStorageService.generateUnlockedPdfFileName();
+      if (unlockedBytes.isEmpty) {
+        throw Exception('Failed to generate unlocked PDF data');
+      }
 
-      final savedPath = await PdfStorageService.savePdfToDownloads(
-        pdfBytes: unlockedBytes,
-        fileName: fileName,
-      );
+      onProgress?.call(0.9, 'Unlocking existing PDF file...');
+      await sourceFile.writeAsBytes(unlockedBytes, flush: true);
 
       onProgress?.call(1.0, 'Finalizing...');
 
-      if (savedPath == null) {
-        throw Exception('Failed to save unlocked PDF to storage');
-      }
-
-      // Record in recent
+      // Refresh recent and file list
       try {
         final recentController = Get.isRegistered<RecentPdfController>()
             ? Get.find<RecentPdfController>()
             : Get.put(RecentPdfController());
-        await recentController.addRecentPdf(savedPath, fileName);
+        await recentController.addRecentPdf(sourceFile.path);
 
         if (Get.isRegistered<FilePageController>()) {
-          await Get.find<FilePageController>().refreshPdfs();
+          final fc = Get.find<FilePageController>();
+          fc.ensureFileInList(sourceFile);
+          fc.refreshPdfs();
         }
       } catch (_) {}
 
-      return File(savedPath);
+      return sourceFile;
     } catch (e) {
       rethrow;
     } finally {
