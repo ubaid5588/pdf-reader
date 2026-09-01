@@ -24,7 +24,9 @@ class UnlockPdfController extends GetxController {
       if (result == null || result.files.isEmpty) return null;
       final path = result.files.single.path;
       if (path == null) return null;
-      return File(path);
+
+      final pickedFile = File(path);
+      return await PdfStorageService.resolveOriginalStorageFile(pickedFile);
     } catch (e) {
       Get.snackbar('Error', 'Failed to pick file: $e');
       return null;
@@ -150,16 +152,19 @@ class UnlockPdfController extends GetxController {
     );
   }
 
-  /// Verifies password and decrypts PDF, generating an unlocked copy
+  /// Verifies password and decrypts PDF, modifying the existing [sourceFile] in-place.
+  /// Does NOT create a new duplicate PDF. Keeps the same path and location.
   Future<File> unlockPdf(
     File sourceFile, {
     required String password,
     void Function(double progress, String status)? onProgress,
   }) async {
+    final realFile = await PdfStorageService.resolveOriginalStorageFile(sourceFile);
+
     isLoading.value = true;
     try {
       onProgress?.call(0.2, 'Verifying password...');
-      final bytes = await sourceFile.readAsBytes();
+      final bytes = await realFile.readAsBytes();
 
       PdfDocument sourceDoc;
       try {
@@ -199,26 +204,57 @@ class UnlockPdfController extends GetxController {
       }
 
       onProgress?.call(0.9, 'Unlocking existing PDF file...');
-      await sourceFile.writeAsBytes(unlockedBytes, flush: true);
+
+      // Safe atomic replacement: write to temp file first
+      final tempPath = '${realFile.path}.tmp_unlock';
+      final tempFile = File(tempPath);
+      await tempFile.writeAsBytes(unlockedBytes, flush: true);
+
+      // Atomically replace original file
+      try {
+        await tempFile.rename(realFile.path);
+      } catch (_) {
+        await tempFile.copy(realFile.path);
+        await tempFile.delete();
+      }
 
       onProgress?.call(1.0, 'Finalizing...');
+
+      // Clean up cached copy if picked from file picker cache
+      if (sourceFile.path != realFile.path) {
+        try {
+          if (await sourceFile.exists()) {
+            await sourceFile.delete();
+          }
+        } catch (_) {}
+      }
 
       // Refresh recent and file list
       try {
         final recentController = Get.isRegistered<RecentPdfController>()
             ? Get.find<RecentPdfController>()
             : Get.put(RecentPdfController());
-        await recentController.addRecentPdf(sourceFile.path);
+        await recentController.addRecentPdf(realFile.path);
 
         if (Get.isRegistered<FilePageController>()) {
           final fc = Get.find<FilePageController>();
-          fc.ensureFileInList(sourceFile);
+          final stat = await realFile.stat();
+          fc.ensureFileInList(
+            realFile,
+            size: stat.size,
+            modified: stat.modified,
+          );
           fc.refreshPdfs();
         }
       } catch (_) {}
 
-      return sourceFile;
+      return realFile;
     } catch (e) {
+      // Clean up temp file on error so original file is never corrupted
+      try {
+        final tempFile = File('${realFile.path}.tmp_unlock');
+        if (await tempFile.exists()) await tempFile.delete();
+      } catch (_) {}
       rethrow;
     } finally {
       isLoading.value = false;

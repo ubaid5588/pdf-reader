@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -333,5 +334,71 @@ class PdfStorageService {
     } catch (e) {
       return false;
     }
+  }
+
+  /// Resolves a potentially cached file (from FilePicker on Android) to the
+  /// real persistent file in device storage (e.g. in Downloads, Documents, or loaded in FilePageController).
+  static Future<File> resolveOriginalStorageFile(File pickedFile) async {
+    // If not in a cache directory, it's already the original file
+    if (!pickedFile.path.contains('/cache/file_picker') &&
+        !pickedFile.path.contains('/cache/')) {
+      return pickedFile;
+    }
+
+    final fileName = pickedFile.path.split(Platform.pathSeparator).last;
+    int pickedSize = 0;
+    try {
+      pickedSize = await pickedFile.length();
+    } catch (_) {}
+
+    // Check FilePageController.pdfFiles first
+    if (Get.isRegistered<FilePageController>()) {
+      final fc = Get.find<FilePageController>();
+      for (final f in fc.pdfFiles) {
+        if (f.path.split(Platform.pathSeparator).last == fileName) {
+          try {
+            if (await f.exists()) {
+              final size = await f.length();
+              if (pickedSize == 0 || size == pickedSize) {
+                return f;
+              }
+            }
+          } catch (_) {}
+        }
+      }
+    }
+
+    // Check standard storage paths
+    final candidateDirs = [
+      '/storage/emulated/0/Download',
+      '/storage/emulated/0/Documents',
+      '/storage/emulated/0',
+    ];
+
+    for (final dirPath in candidateDirs) {
+      final candidate = File('$dirPath${Platform.pathSeparator}$fileName');
+      try {
+        if (await candidate.exists()) {
+          final size = await candidate.length();
+          if (pickedSize == 0 || size == pickedSize) {
+            return candidate;
+          }
+        }
+      } catch (_) {}
+    }
+
+    // If not found in standard directories, try app documents directory
+    try {
+      final appDocDir = await getApplicationDocumentsDirectory();
+      final candidate = File('${appDocDir.path}${Platform.pathSeparator}$fileName');
+      if (await candidate.exists()) {
+        final size = await candidate.length();
+        if (pickedSize == 0 || size == pickedSize) {
+          return candidate;
+        }
+      }
+    } catch (_) {}
+
+    return pickedFile;
   }
 }

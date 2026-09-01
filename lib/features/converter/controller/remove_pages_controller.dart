@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:file_picker/file_picker.dart' as fp;
+import 'package:file_reader/features/converter/services/pdf_storage_service.dart';
 import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:file_reader/services/recent_pdf_controller.dart';
 import 'package:get/get.dart';
@@ -34,7 +35,7 @@ class RemovePagesController extends GetxController {
         return null;
       }
 
-      return file;
+      return await PdfStorageService.resolveOriginalStorageFile(file);
     } catch (e) {
       Get.snackbar('Error', 'Failed to pick file: $e');
       return null;
@@ -186,7 +187,12 @@ class RemovePagesController extends GetxController {
 
         if (Get.isRegistered<FilePageController>()) {
           final fc = Get.find<FilePageController>();
-          fc.ensureFileInList(file);
+          final stat = await file.stat();
+          fc.ensureFileInList(
+            file,
+            size: stat.size,
+            modified: stat.modified,
+          );
           fc.refreshPdfs();
         }
       } catch (_) {}

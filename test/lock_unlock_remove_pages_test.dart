@@ -186,31 +186,31 @@ void main() {
       final unlockController = UnlockPdfController();
       final removeController = RemovePagesController();
 
-      // 1. Lock PDF -> verify same path and registered in Recent
+      // 1. Lock PDF -> verify same path, registered in Recent, and exactly 1 entry in fileController
       final lockedFile = await lockController.protectPdf(
         samplePdfFile,
         userPassword: 'Pass123',
       );
       expect(lockedFile.path, equals(samplePdfFile.path));
       expect(recentController.recentPdfs.any((item) => item['path'] == samplePdfFile.path), isTrue);
-      expect(fileController.pdfFiles.any((f) => f.path == samplePdfFile.path), isTrue);
+      expect(fileController.pdfFiles.where((f) => f.path == samplePdfFile.path).length, equals(1));
 
-      // 2. Unlock PDF -> verify same path and still in Recent
+      // 2. Unlock PDF -> verify same path, still in Recent, and exactly 1 entry in fileController
       final unlockedFile = await unlockController.unlockPdf(
         samplePdfFile,
         password: 'Pass123',
       );
       expect(unlockedFile.path, equals(samplePdfFile.path));
       expect(recentController.recentPdfs.any((item) => item['path'] == samplePdfFile.path), isTrue);
-      expect(fileController.pdfFiles.any((f) => f.path == samplePdfFile.path), isTrue);
+      expect(fileController.pdfFiles.where((f) => f.path == samplePdfFile.path).length, equals(1));
 
-      // 3. Remove Pages -> verify in-place update and still registered
+      // 3. Remove Pages -> verify in-place update, still in Recent, and exactly 1 entry in fileController
       await removeController.inspectPdf(samplePdfFile);
       removeController.togglePageRemoval(1);
       final modifiedFile = await removeController.generatePdfWithoutRemovedPages();
       expect(modifiedFile.path, equals(samplePdfFile.path));
       expect(recentController.recentPdfs.any((item) => item['path'] == samplePdfFile.path), isTrue);
-      expect(fileController.pdfFiles.any((f) => f.path == samplePdfFile.path), isTrue);
+      expect(fileController.pdfFiles.where((f) => f.path == samplePdfFile.path).length, equals(1));
 
       // 4. Verify Hive records the path (so a real device loadPdfs() would find it)
       final hiveList = HiveService().getRecentPdfs();
