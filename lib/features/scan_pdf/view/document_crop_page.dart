@@ -9,8 +9,13 @@ import 'package:get/get.dart';
 
 class DocumentCropPage extends StatefulWidget {
   final String pageId;
+  final bool returnToQueue;
 
-  const DocumentCropPage({super.key, required this.pageId});
+  const DocumentCropPage({
+    super.key,
+    required this.pageId,
+    this.returnToQueue = false,
+  });
 
   @override
   State<DocumentCropPage> createState() => _DocumentCropPageState();
@@ -82,7 +87,10 @@ class _DocumentCropPageState extends State<DocumentCropPage> {
     );
 
     Get.off(
-      () => DocumentPreviewEditPage(pageId: widget.pageId),
+      () => DocumentPreviewEditPage(
+        pageId: widget.pageId,
+        returnToQueue: widget.returnToQueue,
+      ),
     );
   }
 

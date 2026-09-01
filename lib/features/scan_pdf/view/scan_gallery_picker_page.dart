@@ -1,6 +1,7 @@
 import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/features/scan_pdf/controller/scan_pdf_controller.dart';
 import 'package:file_reader/features/scan_pdf/view/crop_mode_dialog.dart';
+import 'package:file_reader/features/scan_pdf/view/document_camera_page.dart';
 import 'package:file_reader/features/scan_pdf/view/document_crop_page.dart';
 import 'package:file_reader/features/scan_pdf/view/scan_queue_page.dart';
 import 'package:flutter/material.dart';
@@ -24,11 +25,8 @@ class _ScanGalleryPickerPageState extends State<ScanGalleryPickerPage> {
     }
   }
 
-  void _onCaptureFromCameraShortcut() async {
-    final path = await controller.captureFromCamera();
-    if (path != null) {
-      _processImportedImages([path]);
-    }
+  void _onCaptureFromCameraShortcut() {
+    Get.off(() => const DocumentCameraPage(returnToQueue: true));
   }
 
   Future<void> _processImportedImages(List<String> paths) async {

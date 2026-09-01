@@ -183,11 +183,23 @@ class ScanPdfController extends GetxController {
     }
   }
 
-  /// Reorder pages in queue
+  /// Move page directly from [fromIndex] to [toIndex]
+  void movePage(int fromIndex, int toIndex) {
+    if (fromIndex < 0 || fromIndex >= scannedPages.length) return;
+    if (toIndex < 0 || toIndex >= scannedPages.length) return;
+    if (fromIndex == toIndex) return;
+
+    final item = scannedPages.removeAt(fromIndex);
+    scannedPages.insert(toIndex, item);
+  }
+
+  /// Reorder pages in queue (compatible with ReorderableListView indices)
   void reorderPages(int oldIndex, int newIndex) {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
+    if (oldIndex < 0 || oldIndex >= scannedPages.length) return;
+    if (newIndex < 0 || newIndex >= scannedPages.length) return;
     final item = scannedPages.removeAt(oldIndex);
     scannedPages.insert(newIndex, item);
   }

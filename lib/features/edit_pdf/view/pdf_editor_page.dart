@@ -17,6 +17,8 @@ class PdfEditorPage extends StatefulWidget {
 class _PdfEditorPageState extends State<PdfEditorPage> {
   late final EditPdfController controller;
   final GlobalKey _canvasKey = GlobalKey();
+  final TransformationController _transformationController =
+      TransformationController();
 
   List<Offset> _livePoints = [];
   Offset? _shapeStart;
@@ -35,6 +37,10 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
     Color(0xFFFFFFFF), // White
   ];
 
+  final TextEditingController _inlineTextController = TextEditingController();
+  final FocusNode _inlineTextFocusNode = FocusNode();
+  double _lastKeyboardHeight = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -43,7 +49,134 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
         : Get.put(EditPdfController());
   }
 
+  @override
+  void dispose() {
+    _commitInlineTextEdit();
+    _transformationController.dispose();
+    _inlineTextController.dispose();
+    _inlineTextFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _ensureActiveFieldVisible({
+    required double keyboardHeight,
+    required double canvasHeight,
+    required Size pageSize,
+    required Size canvasSize,
+  }) {
+    if (_selectedExtractedId == null || keyboardHeight <= 0) return;
+
+    final item = controller.extractedTextItems
+        .firstWhereOrNull((t) => t.id == _selectedExtractedId);
+    if (item == null) return;
+
+    final renderRect = EditPdfController.computePdfPageRenderRect(
+      pageSize: pageSize,
+      canvasSize: canvasSize,
+    );
+    final double scale = renderRect.width / pageSize.width;
+
+    final fieldSceneTop = renderRect.top +
+        (item.customPosition?.dy ?? item.originalBounds.top) * scale;
+    final fieldSceneBottom =
+        fieldSceneTop + (item.originalBounds.height * scale);
+
+    final matrix = _transformationController.value;
+    final currentScale = matrix.getMaxScaleOnAxis();
+    final currentTy = matrix.storage[13]; // Translation Y
+    final currentTx = matrix.storage[12]; // Translation X
+
+    final fieldViewportBottom = (fieldSceneBottom * currentScale) + currentTy;
+    final fieldViewportTop = (fieldSceneTop * currentScale) + currentTy;
+
+    // Available height in canvas above keyboard and comfortable margin
+    const double comfortableMargin = 28.0;
+    final double visibleBottom =
+        canvasHeight - keyboardHeight - comfortableMargin;
+
+    if (fieldViewportBottom > visibleBottom) {
+      final double deltaY = visibleBottom - fieldViewportBottom;
+      final newTy = currentTy + deltaY;
+
+      _transformationController.value = Matrix4.identity()
+        ..scale(currentScale, currentScale, 1.0)
+        ..setTranslationRaw(currentTx, newTy, 0.0);
+    } else if (fieldViewportTop < 16.0) {
+      final double deltaY = 16.0 - fieldViewportTop;
+      final newTy = currentTy + deltaY;
+
+      _transformationController.value = Matrix4.identity()
+        ..scale(currentScale, currentScale, 1.0)
+        ..setTranslationRaw(currentTx, newTy, 0.0);
+    }
+  }
+
+  void _startEditingExtractedText(ExtractedPdfTextItem item) {
+    if (_selectedExtractedId == item.id) {
+      _inlineTextFocusNode.requestFocus();
+      return;
+    }
+    _commitInlineTextEdit();
+    setState(() {
+      _selectedExtractedId = item.id;
+      _inlineTextController.text = item.currentText;
+      _inlineTextController.selection = TextSelection.collapsed(
+        offset: item.currentText.length,
+      );
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _inlineTextFocusNode.requestFocus();
+        final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+        final page = controller.currentPageIndex.value;
+        final pageSize =
+            controller.originalPageSizes[page] ?? const Size(595, 842);
+        final renderBox =
+            _canvasKey.currentContext?.findRenderObject() as RenderBox?;
+        final canvasSize = renderBox?.size ?? const Size(360, 500);
+
+        _ensureActiveFieldVisible(
+          keyboardHeight: keyboardHeight > 0 ? keyboardHeight : 280.0,
+          canvasHeight: canvasSize.height,
+          pageSize: pageSize,
+          canvasSize: canvasSize,
+        );
+      }
+    });
+  }
+
+  void _commitInlineTextEdit() {
+    if (_selectedExtractedId == null) return;
+    final currentId = _selectedExtractedId;
+    final text = _inlineTextController.text;
+    final itemIndex =
+        controller.extractedTextItems.indexWhere((t) => t.id == currentId);
+    if (itemIndex != -1) {
+      final item = controller.extractedTextItems[itemIndex];
+      if (item.currentText != text) {
+        controller.updateExtractedTextItem(
+          item.copyWith(
+            currentText: text,
+            isEdited: true,
+            isDeleted: text.isEmpty,
+          ),
+        );
+      }
+    }
+  }
+
+  void _stopEditing() {
+    _commitInlineTextEdit();
+    _inlineTextFocusNode.unfocus();
+    if (_selectedExtractedId != null) {
+      setState(() {
+        _selectedExtractedId = null;
+      });
+    }
+  }
+
   void _handleSave(BuildContext context, AppLocalizations l10n) {
+    _commitInlineTextEdit();
     final RenderBox? renderBox =
         _canvasKey.currentContext?.findRenderObject() as RenderBox?;
     final size = renderBox?.size ?? const Size(360, 500);
@@ -60,245 +193,6 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
           canvasWidth: size.width,
           canvasHeight: size.height,
         ),
-      ),
-    );
-  }
-
-  /// Dialog to edit existing extracted text directly on the page
-  Future<void> _showEditExtractedTextDialog(
-    BuildContext context,
-    ExtractedPdfTextItem item,
-  ) {
-    final colors = context.colors;
-    final textController = TextEditingController(text: item.currentText);
-    double fontSize = item.fontSize;
-    Color textColor = item.textColor;
-    bool isBold = item.isBold;
-    bool isItalic = item.isItalic;
-
-    return showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            backgroundColor: colors.surfaceElevated,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Row(
-              children: [
-                Icon(Icons.edit_note_rounded, color: colors.primary, size: 22),
-                const SizedBox(width: 8),
-                Text(
-                  'Edit Text',
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Original Text reference
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: colors.isDark
-                          ? const Color(0xFF1E293B)
-                          : const Color(0xFFF1F5F9),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: colors.border.withOpacity(0.5)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Original Text:',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          item.originalText,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: colors.textPrimary,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-
-                  // Editable input
-                  TextField(
-                    controller: textController,
-                    autofocus: true,
-                    maxLines: 3,
-                    style: TextStyle(
-                      fontSize: fontSize,
-                      fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-                      fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
-                      color: textColor,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: 'Modified Text',
-                      labelStyle: TextStyle(color: colors.primary),
-                      filled: true,
-                      fillColor: colors.surface,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-
-                  // Font Style & Controls
-                  Row(
-                    children: [
-                      FilterChip(
-                        label: const Text('Bold'),
-                        selected: isBold,
-                        onSelected: (val) => setState(() => isBold = val),
-                        selectedColor: colors.primary.withOpacity(0.2),
-                      ),
-                      const SizedBox(width: 8),
-                      FilterChip(
-                        label: const Text('Italic'),
-                        selected: isItalic,
-                        onSelected: (val) => setState(() => isItalic = val),
-                        selectedColor: colors.primary.withOpacity(0.2),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Font Size Stepper
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Font Size (${fontSize.toInt()}pt)',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: colors.textSecondary,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.remove_circle_outline),
-                            iconSize: 20,
-                            onPressed: () {
-                              if (fontSize > 8) {
-                                setState(() => fontSize -= 1);
-                              }
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.add_circle_outline),
-                            iconSize: 20,
-                            onPressed: () {
-                              if (fontSize < 48) {
-                                setState(() => fontSize += 1);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-
-                  // Color Picker
-                  Text(
-                    'Text Color',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: _palette.take(6).map((c) {
-                      return GestureDetector(
-                        onTap: () => setState(() => textColor = c),
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: c,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: textColor == c
-                                  ? colors.primary
-                                  : Colors.grey,
-                              width: textColor == c ? 2.5 : 1,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                onPressed: () {
-                  controller.deleteExtractedTextItem(item.id);
-                  Navigator.of(ctx).pop();
-                },
-                child: const Text('Delete Text'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(color: colors.textSecondary),
-                ),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () {
-                  final newText = textController.text.trim();
-                  controller.updateExtractedTextItem(
-                    item.copyWith(
-                      currentText: newText,
-                      fontSize: fontSize,
-                      textColor: textColor,
-                      isBold: isBold,
-                      isItalic: isItalic,
-                      isEdited: true,
-                      isDeleted: newText.isEmpty,
-                    ),
-                  );
-                  Navigator.of(ctx).pop();
-                },
-                child: const Text('Apply Edit'),
-              ),
-            ],
-          );
-        },
       ),
     );
   }
@@ -411,7 +305,8 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                             ),
                             onTap: () {
                               Navigator.of(ctx).pop();
-                              _showEditExtractedTextDialog(context, item);
+                              controller.goToPage(item.pageIndex);
+                              _startEditingExtractedText(item);
                             },
                           );
                         },
@@ -594,12 +489,51 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
     }
   }
 
+  Widget _buildCornerHandle() {
+    return Container(
+      width: 12,
+      height: 12,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: const Color(0xFF1E88E5),
+          width: 2.2,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colors = context.colors;
 
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    if (keyboardHeight > 0 && keyboardHeight != _lastKeyboardHeight) {
+      _lastKeyboardHeight = keyboardHeight;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final page = controller.currentPageIndex.value;
+        final pageSize = controller.originalPageSizes[page] ??
+            const Size(595, 842);
+        final renderBox =
+            _canvasKey.currentContext?.findRenderObject() as RenderBox?;
+        final canvasSize = renderBox?.size ?? const Size(360, 500);
+
+        _ensureActiveFieldVisible(
+          keyboardHeight: keyboardHeight,
+          canvasHeight: canvasSize.height,
+          pageSize: pageSize,
+          canvasSize: canvasSize,
+        );
+      });
+    } else if (keyboardHeight == 0) {
+      _lastKeyboardHeight = 0.0;
+    }
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: colors.background,
       appBar: AppBar(
         backgroundColor: colors.background,
@@ -627,7 +561,10 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                       ? colors.primary
                       : colors.textSecondary.withOpacity(0.3),
                   onPressed: current > 0
-                      ? () => controller.goToPrevPage()
+                      ? () {
+                          _stopEditing();
+                          controller.goToPrevPage();
+                        }
                       : null,
                 ),
 
@@ -657,7 +594,10 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                       ? colors.primary
                       : colors.textSecondary.withOpacity(0.3),
                   onPressed: current < total - 1
-                      ? () => controller.goToNextPage()
+                      ? () {
+                          _stopEditing();
+                          controller.goToNextPage();
+                        }
                       : null,
                 ),
               ],
@@ -765,442 +705,640 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                   final canvasWidth = constraints.maxWidth;
                   final canvasHeight = constraints.maxHeight;
 
-                  return Stack(
-                    key: _canvasKey,
-                    children: [
-                      // 1. Live Visual PDF Background
-                      if (controller.sourceFile.value != null)
-                        Positioned.fill(
-                          child: IgnorePointer(
-                            ignoring:
-                                controller.activeTool.value !=
-                                EditorTool.select,
-                            child: SfPdfViewer.file(
-                              controller.sourceFile.value!,
-                              controller: controller.pdfViewerController,
-                              pageLayoutMode: PdfPageLayoutMode.single,
-                              canShowScrollHead: false,
-                              canShowScrollStatus: false,
-                              enableDoubleTapZooming: false,
-                              enableTextSelection: false,
-                            ),
-                          ),
-                        ),
+                  return Obx(() {
+                    final page = controller.currentPageIndex.value;
+                    final pageSize = controller.originalPageSizes[page] ??
+                        const Size(595, 842);
+                    final renderRect = EditPdfController.computePdfPageRenderRect(
+                      pageSize: pageSize,
+                      canvasSize: Size(canvasWidth, canvasHeight),
+                    );
+                    final double scale = renderRect.width / pageSize.width;
 
-                      // 2. Extracted Interactive Text Layer (Tap to edit on any page)
-                      Obx(() {
-                        final page = controller.currentPageIndex.value;
-                        final pageSize =
-                            controller.originalPageSizes[page] ??
-                            const Size(595, 842);
-                        final double scaleX = canvasWidth / pageSize.width;
-                        final double scaleY = canvasHeight / pageSize.height;
-
-                        final pageExtracted = controller.extractedTextItems
-                            .where((t) => t.pageIndex == page && !t.isDeleted)
-                            .toList();
-
-                        return Stack(
-                          children: pageExtracted.map((item) {
-                            final isSelected = _selectedExtractedId == item.id;
-                            final pos =
-                                item.customPosition ??
-                                item.originalBounds.topLeft;
-
-                            final left = (pos.dx * scaleX).clamp(
-                              0.0,
-                              canvasWidth,
-                            );
-                            final top = (pos.dy * scaleY).clamp(
-                              0.0,
-                              canvasHeight,
-                            );
-                            final width = (item.originalBounds.width * scaleX)
-                                .clamp(20.0, canvasWidth);
-                            final height = (item.originalBounds.height * scaleY)
-                                .clamp(14.0, canvasHeight);
-
-                            return Positioned(
-                              left: left,
-                              top: top,
-                              child: GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  setState(
-                                    () => _selectedExtractedId = item.id,
-                                  );
-                                  _showEditExtractedTextDialog(context, item);
-                                },
-                                child: Container(
-                                  width: item.isEdited ? null : width,
-                                  height: item.isEdited ? null : height,
-                                  constraints: BoxConstraints(
-                                    minWidth: width,
-                                    minHeight: height,
+                    return InteractiveViewer(
+                      transformationController: _transformationController,
+                      minScale: 1.0,
+                      maxScale: 4.0,
+                      boundaryMargin: const EdgeInsets.symmetric(
+                        vertical: 600,
+                        horizontal: 100,
+                      ),
+                      panEnabled:
+                          controller.activeTool.value == EditorTool.select,
+                      scaleEnabled:
+                          controller.activeTool.value == EditorTool.select,
+                      child: SizedBox(
+                        width: canvasWidth,
+                        height: canvasHeight,
+                        child: Stack(
+                          key: _canvasKey,
+                          children: [
+                            // 1. Live Visual PDF Background (fitted inside renderRect)
+                            if (controller.sourceFile.value != null)
+                              Positioned.fromRect(
+                                rect: renderRect,
+                                child: IgnorePointer(
+                                  ignoring: true,
+                                  child: SfPdfViewer.file(
+                                    controller.sourceFile.value!,
+                                    controller: controller.pdfViewerController,
+                                    pageLayoutMode: PdfPageLayoutMode.single,
+                                    canShowScrollHead: false,
+                                    canShowScrollStatus: false,
+                                    enableDoubleTapZooming: false,
+                                    enableTextSelection: false,
                                   ),
-                                  padding: item.isEdited
-                                      ? const EdgeInsets.symmetric(
-                                          horizontal: 4,
-                                          vertical: 1,
-                                        )
-                                      : EdgeInsets.zero,
-                                  decoration: BoxDecoration(
-                                    color: item.isEdited
-                                        ? Colors.white
-                                        : (isSelected
-                                              ? colors.primary.withOpacity(0.18)
-                                              : Colors.transparent),
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? colors.primary
-                                          : (item.isEdited
-                                                ? colors.primary.withOpacity(
-                                                    0.5,
-                                                  )
-                                                : colors.primary.withOpacity(
-                                                    0.15,
-                                                  )),
-                                      width: isSelected ? 1.5 : 0.8,
-                                    ),
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                  child: item.isEdited
-                                      ? Text(
-                                          item.currentText,
-                                          style: TextStyle(
-                                            fontSize:
-                                                item.fontSize *
-                                                ((scaleX + scaleY) / 2),
-                                            fontWeight: item.isBold
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                            fontStyle: item.isItalic
-                                                ? FontStyle.italic
-                                                : FontStyle.normal,
-                                            color: item.textColor,
-                                          ),
-                                        )
-                                      : null,
                                 ),
                               ),
-                            );
-                          }).toList(),
-                        );
-                      }),
 
-                      // 3. Custom Painter Layer (Drawings, Highlights, Shapes, Whiteouts)
-                      Positioned.fill(
-                        child: Obx(() {
-                          final page = controller.currentPageIndex.value;
-                          final pageStrokes = controller.drawStrokes
-                              .where((s) => s.pageIndex == page)
-                              .toList();
-                          final pageShapes = controller.shapeElements
-                              .where((s) => s.pageIndex == page)
-                              .toList();
-                          final pageWhiteouts = controller.whiteoutElements
-                              .where((w) => w.pageIndex == page)
-                              .toList();
+                            // 2. Extracted Interactive Text Layer (Subtle, accurate bounding boxes)
+                            Obx(() {
+                              final pageExtracted = controller.extractedTextItems
+                                  .where(
+                                    (t) => t.pageIndex == page && !t.isDeleted,
+                                  )
+                                  .toList();
 
-                          return CustomPaint(
-                            painter: _CanvasElementsPainter(
-                              strokes: pageStrokes,
-                              shapes: pageShapes,
-                              whiteouts: pageWhiteouts,
-                              livePoints: _livePoints,
-                              liveColor: controller.selectedColor.value,
-                              liveStrokeWidth: controller.strokeWidth.value,
-                              liveIsHighlighter:
-                                  controller.activeTool.value ==
-                                  EditorTool.highlight,
-                              liveShapeStart: _shapeStart,
-                              liveShapeEnd: _shapeEnd,
-                              liveShapeType: controller.selectedShape.value,
-                            ),
-                          );
-                        }),
-                      ),
+                              return Stack(
+                                children: pageExtracted.map((item) {
+                                  final isSelected =
+                                      _selectedExtractedId == item.id;
+                                  final pos = item.customPosition ??
+                                      item.originalBounds.topLeft;
 
-                      // 4. User-added Image Stamps
-                      Obx(() {
-                        final page = controller.currentPageIndex.value;
-                        final pageImages = controller.imageElements
-                            .where((img) => img.pageIndex == page)
-                            .toList();
+                                  final left = renderRect.left + pos.dx * scale;
+                                  final top = renderRect.top + pos.dy * scale;
+                                  final width =
+                                      (item.originalBounds.width * scale).clamp(
+                                        8.0,
+                                        renderRect.width,
+                                      );
+                                  final height =
+                                      (item.originalBounds.height * scale).clamp(
+                                        8.0,
+                                        renderRect.height,
+                                      );
 
-                        return Stack(
-                          children: pageImages.map((img) {
-                            return Positioned(
-                              left: img.position.dx,
-                              top: img.position.dy,
-                              child: GestureDetector(
-                                onPanUpdate: (details) {
-                                  setState(() {
-                                    img.position += details.delta;
-                                  });
-                                },
-                                child: Container(
-                                  width: img.size.width,
-                                  height: img.size.height,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: colors.primary.withOpacity(0.5),
-                                      width: 1,
+                                  return Positioned(
+                                    left: left,
+                                    top: top,
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () {
+                                        _startEditingExtractedText(item);
+                                      },
+                                      child: Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          Container(
+                                            width: (isSelected || item.isEdited)
+                                                ? null
+                                                : width,
+                                            height:
+                                                (isSelected || item.isEdited)
+                                                    ? null
+                                                    : height,
+                                            constraints: BoxConstraints(
+                                              minWidth: width,
+                                              minHeight: height,
+                                            ),
+                                            padding: (isSelected ||
+                                                    item.isEdited)
+                                                ? const EdgeInsets.symmetric(
+                                                    horizontal: 3,
+                                                    vertical: 1,
+                                                  )
+                                                : EdgeInsets.zero,
+                                            decoration: BoxDecoration(
+                                              color: (isSelected ||
+                                                      item.isEdited)
+                                                  ? Colors.white
+                                                  : Colors.transparent,
+                                              border: Border.all(
+                                                color: isSelected
+                                                    ? const Color(0xFF1E88E5)
+                                                    : (item.isEdited
+                                                        ? const Color(
+                                                                0xFF1E88E5)
+                                                            .withOpacity(0.6)
+                                                        : Colors.grey
+                                                            .withOpacity(0.35)),
+                                                width: isSelected ? 2.0 : 0.8,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(2),
+                                            ),
+                                            child: isSelected
+                                                ? IntrinsicWidth(
+                                                    child: TextField(
+                                                      controller:
+                                                          _inlineTextController,
+                                                      focusNode:
+                                                          _inlineTextFocusNode,
+                                                      autofocus: true,
+                                                      maxLines: null,
+                                                      cursorColor: const Color(
+                                                          0xFF1E88E5),
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            item.fontSize *
+                                                                scale,
+                                                        fontWeight: item.isBold
+                                                            ? FontWeight.bold
+                                                            : FontWeight.normal,
+                                                        fontStyle: item.isItalic
+                                                            ? FontStyle.italic
+                                                            : FontStyle.normal,
+                                                        color: item.textColor,
+                                                        height: 1.15,
+                                                      ),
+                                                      decoration:
+                                                          const InputDecoration(
+                                                        isDense: true,
+                                                        contentPadding:
+                                                            EdgeInsets
+                                                                .symmetric(
+                                                          horizontal: 2,
+                                                          vertical: 0,
+                                                        ),
+                                                        border:
+                                                            InputBorder.none,
+                                                      ),
+                                                      onChanged: (val) {
+                                                        controller
+                                                            .updateExtractedText(
+                                                          item.id,
+                                                          newText: val,
+                                                        );
+                                                      },
+                                                    ),
+                                                  )
+                                                : (item.isEdited
+                                                    ? Text(
+                                                        item.currentText,
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              item.fontSize *
+                                                                  scale,
+                                                          fontWeight: item
+                                                                  .isBold
+                                                              ? FontWeight.bold
+                                                              : FontWeight
+                                                                  .normal,
+                                                          fontStyle: item
+                                                                  .isItalic
+                                                              ? FontStyle.italic
+                                                              : FontStyle
+                                                                  .normal,
+                                                          color: item.textColor,
+                                                          height: 1.15,
+                                                        ),
+                                                      )
+                                                    : null),
+                                          ),
+
+                                          // Selection handles and pin (Matching reference image)
+                                          if (isSelected) ...[
+                                            // 4 corner circular handles
+                                            Positioned(
+                                              top: -6,
+                                              left: -6,
+                                              child: _buildCornerHandle(),
+                                            ),
+                                            Positioned(
+                                              bottom: -6,
+                                              left: -6,
+                                              child: _buildCornerHandle(),
+                                            ),
+                                            Positioned(
+                                              top: -6,
+                                              right: -6,
+                                              child: _buildCornerHandle(),
+                                            ),
+                                            Positioned(
+                                              bottom: -6,
+                                              right: -6,
+                                              child: _buildCornerHandle(),
+                                            ),
+
+                                            // Bottom-right teardrop action pin / finish editing button
+                                            Positioned(
+                                              bottom: -24,
+                                              right: -10,
+                                              child: GestureDetector(
+                                                onTap: () => _stopEditing(),
+                                                child: Container(
+                                                  width: 22,
+                                                  height: 22,
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        const Color(0xFF1E88E5),
+                                                    shape: BoxShape.circle,
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: const Color(
+                                                                0xFF1E88E5)
+                                                            .withOpacity(0.4),
+                                                        blurRadius: 4,
+                                                        offset:
+                                                            const Offset(0, 2),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: const Center(
+                                                    child: Icon(
+                                                      Icons.check_rounded,
+                                                      size: 13,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
                                     ),
+                                  );
+                                }).toList(),
+                              );
+                            }),
+
+                            // 3. Custom Painter Layer (Drawings, Highlights, Shapes, Whiteouts)
+                            Positioned.fill(
+                              child: Obx(() {
+                                final pageStrokes = controller.drawStrokes
+                                    .where((s) => s.pageIndex == page)
+                                    .toList();
+                                final pageShapes = controller.shapeElements
+                                    .where((s) => s.pageIndex == page)
+                                    .toList();
+                                final pageWhiteouts = controller
+                                    .whiteoutElements
+                                    .where((w) => w.pageIndex == page)
+                                    .toList();
+
+                                return CustomPaint(
+                                  painter: _CanvasElementsPainter(
+                                    strokes: pageStrokes,
+                                    shapes: pageShapes,
+                                    whiteouts: pageWhiteouts,
+                                    livePoints: _livePoints,
+                                    liveColor: controller.selectedColor.value,
+                                    liveStrokeWidth:
+                                        controller.strokeWidth.value,
+                                    liveIsHighlighter:
+                                        controller.activeTool.value ==
+                                        EditorTool.highlight,
+                                    liveShapeStart: _shapeStart,
+                                    liveShapeEnd: _shapeEnd,
+                                    liveShapeType:
+                                        controller.selectedShape.value,
                                   ),
-                                  child: Stack(
-                                    children: [
-                                      Image.memory(
-                                        img.imageBytes,
-                                        fit: BoxFit.cover,
+                                );
+                              }),
+                            ),
+
+                            // 4. User-added Image Stamps
+                            Obx(() {
+                              final pageImages = controller.imageElements
+                                  .where((img) => img.pageIndex == page)
+                                  .toList();
+
+                              return Stack(
+                                children: pageImages.map((img) {
+                                  return Positioned(
+                                    left: img.position.dx,
+                                    top: img.position.dy,
+                                    child: GestureDetector(
+                                      onPanUpdate: (details) {
+                                        setState(() {
+                                          img.position += details.delta;
+                                        });
+                                      },
+                                      child: Container(
                                         width: img.size.width,
                                         height: img.size.height,
-                                      ),
-                                      Positioned(
-                                        top: 2,
-                                        right: 2,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            controller.imageElements
-                                                .removeWhere(
-                                                  (i) => i.id == img.id,
-                                                );
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.all(2),
-                                            decoration: const BoxDecoration(
-                                              color: Colors.red,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: const Icon(
-                                              Icons.close,
-                                              size: 14,
-                                              color: Colors.white,
-                                            ),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: colors.primary
+                                                .withOpacity(0.5),
+                                            width: 1,
                                           ),
                                         ),
+                                        child: Stack(
+                                          children: [
+                                            Image.memory(
+                                              img.imageBytes,
+                                              fit: BoxFit.cover,
+                                              width: img.size.width,
+                                              height: img.size.height,
+                                            ),
+                                            Positioned(
+                                              top: 2,
+                                              right: 2,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  controller.imageElements
+                                                      .removeWhere(
+                                                        (i) => i.id == img.id,
+                                                      );
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(2),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                        color: Colors.red,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                  child: const Icon(
+                                                    Icons.close,
+                                                    size: 14,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        );
-                      }),
-
-                      // 5. User-added Text Elements
-                      Obx(() {
-                        final page = controller.currentPageIndex.value;
-                        final pageTexts = controller.textElements
-                            .where((t) => t.pageIndex == page)
-                            .toList();
-
-                        return Stack(
-                          children: pageTexts.map((textEl) {
-                            final isSelected = _selectedElementId == textEl.id;
-
-                            return Positioned(
-                              left: textEl.position.dx,
-                              top: textEl.position.dy,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedElementId = isSelected
-                                        ? null
-                                        : textEl.id;
-                                  });
-                                },
-                                onPanUpdate: (details) {
-                                  setState(() {
-                                    textEl.position += details.delta;
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 3,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        textEl.backgroundColor ??
-                                        (isSelected
-                                            ? colors.primary.withOpacity(0.15)
-                                            : Colors.transparent),
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? colors.primary
-                                          : Colors.transparent,
-                                      width: 1.5,
                                     ),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        textEl.text,
-                                        style: TextStyle(
-                                          fontSize: textEl.fontSize,
-                                          fontWeight: textEl.isBold
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
-                                          fontStyle: textEl.isItalic
-                                              ? FontStyle.italic
-                                              : FontStyle.normal,
-                                          color: textEl.color,
+                                  );
+                                }).toList(),
+                              );
+                            }),
+
+                            // 5. User-added Text Elements
+                            Obx(() {
+                              final pageTexts = controller.textElements
+                                  .where((t) => t.pageIndex == page)
+                                  .toList();
+
+                              return Stack(
+                                children: pageTexts.map((textEl) {
+                                  final isSelected =
+                                      _selectedElementId == textEl.id;
+
+                                  return Positioned(
+                                    left: textEl.position.dx,
+                                    top: textEl.position.dy,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedElementId = isSelected
+                                              ? null
+                                              : textEl.id;
+                                        });
+                                      },
+                                      onPanUpdate: (details) {
+                                        setState(() {
+                                          textEl.position += details.delta;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 3,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              textEl.backgroundColor ??
+                                              (isSelected
+                                                  ? colors.primary.withOpacity(
+                                                      0.15,
+                                                    )
+                                                  : Colors.transparent),
+                                          border: Border.all(
+                                            color: isSelected
+                                                ? colors.primary
+                                                : Colors.transparent,
+                                            width: 1.5,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              textEl.text,
+                                              style: TextStyle(
+                                                fontSize: textEl.fontSize,
+                                                fontWeight: textEl.isBold
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                                fontStyle: textEl.isItalic
+                                                    ? FontStyle.italic
+                                                    : FontStyle.normal,
+                                                color: textEl.color,
+                                              ),
+                                            ),
+                                            if (isSelected) ...[
+                                              const SizedBox(width: 6),
+                                              GestureDetector(
+                                                onTap: () =>
+                                                    controller.removeTextElement(
+                                                      textEl.id,
+                                                    ),
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(2),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                        color: Colors.red,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                  child: const Icon(
+                                                    Icons.close,
+                                                    size: 12,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
                                         ),
                                       ),
-                                      if (isSelected) ...[
-                                        const SizedBox(width: 6),
-                                        GestureDetector(
-                                          onTap: () => controller
-                                              .removeTextElement(textEl.id),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(2),
-                                            decoration: const BoxDecoration(
-                                              color: Colors.red,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: const Icon(
-                                              Icons.close,
-                                              size: 12,
-                                              color: Colors.white,
-                                            ),
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            }),
+
+                            // 6. Master Canvas Gesture Handler (Accurate touch anywhere on text & tools)
+                            Positioned.fill(
+                              child: Obx(() {
+                                final tool = controller.activeTool.value;
+                                if (tool == EditorTool.select) {
+                                  return GestureDetector(
+                                    behavior: HitTestBehavior.translucent,
+                                    onTapUp: (details) {
+                                      final scenePos = _transformationController
+                                          .toScene(details.localPosition);
+                                      if (!renderRect
+                                          .inflate(12)
+                                          .contains(scenePos)) {
+                                        _stopEditing();
+                                        return;
+                                      }
+
+                                      final pdfX =
+                                          (scenePos.dx - renderRect.left) /
+                                              scale;
+                                      final pdfY =
+                                          (scenePos.dy - renderRect.top) /
+                                              scale;
+                                      final pdfPoint = Offset(pdfX, pdfY);
+
+                                      final match = controller
+                                          .findExtractedTextAt(
+                                            page,
+                                            pdfPoint,
+                                          );
+                                      if (match != null) {
+                                        _startEditingExtractedText(match);
+                                      } else {
+                                        _stopEditing();
+                                      }
+                                    },
+                                  );
+                                }
+
+                                return GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTapDown: (details) {
+                                    final scenePos = _transformationController
+                                        .toScene(details.localPosition);
+                                    if (tool == EditorTool.text) {
+                                      _showAddTextDialog(
+                                        context,
+                                        position: scenePos,
+                                      );
+                                    }
+                                  },
+                                  onPanStart: (details) {
+                                    final scenePos = _transformationController
+                                        .toScene(details.localPosition);
+                                    if (tool == EditorTool.draw ||
+                                        tool == EditorTool.highlight) {
+                                      setState(() {
+                                        _livePoints = [scenePos];
+                                      });
+                                    } else if (tool == EditorTool.shape ||
+                                        tool == EditorTool.whiteout) {
+                                      setState(() {
+                                        _shapeStart = scenePos;
+                                        _shapeEnd = scenePos;
+                                      });
+                                    }
+                                  },
+                                  onPanUpdate: (details) {
+                                    final scenePos = _transformationController
+                                        .toScene(details.localPosition);
+                                    if (tool == EditorTool.draw ||
+                                        tool == EditorTool.highlight) {
+                                      setState(() {
+                                        _livePoints.add(scenePos);
+                                      });
+                                    } else if (tool == EditorTool.shape ||
+                                        tool == EditorTool.whiteout) {
+                                      setState(() {
+                                        _shapeEnd = scenePos;
+                                      });
+                                    }
+                                  },
+                                  onPanEnd: (details) {
+                                    final page =
+                                        controller.currentPageIndex.value;
+
+                                    if (tool == EditorTool.draw) {
+                                      if (_livePoints.length > 1) {
+                                        controller.addDrawStroke(
+                                          VisualDrawStroke(
+                                            pageIndex: page,
+                                            points: List.from(_livePoints),
+                                            color: controller
+                                                .selectedColor.value,
+                                            strokeWidth: controller
+                                                .strokeWidth.value,
+                                            isHighlighter: false,
                                           ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        );
-                      }),
-
-                      // 6. User Touch Gesture Layer
-                      Positioned.fill(
-                        child: Obx(() {
-                          final tool = controller.activeTool.value;
-                          if (tool == EditorTool.select) {
-                            return const SizedBox.shrink();
-                          }
-
-                          return GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTapDown: (details) {
-                              if (tool == EditorTool.text) {
-                                _showAddTextDialog(
-                                  context,
-                                  position: details.localPosition,
+                                        );
+                                      }
+                                      setState(() => _livePoints = []);
+                                    } else if (tool == EditorTool.highlight) {
+                                      if (_livePoints.length > 1) {
+                                        controller.addDrawStroke(
+                                          VisualDrawStroke(
+                                            pageIndex: page,
+                                            points: List.from(_livePoints),
+                                            color: controller
+                                                .selectedColor.value,
+                                            strokeWidth: 14.0,
+                                            isHighlighter: true,
+                                          ),
+                                        );
+                                      }
+                                      setState(() => _livePoints = []);
+                                    } else if (tool == EditorTool.shape) {
+                                      if (_shapeStart != null &&
+                                          _shapeEnd != null) {
+                                        final rect = Rect.fromPoints(
+                                          _shapeStart!,
+                                          _shapeEnd!,
+                                        );
+                                        controller.addShapeElement(
+                                          VisualShapeElement(
+                                            id: DateTime.now()
+                                                .millisecondsSinceEpoch
+                                                .toString(),
+                                            pageIndex: page,
+                                            shapeType: controller
+                                                .selectedShape.value,
+                                            rect: rect,
+                                            color: controller
+                                                .selectedColor.value,
+                                            strokeWidth: controller
+                                                .strokeWidth.value,
+                                          ),
+                                        );
+                                      }
+                                      setState(() {
+                                        _shapeStart = null;
+                                        _shapeEnd = null;
+                                      });
+                                    } else if (tool == EditorTool.whiteout) {
+                                      if (_shapeStart != null &&
+                                          _shapeEnd != null) {
+                                        final rect = Rect.fromPoints(
+                                          _shapeStart!,
+                                          _shapeEnd!,
+                                        );
+                                        controller.addWhiteoutElement(
+                                          VisualWhiteoutElement(
+                                            id: DateTime.now()
+                                                .millisecondsSinceEpoch
+                                                .toString(),
+                                            pageIndex: page,
+                                            rect: rect,
+                                          ),
+                                        );
+                                      }
+                                      setState(() {
+                                        _shapeStart = null;
+                                        _shapeEnd = null;
+                                      });
+                                    }
+                                  },
                                 );
-                              }
-                            },
-                            onPanStart: (details) {
-                              if (tool == EditorTool.draw ||
-                                  tool == EditorTool.highlight) {
-                                setState(() {
-                                  _livePoints = [details.localPosition];
-                                });
-                              } else if (tool == EditorTool.shape ||
-                                  tool == EditorTool.whiteout) {
-                                setState(() {
-                                  _shapeStart = details.localPosition;
-                                  _shapeEnd = details.localPosition;
-                                });
-                              }
-                            },
-                            onPanUpdate: (details) {
-                              if (tool == EditorTool.draw ||
-                                  tool == EditorTool.highlight) {
-                                setState(() {
-                                  _livePoints.add(details.localPosition);
-                                });
-                              } else if (tool == EditorTool.shape ||
-                                  tool == EditorTool.whiteout) {
-                                setState(() {
-                                  _shapeEnd = details.localPosition;
-                                });
-                              }
-                            },
-                            onPanEnd: (details) {
-                              final page = controller.currentPageIndex.value;
-
-                              if (tool == EditorTool.draw) {
-                                if (_livePoints.length > 1) {
-                                  controller.addDrawStroke(
-                                    VisualDrawStroke(
-                                      pageIndex: page,
-                                      points: List.from(_livePoints),
-                                      color: controller.selectedColor.value,
-                                      strokeWidth: controller.strokeWidth.value,
-                                      isHighlighter: false,
-                                    ),
-                                  );
-                                }
-                                setState(() => _livePoints = []);
-                              } else if (tool == EditorTool.highlight) {
-                                if (_livePoints.length > 1) {
-                                  controller.addDrawStroke(
-                                    VisualDrawStroke(
-                                      pageIndex: page,
-                                      points: List.from(_livePoints),
-                                      color: controller.selectedColor.value,
-                                      strokeWidth: 14.0,
-                                      isHighlighter: true,
-                                    ),
-                                  );
-                                }
-                                setState(() => _livePoints = []);
-                              } else if (tool == EditorTool.shape) {
-                                if (_shapeStart != null && _shapeEnd != null) {
-                                  final rect = Rect.fromPoints(
-                                    _shapeStart!,
-                                    _shapeEnd!,
-                                  );
-                                  controller.addShapeElement(
-                                    VisualShapeElement(
-                                      id: DateTime.now().millisecondsSinceEpoch
-                                          .toString(),
-                                      pageIndex: page,
-                                      shapeType: controller.selectedShape.value,
-                                      rect: rect,
-                                      color: controller.selectedColor.value,
-                                      strokeWidth: controller.strokeWidth.value,
-                                    ),
-                                  );
-                                }
-                                setState(() {
-                                  _shapeStart = null;
-                                  _shapeEnd = null;
-                                });
-                              } else if (tool == EditorTool.whiteout) {
-                                if (_shapeStart != null && _shapeEnd != null) {
-                                  final rect = Rect.fromPoints(
-                                    _shapeStart!,
-                                    _shapeEnd!,
-                                  );
-                                  controller.addWhiteoutElement(
-                                    VisualWhiteoutElement(
-                                      id: DateTime.now().millisecondsSinceEpoch
-                                          .toString(),
-                                      pageIndex: page,
-                                      rect: rect,
-                                    ),
-                                  );
-                                }
-                                setState(() {
-                                  _shapeStart = null;
-                                  _shapeEnd = null;
-                                });
-                              }
-                            },
-                          );
-                        }),
+                              }),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  );
+                    );
+                  });
                 },
               ),
             ),

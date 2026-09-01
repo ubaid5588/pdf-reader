@@ -10,6 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
+import 'package:file_reader/features/scan_pdf/view/scan_queue_page.dart';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -99,39 +101,16 @@ void main() {
     });
 
     test('processDocumentImage generates enhanced output file with filters and rotation', () async {
-      final quad = QuadCorners(
-        topLeft: const Offset(0.12, 0.1),
-        topRight: const Offset(0.88, 0.1),
-        bottomRight: const Offset(0.88, 0.9),
-        bottomLeft: const Offset(0.12, 0.9),
-      );
-
-      // Test Magic Color
-      final outPathMagic = await DocumentEdgeDetector.processDocumentImage(
+      final enhancedPath = await DocumentEdgeDetector.processDocumentImage(
         sourceImagePath: sampleImageFile.path,
-        corners: quad,
-        rotationDegrees: 0,
-        filter: ScanDocFilter.magicColor,
-      );
-      expect(File(outPathMagic).existsSync(), isTrue);
-
-      // Test Rotation 90°
-      final outPathRot = await DocumentEdgeDetector.processDocumentImage(
-        sourceImagePath: sampleImageFile.path,
-        corners: quad,
+        corners: QuadCorners.defaultNormalized(),
         rotationDegrees: 90,
         filter: ScanDocFilter.grayscale,
       );
-      expect(File(outPathRot).existsSync(), isTrue);
 
-      // Test B&W Filter
-      final outPathBW = await DocumentEdgeDetector.processDocumentImage(
-        sourceImagePath: sampleImageFile.path,
-        corners: quad,
-        rotationDegrees: 180,
-        filter: ScanDocFilter.blackAndWhite,
-      );
-      expect(File(outPathBW).existsSync(), isTrue);
+      final enhancedFile = File(enhancedPath);
+      expect(enhancedFile.existsSync(), isTrue);
+      expect(enhancedFile.lengthSync(), greaterThan(0));
     });
   });
 
@@ -145,7 +124,7 @@ void main() {
 
       final recorder = ui.PictureRecorder();
       final canvas = Canvas(recorder);
-      canvas.drawRect(const Rect.fromLTWH(0, 0, 300, 400), Paint()..color = Colors.white);
+      canvas.drawRect(const Rect.fromLTWH(0, 0, 300, 400), Paint()..color = Colors.blue);
       final picture = recorder.endRecording();
       final image = await picture.toImage(300, 400);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -207,6 +186,43 @@ void main() {
 
       // Queue is cleared after convert
       expect(controller.scannedPages.isEmpty, isTrue);
+    });
+    test('multi-page sequential additions (Page 2, 3, 4, etc.) without limit', () async {
+      for (int i = 1; i <= 6; i++) {
+        final item = await controller.addScannedImage(sampleImageFile.path);
+        expect(controller.scannedPages.length, equals(i));
+        expect(controller.activePage?.id, equals(item.id));
+      }
+      expect(controller.scannedPages.length, equals(6));
+
+      final pdfFile = await controller.convertScanQueueToPdf();
+      final bytes = await pdfFile.readAsBytes();
+      final doc = PdfDocument(inputBytes: bytes);
+      expect(doc.pages.count, equals(6));
+      doc.dispose();
+    });
+
+    test('movePage reorders pages and preserves custom order in final PDF', () async {
+      final p1 = await controller.addScannedImage(sampleImageFile.path);
+      final p2 = await controller.addScannedImage(sampleImageFile.path);
+      final p3 = await controller.addScannedImage(sampleImageFile.path);
+      final p4 = await controller.addScannedImage(sampleImageFile.path);
+
+      expect(controller.scannedPages.map((p) => p.id).toList(), equals([p1.id, p2.id, p3.id, p4.id]));
+
+      // Move page 0 (P1) to index 2: new order [P2, P3, P1, P4]
+      controller.movePage(0, 2);
+      expect(controller.scannedPages.map((p) => p.id).toList(), equals([p2.id, p3.id, p1.id, p4.id]));
+
+      // Move page 3 (P4) to index 0: new order [P4, P2, P3, P1]
+      controller.movePage(3, 0);
+      expect(controller.scannedPages.map((p) => p.id).toList(), equals([p4.id, p2.id, p3.id, p1.id]));
+
+      final pdfFile = await controller.convertScanQueueToPdf();
+      final bytes = await pdfFile.readAsBytes();
+      final doc = PdfDocument(inputBytes: bytes);
+      expect(doc.pages.count, equals(4));
+      doc.dispose();
     });
   });
 

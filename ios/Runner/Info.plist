@@ -9,6 +9,11 @@
     <true/>
 </dict>
 
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to the camera to scan documents into PDF.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to the photo library to import images for PDF scanning.</string>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 

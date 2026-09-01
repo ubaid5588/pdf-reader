@@ -221,6 +221,107 @@ class EditPdfController extends GetxController {
 
   int get activePageCount => totalPages.value - deletedPages.length;
 
+  /// Calculates the exact rendered rectangle and aspect ratio of a PDF page within a given canvas size.
+  static ui.Rect computePdfPageRenderRect({
+    required ui.Size pageSize,
+    required ui.Size canvasSize,
+  }) {
+    if (pageSize.width <= 0 ||
+        pageSize.height <= 0 ||
+        canvasSize.width <= 0 ||
+        canvasSize.height <= 0) {
+      return ui.Rect.fromLTWH(0, 0, canvasSize.width, canvasSize.height);
+    }
+
+    final double pageAspect = pageSize.width / pageSize.height;
+    final double canvasAspect = canvasSize.width / canvasSize.height;
+
+    double renderWidth;
+    double renderHeight;
+    double renderLeft;
+    double renderTop;
+
+    if (canvasAspect > pageAspect) {
+      // Canvas is wider than page -> fits canvas height, centered horizontally
+      renderHeight = canvasSize.height;
+      renderWidth = canvasSize.height * pageAspect;
+      renderLeft = (canvasSize.width - renderWidth) / 2.0;
+      renderTop = 0.0;
+    } else {
+      // Canvas is taller than page -> fits canvas width, centered vertically
+      renderWidth = canvasSize.width;
+      renderHeight = canvasSize.width / pageAspect;
+      renderLeft = 0.0;
+      renderTop = (canvasSize.height - renderHeight) / 2.0;
+    }
+
+    return ui.Rect.fromLTWH(renderLeft, renderTop, renderWidth, renderHeight);
+  }
+
+  /// Finds the extracted text item on [pageIndex] at the given [pdfPoint] (in PDF page points).
+  /// Performs accurate hit-testing: direct containment first, then closest within [tolerance].
+  ExtractedPdfTextItem? findExtractedTextAt(
+    int pageIndex,
+    ui.Offset pdfPoint, {
+    double tolerance = 8.0,
+  }) {
+    final pageItems = extractedTextItems
+        .where((t) => t.pageIndex == pageIndex && !t.isDeleted)
+        .toList();
+
+    if (pageItems.isEmpty) return null;
+
+    // 1. Direct bounding box containment (exact hit on any part of the text)
+    final directHits = pageItems.where((item) {
+      final pos = item.customPosition ?? item.originalBounds.topLeft;
+      final bounds = ui.Rect.fromLTWH(
+        pos.dx,
+        pos.dy,
+        item.originalBounds.width,
+        item.originalBounds.height,
+      );
+      return bounds.contains(pdfPoint);
+    }).toList();
+
+    if (directHits.isNotEmpty) {
+      // If multiple overlap or touch, pick the most specific one (smallest bounding box area)
+      directHits.sort((a, b) {
+        final areaA = a.originalBounds.width * a.originalBounds.height;
+        final areaB = b.originalBounds.width * b.originalBounds.height;
+        return areaA.compareTo(areaB);
+      });
+      return directHits.first;
+    }
+
+    // 2. Tolerance / Padding hit test (close to the text / finger touch radius)
+    ExtractedPdfTextItem? closestItem;
+    double minDistance = double.infinity;
+
+    for (final item in pageItems) {
+      final pos = item.customPosition ?? item.originalBounds.topLeft;
+      final bounds = ui.Rect.fromLTWH(
+        pos.dx,
+        pos.dy,
+        item.originalBounds.width,
+        item.originalBounds.height,
+      );
+
+      final inflated = bounds.inflate(tolerance);
+      if (inflated.contains(pdfPoint)) {
+        final center = bounds.center;
+        final dx = pdfPoint.dx - center.dx;
+        final dy = pdfPoint.dy - center.dy;
+        final dist = dx * dx + dy * dy;
+        if (dist < minDistance) {
+          minDistance = dist;
+          closestItem = item;
+        }
+      }
+    }
+
+    return closestItem;
+  }
+
   /// Inspect and pick PDF file for visual editing
   Future<bool> pickAndInspectPdf(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
@@ -245,7 +346,8 @@ class EditPdfController extends GetxController {
       final selectedPath = result.files.single.path;
       if (selectedPath == null) return false;
 
-      final file = File(selectedPath);
+      final pickedFile = File(selectedPath);
+      final file = await PdfStorageService.resolveOriginalStorageFile(pickedFile);
       if (!await file.exists()) {
         _showErrorDialog(unableOpenTitle, unableOpenMsg);
         return false;
@@ -276,7 +378,7 @@ class EditPdfController extends GetxController {
         return false;
       }
 
-      // Step 2: Extract text lines across ALL pages of the PDF
+      // Step 2: Extract text across ALL pages of the PDF with word-level accuracy
       final List<ExtractedPdfTextItem> extracted = [];
       final Map<int, ui.Size> pageSizes = {};
 
@@ -294,7 +396,9 @@ class EditPdfController extends GetxController {
             int lineIndex = 0;
             for (final line in textLines) {
               final textContent = line.text.trim();
-              if (textContent.isNotEmpty) {
+              if (textContent.isNotEmpty &&
+                  line.bounds.width > 0 &&
+                  line.bounds.height > 0) {
                 final calcFontSize =
                     (line.bounds.height * 0.78).clamp(9.0, 48.0);
                 extracted.add(
@@ -461,6 +565,30 @@ class EditPdfController extends GetxController {
     }
   }
 
+  void updateExtractedText(
+    String id, {
+    String? newText,
+    double? fontSize,
+    ui.Color? textColor,
+    bool? isBold,
+    bool? isItalic,
+  }) {
+    final index = extractedTextItems.indexWhere((t) => t.id == id);
+    if (index != -1) {
+      final existing = extractedTextItems[index];
+      extractedTextItems[index] = existing.copyWith(
+        currentText: newText ?? existing.currentText,
+        fontSize: fontSize ?? existing.fontSize,
+        textColor: textColor ?? existing.textColor,
+        isBold: isBold ?? existing.isBold,
+        isItalic: isItalic ?? existing.isItalic,
+        isEdited: true,
+        isDeleted: newText != null && newText.isEmpty,
+      );
+      extractedTextItems.refresh();
+    }
+  }
+
   void deleteExtractedTextItem(String id) {
     _recordSnapshot();
     final index = extractedTextItems.indexWhere((t) => t.id == id);
@@ -511,12 +639,12 @@ class EditPdfController extends GetxController {
     whiteoutElements.add(whiteout);
   }
 
-  // --- Undo & Redo ---
+  // --- Undo / Redo ---
 
   void _recordSnapshot() {
     _undoStack.add([
       extractedTextItems.map((e) => e.copyWith()).toList(),
-      List<VisualTextElement>.from(textElements),
+      textElements.map((e) => e.copyWith()).toList(),
       List<VisualDrawStroke>.from(drawStrokes),
       List<VisualShapeElement>.from(shapeElements),
       List<VisualImageElement>.from(imageElements),
@@ -525,78 +653,90 @@ class EditPdfController extends GetxController {
     _redoStack.clear();
   }
 
-  bool get canUndo => _undoStack.isNotEmpty;
-  bool get canRedo => _redoStack.isNotEmpty;
-
   void undo() {
-    if (!canUndo) return;
-    final lastState = _undoStack.removeLast();
+    if (_undoStack.isEmpty) return;
+
     _redoStack.add([
       extractedTextItems.map((e) => e.copyWith()).toList(),
-      List<VisualTextElement>.from(textElements),
+      textElements.map((e) => e.copyWith()).toList(),
       List<VisualDrawStroke>.from(drawStrokes),
       List<VisualShapeElement>.from(shapeElements),
       List<VisualImageElement>.from(imageElements),
       List<VisualWhiteoutElement>.from(whiteoutElements),
     ]);
 
-    extractedTextItems
-        .assignAll(lastState[0] as List<ExtractedPdfTextItem>);
-    textElements.assignAll(lastState[1] as List<VisualTextElement>);
-    drawStrokes.assignAll(lastState[2] as List<VisualDrawStroke>);
-    shapeElements.assignAll(lastState[3] as List<VisualShapeElement>);
-    imageElements.assignAll(lastState[4] as List<VisualImageElement>);
-    whiteoutElements.assignAll(lastState[5] as List<VisualWhiteoutElement>);
+    final last = _undoStack.removeLast();
+    extractedTextItems.assignAll(
+      (last[0] as List<ExtractedPdfTextItem>).map((e) => e.copyWith()),
+    );
+    textElements.assignAll(
+      (last[1] as List<VisualTextElement>).map((e) => e.copyWith()),
+    );
+    drawStrokes.assignAll(List<VisualDrawStroke>.from(last[2]));
+    shapeElements.assignAll(List<VisualShapeElement>.from(last[3]));
+    imageElements.assignAll(List<VisualImageElement>.from(last[4]));
+    whiteoutElements.assignAll(List<VisualWhiteoutElement>.from(last[5]));
   }
 
   void redo() {
-    if (!canRedo) return;
-    final nextState = _redoStack.removeLast();
+    if (_redoStack.isEmpty) return;
+
     _undoStack.add([
       extractedTextItems.map((e) => e.copyWith()).toList(),
-      List<VisualTextElement>.from(textElements),
+      textElements.map((e) => e.copyWith()).toList(),
       List<VisualDrawStroke>.from(drawStrokes),
       List<VisualShapeElement>.from(shapeElements),
       List<VisualImageElement>.from(imageElements),
       List<VisualWhiteoutElement>.from(whiteoutElements),
     ]);
 
-    extractedTextItems
-        .assignAll(nextState[0] as List<ExtractedPdfTextItem>);
-    textElements.assignAll(nextState[1] as List<VisualTextElement>);
-    drawStrokes.assignAll(nextState[2] as List<VisualDrawStroke>);
-    shapeElements.assignAll(nextState[3] as List<VisualShapeElement>);
-    imageElements.assignAll(nextState[4] as List<VisualImageElement>);
-    whiteoutElements.assignAll(nextState[5] as List<VisualWhiteoutElement>);
+    final next = _redoStack.removeLast();
+    extractedTextItems.assignAll(
+      (next[0] as List<ExtractedPdfTextItem>).map((e) => e.copyWith()),
+    );
+    textElements.assignAll(
+      (next[1] as List<VisualTextElement>).map((e) => e.copyWith()),
+    );
+    drawStrokes.assignAll(List<VisualDrawStroke>.from(next[2]));
+    shapeElements.assignAll(List<VisualShapeElement>.from(next[3]));
+    imageElements.assignAll(List<VisualImageElement>.from(next[4]));
+    whiteoutElements.assignAll(List<VisualWhiteoutElement>.from(next[5]));
   }
 
-  // --- Save Edited PDF preserving ALL pages ---
+  // --- Save Edited PDF Document ---
 
+  /// Renders and applies all visual edits (text edits, drawings, shapes, images, whiteouts, page rotations)
+  /// and saves the output PDF to the device.
   Future<File?> saveEditedPdf({
-    void Function(double progress, String status)? onProgress,
+    required void Function(double progress, String status)? onProgress,
     double canvasWidth = 360,
     double canvasHeight = 500,
   }) async {
-    if (sourceFile.value == null) return null;
+    if (sourceFile.value == null) {
+      throw Exception('Source PDF file is missing.');
+    }
 
-    isLoading.value = true;
     try {
-      onProgress?.call(0.12, 'Reading PDF pages...');
-      final bytes = await sourceFile.value!.readAsBytes();
-      final PdfDocument sourceDoc = PdfDocument(inputBytes: bytes);
+      isLoading.value = true;
+      onProgress?.call(0.05, 'Preparing document pages...');
+
+      final sourceBytes = await sourceFile.value!.readAsBytes();
+      final PdfDocument sourceDoc = PdfDocument(inputBytes: sourceBytes);
       final PdfDocument newDoc = PdfDocument();
 
       final totalSrcPages = sourceDoc.pages.count;
       int processedPages = 0;
-      final validPagesCount = activePageCount;
+      final int validPagesCount = totalSrcPages - deletedPages.length;
 
       for (int i = 0; i < totalSrcPages; i++) {
-        if (deletedPages.contains(i)) continue;
+        // Skip deleted pages
+        if (deletedPages.contains(i)) {
+          continue;
+        }
 
         processedPages++;
-        final progressPct =
-            0.15 +
-            (0.65 *
+        final double progressPct = 0.05 +
+            (0.80 *
                 (processedPages / (validPagesCount > 0 ? validPagesCount : 1)));
         onProgress?.call(
           progressPct,
@@ -629,11 +769,21 @@ class EditPdfController extends GetxController {
           newPage.rotation = PdfPageRotateAngle.rotateAngle270;
         }
 
-        // Coordinate scaling factors between visual canvas and actual PDF page size
-        final double scaleX =
-            pageSize.width / (canvasWidth > 0 ? canvasWidth : 1);
-        final double scaleY =
-            pageSize.height / (canvasHeight > 0 ? canvasHeight : 1);
+        // Exact rendered page rect and scale mapping
+        final pageRenderRect = computePdfPageRenderRect(
+          pageSize: pageSize,
+          canvasSize: ui.Size(
+            canvasWidth > 0 ? canvasWidth : pageSize.width,
+            canvasHeight > 0 ? canvasHeight : pageSize.height,
+          ),
+        );
+        final double scale = pageRenderRect.width / pageSize.width;
+        final double leftOffset = pageRenderRect.left;
+        final double topOffset = pageRenderRect.top;
+
+        double toPdfX(double screenX) => (screenX - leftOffset) / scale;
+        double toPdfY(double screenY) => (screenY - topOffset) / scale;
+        double toPdfDist(double dist) => dist / scale;
 
         // 3. Process Extracted Text Edits on this page (Page i)
         final pageExtractedTexts =
@@ -643,10 +793,10 @@ class EditPdfController extends GetxController {
           if (item.isEdited || item.isDeleted) {
             // (a) Cover the original text in the PDF with a whiteout mask rectangle
             final maskRect = ui.Rect.fromLTWH(
-              (item.originalBounds.left - 1.5).clamp(0.0, pageSize.width),
-              (item.originalBounds.top - 1.5).clamp(0.0, pageSize.height),
-              (item.originalBounds.width + 3.0),
-              (item.originalBounds.height + 3.0),
+              (item.originalBounds.left - 1.0).clamp(0.0, pageSize.width),
+              (item.originalBounds.top - 1.0).clamp(0.0, pageSize.height),
+              (item.originalBounds.width + 2.0),
+              (item.originalBounds.height + 2.0),
             );
             newPage.graphics.drawRectangle(
               brush: PdfSolidBrush(PdfColor(255, 255, 255)),
@@ -679,8 +829,8 @@ class EditPdfController extends GetxController {
               final textDrawRect = ui.Rect.fromLTWH(
                 drawPos.dx,
                 drawPos.dy,
-                (pageSize.width - drawPos.dx).clamp(30.0, pageSize.width),
-                item.originalBounds.height.clamp(14.0, pageSize.height),
+                (pageSize.width - drawPos.dx).clamp(20.0, pageSize.width),
+                item.originalBounds.height.clamp(10.0, pageSize.height),
               );
 
               newPage.graphics.drawString(
@@ -699,10 +849,10 @@ class EditPdfController extends GetxController {
             .toList();
         for (final w in pageWhiteouts) {
           final rect = ui.Rect.fromLTWH(
-            w.rect.left * scaleX,
-            w.rect.top * scaleY,
-            w.rect.width * scaleX,
-            w.rect.height * scaleY,
+            toPdfX(w.rect.left),
+            toPdfY(w.rect.top),
+            toPdfDist(w.rect.width),
+            toPdfDist(w.rect.height),
           );
           newPage.graphics.drawRectangle(
             brush: PdfSolidBrush(PdfColor(255, 255, 255)),
@@ -721,13 +871,13 @@ class EditPdfController extends GetxController {
               (s.color.g * 255.0).round() & 0xff,
               (s.color.b * 255.0).round() & 0xff,
             ),
-            width: s.strokeWidth * ((scaleX + scaleY) / 2),
+            width: toPdfDist(s.strokeWidth),
           );
           final rect = ui.Rect.fromLTWH(
-            s.rect.left * scaleX,
-            s.rect.top * scaleY,
-            s.rect.width * scaleX,
-            s.rect.height * scaleY,
+            toPdfX(s.rect.left),
+            toPdfY(s.rect.top),
+            toPdfDist(s.rect.width),
+            toPdfDist(s.rect.height),
           );
 
           if (s.shapeType == ShapeType.rectangle) {
@@ -752,17 +902,17 @@ class EditPdfController extends GetxController {
               (stroke.color.b * 255.0).round() & 0xff,
               stroke.isHighlighter ? 110 : 255,
             ),
-            width: stroke.strokeWidth * ((scaleX + scaleY) / 2),
+            width: toPdfDist(stroke.strokeWidth),
           );
 
           for (int p = 0; p < stroke.points.length - 1; p++) {
             final p1 = ui.Offset(
-              stroke.points[p].dx * scaleX,
-              stroke.points[p].dy * scaleY,
+              toPdfX(stroke.points[p].dx),
+              toPdfY(stroke.points[p].dy),
             );
             final p2 = ui.Offset(
-              stroke.points[p + 1].dx * scaleX,
-              stroke.points[p + 1].dy * scaleY,
+              toPdfX(stroke.points[p + 1].dx),
+              toPdfY(stroke.points[p + 1].dy),
             );
             newPage.graphics.drawLine(pen, p1, p2);
           }
@@ -776,10 +926,10 @@ class EditPdfController extends GetxController {
           try {
             final pdfImage = PdfBitmap(img.imageBytes);
             final rect = ui.Rect.fromLTWH(
-              img.position.dx * scaleX,
-              img.position.dy * scaleY,
-              img.size.width * scaleX,
-              img.size.height * scaleY,
+              toPdfX(img.position.dx),
+              toPdfY(img.position.dy),
+              toPdfDist(img.size.width),
+              toPdfDist(img.size.height),
             );
             newPage.graphics.drawImage(pdfImage, rect);
           } catch (_) {}
@@ -791,7 +941,7 @@ class EditPdfController extends GetxController {
         for (final textEl in pageTexts) {
           final font = PdfStandardFont(
             PdfFontFamily.helvetica,
-            textEl.fontSize * ((scaleX + scaleY) / 2),
+            toPdfDist(textEl.fontSize),
             style: textEl.isBold && textEl.isItalic
                 ? PdfFontStyle.bold
                 : textEl.isBold
@@ -810,24 +960,18 @@ class EditPdfController extends GetxController {
           );
 
           final rect = ui.Rect.fromLTWH(
-            textEl.position.dx * scaleX,
-            textEl.position.dy * scaleY,
-            (pageSize.width - (textEl.position.dx * scaleX)).clamp(
+            toPdfX(textEl.position.dx),
+            toPdfY(textEl.position.dy),
+            (pageSize.width - toPdfX(textEl.position.dx)).clamp(
               50,
               pageSize.width,
             ),
-            40 * scaleY,
+            toPdfDist(40),
           );
 
           if (textEl.backgroundColor != null) {
             newPage.graphics.drawRectangle(
-              brush: PdfSolidBrush(
-                PdfColor(
-                  (textEl.backgroundColor!.r * 255.0).round() & 0xff,
-                  (textEl.backgroundColor!.g * 255.0).round() & 0xff,
-                  (textEl.backgroundColor!.b * 255.0).round() & 0xff,
-                ),
-              ),
+              brush: PdfSolidBrush(PdfColor(255, 255, 255)),
               bounds: rect,
             );
           }
@@ -841,44 +985,54 @@ class EditPdfController extends GetxController {
         }
       }
 
-      onProgress?.call(0.88, 'Encoding updated PDF document...');
-      final List<int> savedBytes = await newDoc.save();
+      onProgress?.call(0.90, 'Encoding PDF document...');
+      final List<int> pdfBytes = await newDoc.save();
 
       newDoc.dispose();
       sourceDoc.dispose();
 
-      onProgress?.call(0.94, 'Saving edited PDF to storage...');
-      final originalName = sourceFile.value!.path
-          .split(Platform.pathSeparator)
-          .last;
+      if (pdfBytes.isEmpty) {
+        throw Exception('Generated PDF data is empty.');
+      }
+
+      onProgress?.call(0.95, 'Saving to device storage...');
+      final originalName = sourceFile.value!.path.split(Platform.pathSeparator).last;
       final fileName = PdfStorageService.generateEditedPdfFileName(
         originalFileName: originalName,
       );
 
       final savedPath = await PdfStorageService.savePdfToDownloads(
-        pdfBytes: savedBytes,
+        pdfBytes: pdfBytes,
         fileName: fileName,
       );
 
-      onProgress?.call(1.0, 'Finalizing...');
-
       if (savedPath == null) {
-        throw Exception('Failed to save edited PDF to storage');
+        throw Exception('Failed to save edited PDF to device storage.');
       }
 
-      // Record in recent
+      final savedFile = File(savedPath);
+
+      // Register with Recent & Files controllers
       try {
         final recentController = Get.isRegistered<RecentPdfController>()
             ? Get.find<RecentPdfController>()
             : Get.put(RecentPdfController());
-        await recentController.addRecentPdf(savedPath, fileName);
+        await recentController.addRecentPdf(savedPath);
 
         if (Get.isRegistered<FilePageController>()) {
-          await Get.find<FilePageController>().refreshPdfs();
+          final fileController = Get.find<FilePageController>();
+          final stat = await savedFile.stat();
+          fileController.ensureFileInList(
+            savedFile,
+            size: stat.size,
+            modified: stat.modified,
+          );
+          fileController.refreshPdfs();
         }
       } catch (_) {}
 
-      return File(savedPath);
+      onProgress?.call(1.0, 'Completed!');
+      return savedFile;
     } catch (e) {
       rethrow;
     } finally {

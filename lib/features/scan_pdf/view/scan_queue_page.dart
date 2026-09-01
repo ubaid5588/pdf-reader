@@ -2,10 +2,12 @@ import 'dart:io';
 import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/features/converter/view/conversion_processing_page.dart';
 import 'package:file_reader/features/scan_pdf/controller/scan_pdf_controller.dart';
+import 'package:file_reader/features/scan_pdf/view/document_camera_page.dart';
 import 'package:file_reader/features/scan_pdf/view/document_preview_edit_page.dart';
 import 'package:file_reader/features/scan_pdf/view/quit_scan_dialog.dart';
 import 'package:file_reader/features/scan_pdf/view/scan_gallery_picker_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class ScanQueuePage extends StatefulWidget {
@@ -16,8 +18,18 @@ class ScanQueuePage extends StatefulWidget {
 }
 
 class _ScanQueuePageState extends State<ScanQueuePage> {
-  final ScanPdfController controller = Get.find<ScanPdfController>();
+  late final ScanPdfController controller;
   bool _showNoticeBanner = true;
+  int? _draggedIndex;
+  int? _hoveredTargetIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.isRegistered<ScanPdfController>()
+        ? Get.find<ScanPdfController>()
+        : Get.put(ScanPdfController());
+  }
 
   void _onAddPages() {
     Get.bottomSheet(
@@ -47,12 +59,9 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
               ),
               title: const Text('Capture with Camera', style: TextStyle(fontWeight: FontWeight.w600)),
               subtitle: const Text('Take photos of more document pages', style: TextStyle(fontSize: 12)),
-              onTap: () async {
+              onTap: () {
                 Get.back();
-                final path = await controller.captureFromCamera();
-                if (path != null) {
-                  await controller.addScannedImage(path);
-                }
+                Get.to(() => const DocumentCameraPage(returnToQueue: true));
               },
             ),
             const SizedBox(height: 8),
@@ -150,7 +159,7 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
         ),
         body: Column(
           children: [
-            // Notice Banner: "Long press to sort manually"
+            // Notice Banner: "Long press and drag to reorder pages"
             if (_showNoticeBanner)
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -162,11 +171,11 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline_rounded, color: Color(0xFF2563EB), size: 18),
+                    const Icon(Icons.swap_vert_rounded, color: Color(0xFF2563EB), size: 18),
                     const SizedBox(width: 10),
                     const Expanded(
                       child: Text(
-                        'Long press to sort manually',
+                        'Tap & hold to drag and reorder pages',
                         style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
@@ -182,38 +191,157 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
                 ),
               ),
 
-            // Main Queue Grid
+            // Main Queue Grid with Drag & Drop Reordering
             Expanded(
               child: Obx(() {
                 final pages = controller.scannedPages;
                 final totalCards = pages.length + 1; // Includes "Add pages" card
 
-                return GridView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 14,
-                    crossAxisSpacing: 14,
-                    childAspectRatio: 0.72,
-                  ),
-                  itemCount: totalCards,
-                  itemBuilder: (context, index) {
-                    // Last item: "Add pages" card
-                    if (index == pages.length) {
-                      return _buildAddPagesCard(colors);
-                    }
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    final double gridPadding = 16.0;
+                    final double spacing = 14.0;
+                    final double availableWidth = constraints.maxWidth - (gridPadding * 2) - spacing;
+                    final double cardWidth = availableWidth / 2;
+                    final double cardHeight = cardWidth / 0.72;
 
-                    final page = pages[index];
-                    final String sequenceNumber = (index + 1).toString().padLeft(2, '0');
+                    return GridView.builder(
+                      padding: EdgeInsets.fromLTRB(gridPadding, 12, gridPadding, 20),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: spacing,
+                        crossAxisSpacing: spacing,
+                        childAspectRatio: 0.72,
+                      ),
+                      itemCount: totalCards,
+                      itemBuilder: (context, index) {
+                        // Last item: "Add pages" card with DragTarget support
+                        if (index == pages.length) {
+                          return DragTarget<int>(
+                            onWillAcceptWithDetails: (details) {
+                              if (details.data != pages.length - 1) {
+                                setState(() => _hoveredTargetIndex = index);
+                                return true;
+                              }
+                              return false;
+                            },
+                            onLeave: (_) {
+                              if (_hoveredTargetIndex == index) {
+                                setState(() => _hoveredTargetIndex = null);
+                              }
+                            },
+                            onAcceptWithDetails: (details) {
+                              final fromIndex = details.data;
+                              setState(() {
+                                _draggedIndex = null;
+                                _hoveredTargetIndex = null;
+                              });
+                              if (fromIndex != pages.length - 1) {
+                                controller.movePage(fromIndex, pages.length - 1);
+                                HapticFeedback.mediumImpact();
+                              }
+                            },
+                            builder: (context, candidateData, rejectedData) {
+                              final isHovered = _hoveredTargetIndex == index;
+                              return AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                transform: isHovered
+                                    ? (Matrix4.identity()..scale(1.03))
+                                    : Matrix4.identity(),
+                                child: _buildAddPagesCard(colors, isHovered: isHovered),
+                              );
+                            },
+                          );
+                        }
 
-                    return _buildPageCard(
-                      context,
-                      page: page,
-                      sequenceNumber: sequenceNumber,
-                      onDelete: () => controller.deletePage(page.id),
-                      onTap: () {
-                        controller.activePageIndex.value = index;
-                        Get.to(() => DocumentPreviewEditPage(pageId: page.id));
+                        final page = pages[index];
+                        final String sequenceNumber = (index + 1).toString().padLeft(2, '0');
+                        final bool isBeingDragged = _draggedIndex == index;
+                        final bool isTargetHovered = _hoveredTargetIndex == index && !isBeingDragged;
+
+                        return DragTarget<int>(
+                          onWillAcceptWithDetails: (details) {
+                            if (details.data != index) {
+                              setState(() => _hoveredTargetIndex = index);
+                              return true;
+                            }
+                            return false;
+                          },
+                          onLeave: (_) {
+                            if (_hoveredTargetIndex == index) {
+                              setState(() => _hoveredTargetIndex = null);
+                            }
+                          },
+                          onAcceptWithDetails: (details) {
+                            final fromIndex = details.data;
+                            setState(() {
+                              _draggedIndex = null;
+                              _hoveredTargetIndex = null;
+                            });
+                            if (fromIndex != index) {
+                              controller.movePage(fromIndex, index);
+                              HapticFeedback.mediumImpact();
+                            }
+                          },
+                          builder: (context, candidateData, rejectedData) {
+                            return LongPressDraggable<int>(
+                              data: index,
+                              hapticFeedbackOnStart: true,
+                              delay: const Duration(milliseconds: 250),
+                              onDragStarted: () {
+                                setState(() {
+                                  _draggedIndex = index;
+                                  _hoveredTargetIndex = null;
+                                });
+                                HapticFeedback.selectionClick();
+                              },
+                              onDragEnd: (_) {
+                                setState(() {
+                                  _draggedIndex = null;
+                                  _hoveredTargetIndex = null;
+                                });
+                              },
+                              onDraggableCanceled: (_, __) {
+                                setState(() {
+                                  _draggedIndex = null;
+                                  _hoveredTargetIndex = null;
+                                });
+                              },
+                              feedback: Material(
+                                color: Colors.transparent,
+                                child: _buildCardFeedback(
+                                  context,
+                                  page: page,
+                                  sequenceNumber: sequenceNumber,
+                                  width: cardWidth,
+                                  height: cardHeight,
+                                ),
+                              ),
+                              childWhenDragging: _buildPlaceholderCard(
+                                colors,
+                                sequenceNumber: sequenceNumber,
+                              ),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.easeOut,
+                                transform: isTargetHovered
+                                    ? (Matrix4.identity()..scale(1.03))
+                                    : Matrix4.identity(),
+                                child: _buildPageCard(
+                                  context,
+                                  page: page,
+                                  sequenceNumber: sequenceNumber,
+                                  isTargetHovered: isTargetHovered,
+                                  onDelete: () => controller.deletePage(page.id),
+                                  onTap: () {
+                                    controller.activePageIndex.value = index;
+                                    Get.to(() => DocumentPreviewEditPage(pageId: page.id));
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        );
                       },
                     );
                   },
@@ -272,6 +400,7 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
     BuildContext context, {
     required dynamic page,
     required String sequenceNumber,
+    bool isTargetHovered = false,
     required VoidCallback onDelete,
     required VoidCallback onTap,
   }) {
@@ -279,15 +408,23 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
         decoration: BoxDecoration(
           color: colors.surfaceElevated,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colors.border.withOpacity(0.7), width: 1.2),
+          border: Border.all(
+            color: isTargetHovered
+                ? const Color(0xFF2563EB)
+                : colors.border.withOpacity(0.7),
+            width: isTargetHovered ? 2.5 : 1.2,
+          ),
           boxShadow: [
             BoxShadow(
-              color: colors.cardShadow,
-              blurRadius: 8,
+              color: isTargetHovered
+                  ? const Color(0xFF2563EB).withOpacity(0.35)
+                  : colors.cardShadow,
+              blurRadius: isTargetHovered ? 14 : 8,
               offset: const Offset(0, 3),
             ),
           ],
@@ -304,6 +441,9 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
                   child: Image.file(
                     File(page.displayPath),
                     fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const Center(
+                      child: Icon(Icons.image_outlined, color: Colors.white54),
+                    ),
                   ),
                 ),
               ),
@@ -316,7 +456,9 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.7),
+                  color: isTargetHovered
+                      ? const Color(0xFF2563EB)
+                      : Colors.black.withOpacity(0.7),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -329,6 +471,59 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
                 ),
               ),
             ),
+
+            // Drag handle hint icon on bottom-right
+            Positioned(
+              bottom: 12,
+              right: 12,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.drag_indicator_rounded,
+                  color: Colors.white70,
+                  size: 14,
+                ),
+              ),
+            ),
+
+            // Target Hover Insertion Overlay
+            if (isTargetHovered)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2563EB).withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2563EB),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.swap_horiz_rounded, color: Colors.white, size: 14),
+                          SizedBox(width: 4),
+                          Text(
+                            'Move here',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
 
             // Top Right Deletion Indicator (-)
             Positioned(
@@ -365,16 +560,136 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
     );
   }
 
-  Widget _buildAddPagesCard(AppColors colors) {
+  /// Visual placeholder when an item is currently being dragged
+  Widget _buildPlaceholderCard(AppColors colors, {required String sequenceNumber}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surfaceElevated.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFF2563EB).withOpacity(0.4),
+          width: 1.5,
+          style: BorderStyle.solid,
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.drag_indicator_rounded,
+              color: const Color(0xFF2563EB).withOpacity(0.5),
+              size: 28,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Page $sequenceNumber',
+              style: TextStyle(
+                color: colors.textSecondary.withOpacity(0.6),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Floating feedback card under the user's touch during drag
+  Widget _buildCardFeedback(
+    BuildContext context, {
+    required dynamic page,
+    required String sequenceNumber,
+    required double width,
+    required double height,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: const Color(0xFF38BDF8),
+          width: 2.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.45),
+            blurRadius: 22,
+            spreadRadius: 3,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          // Page Thumbnail Image
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(
+                  File(page.displayPath),
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const Center(
+                    child: Icon(Icons.image_outlined, color: Colors.white54),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Top Left Page Badge
+          Positioned(
+            top: 12,
+            left: 12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2563EB),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.open_with_rounded, color: Colors.white, size: 12),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Page $sequenceNumber',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddPagesCard(AppColors colors, {bool isHovered = false}) {
     return GestureDetector(
       onTap: _onAddPages,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
         decoration: BoxDecoration(
-          color: colors.surfaceElevated.withOpacity(0.5),
+          color: isHovered
+              ? const Color(0xFF2563EB).withOpacity(0.18)
+              : colors.surfaceElevated.withOpacity(0.5),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0xFF2563EB).withOpacity(0.4),
-            width: 1.5,
+            color: isHovered
+                ? const Color(0xFF2563EB)
+                : const Color(0xFF2563EB).withOpacity(0.4),
+            width: isHovered ? 2.5 : 1.5,
             style: BorderStyle.solid,
           ),
         ),
@@ -387,19 +702,19 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
                 color: const Color(0xFF2563EB).withOpacity(0.12),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.add_rounded,
-                color: Color(0xFF2563EB),
+              child: Icon(
+                isHovered ? Icons.add_to_photos_rounded : Icons.add_rounded,
+                color: const Color(0xFF2563EB),
                 size: 28,
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              'Add pages',
+              isHovered ? 'Move to end' : 'Add pages',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: colors.textPrimary,
+                color: isHovered ? const Color(0xFF2563EB) : colors.textPrimary,
               ),
             ),
           ],
@@ -408,3 +723,4 @@ class _ScanQueuePageState extends State<ScanQueuePage> {
     );
   }
 }
+

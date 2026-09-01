@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/features/scan_pdf/controller/scan_pdf_controller.dart';
 import 'package:file_reader/features/scan_pdf/model/scanned_page_item.dart';
+import 'package:file_reader/features/scan_pdf/view/document_camera_page.dart';
 import 'package:file_reader/features/scan_pdf/view/document_crop_page.dart';
 import 'package:file_reader/features/scan_pdf/view/quit_scan_dialog.dart';
 import 'package:file_reader/features/scan_pdf/view/scan_queue_page.dart';
@@ -10,30 +11,33 @@ import 'package:get/get.dart';
 
 class DocumentPreviewEditPage extends StatefulWidget {
   final String pageId;
+  final bool returnToQueue;
 
-  const DocumentPreviewEditPage({super.key, required this.pageId});
+  const DocumentPreviewEditPage({
+    super.key,
+    required this.pageId,
+    this.returnToQueue = false,
+  });
 
   @override
-  State<DocumentPreviewEditPage> createState() => _DocumentPreviewEditPageState();
+  State<DocumentPreviewEditPage> createState() =>
+      _DocumentPreviewEditPageState();
 }
 
 class _DocumentPreviewEditPageState extends State<DocumentPreviewEditPage> {
   final ScanPdfController controller = Get.find<ScanPdfController>();
 
   void _onNext() {
-    Get.to(() => const ScanQueuePage());
+    Get.off(() => const ScanQueuePage());
   }
 
-  void _onRetake() async {
-    final newPath = await controller.captureFromCamera();
-    if (newPath != null) {
-      final index = controller.scannedPages.indexWhere((p) => p.id == widget.pageId);
-      if (index != -1) {
-        controller.scannedPages.removeAt(index);
-      }
-      final item = await controller.addScannedImage(newPath);
-      Get.off(() => DocumentPreviewEditPage(pageId: item.id));
-    }
+  void _onRetake() {
+    Get.to(
+      () => DocumentCameraPage(
+        retakePageId: widget.pageId,
+        returnToQueue: widget.returnToQueue,
+      ),
+    );
   }
 
   void _showFilterModal(BuildContext context) {

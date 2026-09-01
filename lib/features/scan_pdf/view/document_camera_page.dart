@@ -1,37 +1,191 @@
 import 'dart:io';
+import 'package:camera/camera.dart';
 import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/features/scan_pdf/controller/scan_pdf_controller.dart';
 import 'package:file_reader/features/scan_pdf/view/crop_mode_dialog.dart';
 import 'package:file_reader/features/scan_pdf/view/document_crop_page.dart';
+import 'package:file_reader/features/scan_pdf/view/document_preview_edit_page.dart';
 import 'package:file_reader/features/scan_pdf/view/quit_scan_dialog.dart';
 import 'package:file_reader/features/scan_pdf/view/scan_gallery_picker_page.dart';
 import 'package:file_reader/features/scan_pdf/view/scan_queue_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DocumentCameraPage extends StatefulWidget {
-  const DocumentCameraPage({super.key});
+  final bool returnToQueue;
+  final String? retakePageId;
+
+  const DocumentCameraPage({
+    super.key,
+    this.returnToQueue = false,
+    this.retakePageId,
+  });
 
   @override
   State<DocumentCameraPage> createState() => _DocumentCameraPageState();
 }
 
 class _DocumentCameraPageState extends State<DocumentCameraPage>
-    with SingleTickerProviderStateMixin {
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   late final ScanPdfController controller;
+  CameraController? _cameraController;
+  List<CameraDescription> _cameras = [];
+  bool _isCameraInitialized = false;
+  bool _isCameraPermissionGranted = false;
+  bool _isPermissionDenied = false;
   bool _isBatchMode = false;
   bool _isFlashOn = false;
+  bool _isCapturing = false;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     controller = Get.isRegistered<ScanPdfController>()
         ? Get.find<ScanPdfController>()
         : Get.put(ScanPdfController());
+    _initCamera();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final CameraController? cameraController = _cameraController;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      cameraController.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      _initCamera();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _cameraController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initCamera() async {
+    try {
+      final status = await Permission.camera.request();
+      if (!status.isGranted) {
+        if (mounted) {
+          setState(() {
+            _isCameraPermissionGranted = false;
+            _isPermissionDenied = true;
+            _errorMessage = 'Camera permission is required to scan documents.';
+          });
+        }
+        return;
+      }
+
+      if (mounted) {
+        setState(() {
+          _isCameraPermissionGranted = true;
+          _isPermissionDenied = false;
+          _errorMessage = null;
+        });
+      }
+
+      _cameras = await availableCameras();
+      if (_cameras.isEmpty) {
+        if (mounted) {
+          setState(() {
+            _isCameraInitialized = false;
+            _errorMessage = 'No camera found on this device.';
+          });
+        }
+        return;
+      }
+
+      // Select back camera or first available
+      final backCamera = _cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.back,
+        orElse: () => _cameras.first,
+      );
+
+      final cameraController = CameraController(
+        backCamera,
+        ResolutionPreset.high,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
+      );
+
+      _cameraController = cameraController;
+
+      await cameraController.initialize();
+      if (!mounted) return;
+
+      if (_isFlashOn) {
+        await cameraController.setFlashMode(FlashMode.torch);
+      } else {
+        await cameraController.setFlashMode(FlashMode.off);
+      }
+
+      setState(() {
+        _isCameraInitialized = true;
+      });
+    } catch (e) {
+      debugPrint('Error initializing camera: $e');
+      if (mounted) {
+        setState(() {
+          _isCameraInitialized = false;
+          _errorMessage = 'Failed to initialize camera.';
+        });
+      }
+    }
+  }
+
+  Future<void> _toggleFlash() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      setState(() => _isFlashOn = !_isFlashOn);
+      return;
+    }
+
+    try {
+      final nextState = !_isFlashOn;
+      await _cameraController!.setFlashMode(
+        nextState ? FlashMode.torch : FlashMode.off,
+      );
+      if (mounted) {
+        setState(() => _isFlashOn = nextState);
+      }
+    } catch (e) {
+      debugPrint('Error setting flash mode: $e');
+      if (mounted) {
+        setState(() => _isFlashOn = !_isFlashOn);
+      }
+    }
   }
 
   Future<void> _handleCapture() async {
-    final imagePath = await controller.captureFromCamera();
+    if (_isCapturing) return;
+
+    String? imagePath;
+
+    if (_cameraController != null && _cameraController!.value.isInitialized) {
+      setState(() => _isCapturing = true);
+      try {
+        final XFile file = await _cameraController!.takePicture();
+        imagePath = file.path;
+      } catch (e) {
+        debugPrint('Error taking picture with camera: $e');
+        imagePath = await controller.captureFromCamera();
+      } finally {
+        if (mounted) {
+          setState(() => _isCapturing = false);
+        }
+      }
+    } else {
+      imagePath = await controller.captureFromCamera();
+    }
+
     if (imagePath == null) return;
 
     // Check crop mode dialog if first time and not opted out
@@ -39,9 +193,31 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
       await CropModeDialog.show(context);
     }
 
+    if (widget.retakePageId != null) {
+      final index = controller.scannedPages
+          .indexWhere((p) => p.id == widget.retakePageId);
+      if (index != -1) {
+        controller.scannedPages.removeAt(index);
+      }
+    }
+
     final item = await controller.addScannedImage(imagePath);
 
-    if (!_isBatchMode) {
+    if (widget.retakePageId != null) {
+      Get.off(
+        () => DocumentPreviewEditPage(
+          pageId: item.id,
+          returnToQueue: widget.returnToQueue,
+        ),
+      );
+    } else if (widget.returnToQueue) {
+      Get.off(
+        () => DocumentCropPage(
+          pageId: item.id,
+          returnToQueue: true,
+        ),
+      );
+    } else if (!_isBatchMode) {
       Get.to(() => DocumentCropPage(pageId: item.id));
     }
   }
@@ -55,11 +231,11 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
       for (final p in paths) {
         await controller.addScannedImage(p);
       }
-      if (paths.length == 1) {
+      if (paths.length == 1 && !widget.returnToQueue) {
         final last = controller.scannedPages.last;
         Get.to(() => DocumentCropPage(pageId: last.id));
       } else {
-        Get.to(() => const ScanQueuePage());
+        Get.off(() => const ScanQueuePage());
       }
     }
   }
@@ -98,9 +274,90 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Viewfinder Center Overlay
+                      // Live Camera Stream
+                      if (_isCameraInitialized && _cameraController != null)
+                        Positioned.fill(
+                          child: ClipRect(
+                            child: FittedBox(
+                              fit: BoxFit.cover,
+                              child: SizedBox(
+                                width: _cameraController!
+                                        .value.previewSize?.height ??
+                                    1.0,
+                                height: _cameraController!
+                                        .value.previewSize?.width ??
+                                    1.0,
+                                child: CameraPreview(_cameraController!),
+                              ),
+                            ),
+                          ),
+                        )
+                      else if (_isPermissionDenied || _errorMessage != null)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(32),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.camera_alt_outlined,
+                                  color: Colors.white54,
+                                  size: 48,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  _errorMessage ??
+                                      'Camera permission is required to scan documents.',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF2563EB),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    if (_isPermissionDenied) {
+                                      openAppSettings();
+                                    } else {
+                                      _initCamera();
+                                    }
+                                  },
+                                  icon: const Icon(
+                                    Icons.refresh_rounded,
+                                    size: 18,
+                                  ),
+                                  label: Text(
+                                    _isPermissionDenied
+                                        ? 'Open Settings'
+                                        : 'Retry',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else
+                        const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFF38BDF8),
+                          ),
+                        ),
+
+                      // Viewfinder Center Framing Overlay
                       Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 60,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
@@ -118,7 +375,10 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
                       Positioned(
                         top: 70,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.55),
                             borderRadius: BorderRadius.circular(20),
@@ -126,7 +386,11 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.crop_free_rounded, color: Color(0xFF38BDF8), size: 16),
+                              Icon(
+                                Icons.crop_free_rounded,
+                                color: Color(0xFF38BDF8),
+                                size: 16,
+                              ),
                               SizedBox(width: 6),
                               Text(
                                 'Align document inside the frame',
@@ -140,6 +404,17 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
                           ),
                         ),
                       ),
+
+                      // In-progress capturing indicator overlay
+                      if (_isCapturing)
+                        Container(
+                          color: Colors.black45,
+                          child: const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -151,16 +426,24 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
                 left: 0,
                 right: 0,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   color: Colors.black.withOpacity(0.4),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.close_rounded, color: Colors.white, size: 26),
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          color: Colors.white,
+                          size: 26,
+                        ),
                         onPressed: () async {
                           if (controller.scannedPages.isNotEmpty) {
-                            final shouldQuit = await QuitScanDialog.show(context);
+                            final shouldQuit =
+                                await QuitScanDialog.show(context);
                             if (shouldQuit) {
                               controller.clearQueue();
                               Get.back();
@@ -184,7 +467,10 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
                             GestureDetector(
                               onTap: () => setState(() => _isBatchMode = false),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 5,
+                                ),
                                 decoration: BoxDecoration(
                                   color: !_isBatchMode
                                       ? const Color(0xFF2563EB)
@@ -196,7 +482,9 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: !_isBatchMode ? Colors.white : Colors.white60,
+                                    color: !_isBatchMode
+                                        ? Colors.white
+                                        : Colors.white60,
                                   ),
                                 ),
                               ),
@@ -204,7 +492,10 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
                             GestureDetector(
                               onTap: () => setState(() => _isBatchMode = true),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 5,
+                                ),
                                 decoration: BoxDecoration(
                                   color: _isBatchMode
                                       ? const Color(0xFF2563EB)
@@ -216,7 +507,9 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: _isBatchMode ? Colors.white : Colors.white60,
+                                    color: _isBatchMode
+                                        ? Colors.white
+                                        : Colors.white60,
                                   ),
                                 ),
                               ),
@@ -227,11 +520,15 @@ class _DocumentCameraPageState extends State<DocumentCameraPage>
 
                       IconButton(
                         icon: Icon(
-                          _isFlashOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
-                          color: _isFlashOn ? const Color(0xFFFACC15) : Colors.white,
+                          _isFlashOn
+                              ? Icons.flash_on_rounded
+                              : Icons.flash_off_rounded,
+                          color: _isFlashOn
+                              ? const Color(0xFFFACC15)
+                              : Colors.white,
                           size: 24,
                         ),
-                        onPressed: () => setState(() => _isFlashOn = !_isFlashOn),
+                        onPressed: _toggleFlash,
                       ),
                     ],
                   ),
