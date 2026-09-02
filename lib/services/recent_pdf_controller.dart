@@ -19,7 +19,10 @@ class RecentPdfController extends GetxController {
   Future<void> loadRecentPdfs() async {
     // If Hive is not initialized (e.g. unit tests), preserve the
     // current in-memory state set by addRecentPdf()
-    if (!Hive.isBoxOpen('recent_pdfs')) return;
+    if (!Hive.isBoxOpen('recent_pdfs')) {
+      isLoading.value = false;
+      return;
+    }
 
     try {
       isLoading.value = true;
@@ -52,8 +55,10 @@ class RecentPdfController extends GetxController {
       // and tests work without Hive being initialized.
       int fileSize = 0;
       try {
-        final stat = await File(path).stat();
-        fileSize = stat.size;
+        final f = File(path);
+        if (f.existsSync()) {
+          fileSize = f.lengthSync();
+        }
       } catch (_) {}
 
       final entry = <String, dynamic>{
@@ -63,12 +68,8 @@ class RecentPdfController extends GetxController {
         'size': fileSize,
       };
 
-      final existing = recentPdfs.indexWhere((item) => item['path'] == path);
-      if (existing >= 0) {
-        recentPdfs[existing] = entry;
-      } else {
-        recentPdfs.insert(0, entry);
-      }
+      recentPdfs.removeWhere((item) => item['path'] == path);
+      recentPdfs.insert(0, entry);
 
       // Persist to Hive (no-op if Hive is not initialized)
       await hiveService.savePdf(path, fileName);
@@ -82,6 +83,7 @@ class RecentPdfController extends GetxController {
 
   Future<void> removeRecentPdf(String path) async {
     try {
+      recentPdfs.removeWhere((item) => item['path'] == path);
       await hiveService.deletePdf(path);
       loadRecentPdfs();
     } catch (e) {

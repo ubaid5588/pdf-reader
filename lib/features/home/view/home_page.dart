@@ -5,6 +5,7 @@ import 'package:file_reader/core/theme/app_colors.dart';
 import 'package:file_reader/features/file/controller/file_page_controller.dart';
 import 'package:file_reader/features/file/view/file_page.dart';
 import 'package:file_reader/features/home/controller/navi_controller.dart';
+import 'package:file_reader/features/home/view/all_recent_files_page.dart';
 import 'package:file_reader/features/home/view/home_page_view.dart';
 import 'package:file_reader/features/pdf_viewer/controller/file_view_controller.dart';
 import 'package:file_reader/features/pdf_viewer/view/pdf_viewer.dart';
@@ -150,6 +151,7 @@ class _HomePageState extends State<HomePage> {
                       final List<Widget> screens = [
                         const HomePageView(),
                         FilePage(),
+                        AllRecentFilesPage(isTab: true),
                         const SettingPage(),
                       ];
 
@@ -201,19 +203,19 @@ class _HomePageState extends State<HomePage> {
     final bool isSmallPhone = width < 360;
     final bool isTablet = width >= 600;
 
-    final double navWidth = width * 0.86;
+    final double navWidth = isSmallPhone ? width * 0.94 : width * 0.90;
 
     final double iconSize = isSmallPhone
-        ? 20
+        ? 19
         : isTablet
-        ? 26
-        : 23;
+        ? 25
+        : 22;
     final double fontSize = isSmallPhone
-        ? 9.0
+        ? 8.5
         : isTablet
-        ? 11.5
-        : 10.0;
-    final double horizontalPadding = isSmallPhone ? 6 : 4;
+        ? 11.0
+        : 9.5;
+    final double horizontalPadding = isSmallPhone ? 4 : 4;
     final double verticalPadding = isSmallPhone ? 4 : 2;
 
     return ClipRRect(
@@ -266,8 +268,20 @@ class _HomePageState extends State<HomePage> {
               ),
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: _buildCenterScanButton(context, isSmallPhone),
+              ),
+
+              Expanded(
+                child: navItem(
+                  context,
+                  Icons.history_rounded,
+                  'Recent',
+                  2,
+                  iconSize,
+                  fontSize,
+                  isSmallPhone,
+                ),
               ),
 
               Expanded(
@@ -275,7 +289,7 @@ class _HomePageState extends State<HomePage> {
                   context,
                   Icons.settings_outlined,
                   lang.settings,
-                  2,
+                  3,
                   iconSize,
                   fontSize,
                   isSmallPhone,
