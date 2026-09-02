@@ -25,6 +25,7 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
   Offset? _shapeEnd;
   String? _selectedElementId;
   String? _selectedExtractedId;
+  String? _selectedImageId;
 
   final List<Color> _palette = const [
     Color(0xFF2563EB), // Blue
@@ -168,9 +169,13 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
   void _stopEditing() {
     _commitInlineTextEdit();
     _inlineTextFocusNode.unfocus();
-    if (_selectedExtractedId != null) {
+    if (_selectedExtractedId != null ||
+        _selectedElementId != null ||
+        _selectedImageId != null) {
       setState(() {
         _selectedExtractedId = null;
+        _selectedElementId = null;
+        _selectedImageId = null;
       });
     }
   }
@@ -475,15 +480,31 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
       if (picked == null) return;
 
       final bytes = await picked.readAsBytes();
+      final page = controller.currentPageIndex.value;
+      final origSize =
+          controller.originalPageSizes[page] ?? const Size(595, 842);
+      const initialWidth = 140.0;
+      const initialHeight = 140.0;
+      final centerX =
+          ((origSize.width - initialWidth) / 2).clamp(20.0, origSize.width);
+      final centerY =
+          ((origSize.height - initialHeight) / 2).clamp(20.0, origSize.height);
+
+      final id = DateTime.now().millisecondsSinceEpoch.toString();
       controller.addImageElement(
         VisualImageElement(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          pageIndex: controller.currentPageIndex.value,
+          id: id,
+          pageIndex: page,
           imageBytes: bytes,
-          position: const Offset(40, 120),
-          size: const Size(120, 120),
+          position: Offset(centerX, centerY),
+          size: const Size(initialWidth, initialHeight),
         ),
       );
+      setState(() {
+        _selectedImageId = id;
+        _selectedExtractedId = null;
+        _selectedElementId = null;
+      });
     } catch (e) {
       Get.snackbar('Error', 'Failed to add image: $e');
     }
@@ -1019,174 +1040,7 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                               }),
                             ),
 
-                            // 4. User-added Image Stamps
-                            Obx(() {
-                              final pageImages = controller.imageElements
-                                  .where((img) => img.pageIndex == page)
-                                  .toList();
-
-                              return Stack(
-                                children: pageImages.map((img) {
-                                  return Positioned(
-                                    left: img.position.dx,
-                                    top: img.position.dy,
-                                    child: GestureDetector(
-                                      onPanUpdate: (details) {
-                                        setState(() {
-                                          img.position += details.delta;
-                                        });
-                                      },
-                                      child: Container(
-                                        width: img.size.width,
-                                        height: img.size.height,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: colors.primary
-                                                .withOpacity(0.5),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Stack(
-                                          children: [
-                                            Image.memory(
-                                              img.imageBytes,
-                                              fit: BoxFit.cover,
-                                              width: img.size.width,
-                                              height: img.size.height,
-                                            ),
-                                            Positioned(
-                                              top: 2,
-                                              right: 2,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  controller.imageElements
-                                                      .removeWhere(
-                                                        (i) => i.id == img.id,
-                                                      );
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(2),
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                        color: Colors.red,
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                  child: const Icon(
-                                                    Icons.close,
-                                                    size: 14,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              );
-                            }),
-
-                            // 5. User-added Text Elements
-                            Obx(() {
-                              final pageTexts = controller.textElements
-                                  .where((t) => t.pageIndex == page)
-                                  .toList();
-
-                              return Stack(
-                                children: pageTexts.map((textEl) {
-                                  final isSelected =
-                                      _selectedElementId == textEl.id;
-
-                                  return Positioned(
-                                    left: textEl.position.dx,
-                                    top: textEl.position.dy,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _selectedElementId = isSelected
-                                              ? null
-                                              : textEl.id;
-                                        });
-                                      },
-                                      onPanUpdate: (details) {
-                                        setState(() {
-                                          textEl.position += details.delta;
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6,
-                                          vertical: 3,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              textEl.backgroundColor ??
-                                              (isSelected
-                                                  ? colors.primary.withOpacity(
-                                                      0.15,
-                                                    )
-                                                  : Colors.transparent),
-                                          border: Border.all(
-                                            color: isSelected
-                                                ? colors.primary
-                                                : Colors.transparent,
-                                            width: 1.5,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              textEl.text,
-                                              style: TextStyle(
-                                                fontSize: textEl.fontSize,
-                                                fontWeight: textEl.isBold
-                                                    ? FontWeight.bold
-                                                    : FontWeight.normal,
-                                                fontStyle: textEl.isItalic
-                                                    ? FontStyle.italic
-                                                    : FontStyle.normal,
-                                                color: textEl.color,
-                                              ),
-                                            ),
-                                            if (isSelected) ...[
-                                              const SizedBox(width: 6),
-                                              GestureDetector(
-                                                onTap: () =>
-                                                    controller.removeTextElement(
-                                                      textEl.id,
-                                                    ),
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(2),
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                        color: Colors.red,
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                  child: const Icon(
-                                                    Icons.close,
-                                                    size: 12,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              );
-                            }),
-
-                            // 6. Master Canvas Gesture Handler (Accurate touch anywhere on text & tools)
+                            // 4. Master Canvas Gesture Handler (Accurate touch anywhere on text & tools)
                             Positioned.fill(
                               child: Obx(() {
                                 final tool = controller.activeTool.value;
@@ -1354,6 +1208,257 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                                 );
                               }),
                             ),
+
+                            // 5. User-added Image Stamps (Draggable + Resizable + Working Delete Button)
+                            Obx(() {
+                              final pageImages = controller.imageElements
+                                  .where((img) => img.pageIndex == page)
+                                  .toList();
+
+                              return Stack(
+                                children: pageImages.map((img) {
+                                  final isSelected =
+                                      _selectedImageId == img.id;
+
+                                  return Positioned(
+                                    left: img.position.dx,
+                                    top: img.position.dy,
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedImageId = img.id;
+                                          _selectedExtractedId = null;
+                                          _selectedElementId = null;
+                                        });
+                                      },
+                                      onPanUpdate: (details) {
+                                        setState(() {
+                                          _selectedImageId = img.id;
+                                          img.position += details.delta;
+                                        });
+                                      },
+                                      child: Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          Container(
+                                            width: img.size.width,
+                                            height: img.size.height,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: isSelected
+                                                    ? const Color(0xFF1E88E5)
+                                                    : colors.primary
+                                                        .withOpacity(0.5),
+                                                width: isSelected ? 2.0 : 1.0,
+                                              ),
+                                            ),
+                                            child: Image.memory(
+                                              img.imageBytes,
+                                              fit: BoxFit.cover,
+                                              width: img.size.width,
+                                              height: img.size.height,
+                                            ),
+                                          ),
+
+                                          // Working Close / Delete Button (Top-Right)
+                                          Positioned(
+                                            top: -12,
+                                            right: -12,
+                                            child: GestureDetector(
+                                              behavior: HitTestBehavior.opaque,
+                                              onTap: () {
+                                                controller.removeImageElement(
+                                                  img.id,
+                                                );
+                                                if (_selectedImageId ==
+                                                    img.id) {
+                                                  setState(() =>
+                                                      _selectedImageId = null);
+                                                }
+                                              },
+                                              child: Container(
+                                                width: 28,
+                                                height: 28,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red,
+                                                  shape: BoxShape.circle,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withOpacity(0.3),
+                                                      blurRadius: 4,
+                                                      offset:
+                                                          const Offset(0, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: const Icon(
+                                                  Icons.close_rounded,
+                                                  size: 16,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+                                          // Corner Resize Handle (Bottom-Right)
+                                          Positioned(
+                                            bottom: -12,
+                                            right: -12,
+                                            child: GestureDetector(
+                                              behavior: HitTestBehavior.opaque,
+                                              onPanUpdate: (details) {
+                                                setState(() {
+                                                  _selectedImageId = img.id;
+                                                  final newWidth = (img.size.width +
+                                                          details.delta.dx)
+                                                      .clamp(40.0, 600.0);
+                                                  final newHeight = (img.size.height +
+                                                          details.delta.dy)
+                                                      .clamp(40.0, 600.0);
+                                                  img.size = Size(
+                                                    newWidth,
+                                                    newHeight,
+                                                  );
+                                                });
+                                              },
+                                              child: Container(
+                                                width: 26,
+                                                height: 26,
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      const Color(0xFF1E88E5),
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 2,
+                                                  ),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withOpacity(0.25),
+                                                      blurRadius: 3,
+                                                      offset:
+                                                          const Offset(0, 1),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: const Icon(
+                                                  Icons.open_in_full_rounded,
+                                                  size: 14,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            }),
+
+                            // 6. User-added Text Elements
+                            Obx(() {
+                              final pageTexts = controller.textElements
+                                  .where((t) => t.pageIndex == page)
+                                  .toList();
+
+                              return Stack(
+                                children: pageTexts.map((textEl) {
+                                  final isSelected =
+                                      _selectedElementId == textEl.id;
+
+                                  return Positioned(
+                                    left: textEl.position.dx,
+                                    top: textEl.position.dy,
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedElementId = isSelected
+                                              ? null
+                                              : textEl.id;
+                                          _selectedExtractedId = null;
+                                          _selectedImageId = null;
+                                        });
+                                      },
+                                      onPanUpdate: (details) {
+                                        setState(() {
+                                          textEl.position += details.delta;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 3,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: textEl.backgroundColor ??
+                                              (isSelected
+                                                  ? colors.primary
+                                                      .withOpacity(0.15)
+                                                  : Colors.transparent),
+                                          border: Border.all(
+                                            color: isSelected
+                                                ? colors.primary
+                                                : Colors.transparent,
+                                            width: 1.5,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              textEl.text,
+                                              style: TextStyle(
+                                                fontSize: textEl.fontSize,
+                                                fontWeight: textEl.isBold
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                                fontStyle: textEl.isItalic
+                                                    ? FontStyle.italic
+                                                    : FontStyle.normal,
+                                                color: textEl.color,
+                                              ),
+                                            ),
+                                            if (isSelected) ...[
+                                              const SizedBox(width: 6),
+                                              GestureDetector(
+                                                behavior:
+                                                    HitTestBehavior.opaque,
+                                                onTap: () => controller
+                                                    .removeTextElement(
+                                                  textEl.id,
+                                                ),
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(2),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Colors.red,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.close,
+                                                    size: 12,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            }),
                           ],
                         ),
                       ),

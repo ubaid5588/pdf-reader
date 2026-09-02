@@ -212,9 +212,7 @@ void main() {
       expect(recentController.recentPdfs.any((item) => item['path'] == samplePdfFile.path), isTrue);
       expect(fileController.pdfFiles.where((f) => f.path == samplePdfFile.path).length, equals(1));
 
-      // 4. Verify Hive records the path (so a real device loadPdfs() would find it)
-      final hiveList = HiveService().getRecentPdfs();
-      // In test environment Hive box is not open, so hiveList may be empty — that is expected.
+      // 4. Verify Hive / Recent records the path (so a real device loadPdfs() would find it)
       // The core invariant is that recentController has the path recorded in its reactive list.
       final inRecent = recentController.recentPdfs.any((item) => item['path'] == samplePdfFile.path);
       expect(inRecent, isTrue, reason: 'Modified PDF must remain in RecentPdfController');

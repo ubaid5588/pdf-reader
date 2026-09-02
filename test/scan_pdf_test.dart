@@ -10,8 +10,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
-import 'package:file_reader/features/scan_pdf/view/scan_queue_page.dart';
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

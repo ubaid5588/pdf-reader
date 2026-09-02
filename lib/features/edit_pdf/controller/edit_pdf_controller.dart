@@ -635,6 +635,12 @@ class EditPdfController extends GetxController {
     imageElements.add(image);
   }
 
+  void removeImageElement(String id) {
+    _recordSnapshot();
+    imageElements.removeWhere((i) => i.id == id);
+    imageElements.refresh();
+  }
+
   void addWhiteoutElement(VisualWhiteoutElement whiteout) {
     _recordSnapshot();
     whiteoutElements.add(whiteout);
