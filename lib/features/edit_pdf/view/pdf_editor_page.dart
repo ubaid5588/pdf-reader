@@ -28,14 +28,14 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
   String? _selectedImageId;
 
   final List<Color> _palette = const [
+    Color(0xFF000000), // Black
+    Color(0xFFFFFFFF), // White
     Color(0xFF2563EB), // Blue
     Color(0xFFDC2626), // Red
     Color(0xFF16A34A), // Green
     Color(0xFFEAB308), // Yellow
     Color(0xFFEA580C), // Orange
     Color(0xFF9333EA), // Purple
-    Color(0xFF0F172A), // Black
-    Color(0xFFFFFFFF), // White
   ];
 
   final TextEditingController _inlineTextController = TextEditingController();
@@ -178,6 +178,538 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
         _selectedImageId = null;
       });
     }
+  }
+
+  VisualTextElement? get _selectedTextElement {
+    if (_selectedElementId == null) return null;
+    return controller.textElements
+        .firstWhereOrNull((e) => e.id == _selectedElementId);
+  }
+
+  ExtractedPdfTextItem? get _selectedExtractedTextItem {
+    if (_selectedExtractedId == null) return null;
+    return controller.extractedTextItems
+        .firstWhereOrNull((e) => e.id == _selectedExtractedId);
+  }
+
+  void _changeSelectedTextSize(double delta) {
+    final textEl = _selectedTextElement;
+    if (textEl != null) {
+      setState(() {
+        textEl.fontSize = (textEl.fontSize + delta).clamp(8.0, 64.0);
+      });
+      controller.textElements.refresh();
+      return;
+    }
+    final extractedEl = _selectedExtractedTextItem;
+    if (extractedEl != null) {
+      setState(() {
+        extractedEl.fontSize = (extractedEl.fontSize + delta).clamp(8.0, 64.0);
+        extractedEl.isEdited = true;
+      });
+      controller.extractedTextItems.refresh();
+    }
+  }
+
+  void _setSelectedTextSize(double size) {
+    final textEl = _selectedTextElement;
+    if (textEl != null) {
+      setState(() {
+        textEl.fontSize = size.clamp(8.0, 64.0);
+      });
+      controller.textElements.refresh();
+      return;
+    }
+    final extractedEl = _selectedExtractedTextItem;
+    if (extractedEl != null) {
+      setState(() {
+        extractedEl.fontSize = size.clamp(8.0, 64.0);
+        extractedEl.isEdited = true;
+      });
+      controller.extractedTextItems.refresh();
+    }
+  }
+
+  void _setSelectedTextColor(Color color) {
+    final textEl = _selectedTextElement;
+    if (textEl != null) {
+      setState(() {
+        textEl.color = color;
+      });
+      controller.textElements.refresh();
+      return;
+    }
+    final extractedEl = _selectedExtractedTextItem;
+    if (extractedEl != null) {
+      setState(() {
+        extractedEl.textColor = color;
+        extractedEl.isEdited = true;
+      });
+      controller.extractedTextItems.refresh();
+    }
+  }
+
+  Widget _buildFormatToggle({
+    required String label,
+    required bool isActive,
+    bool isBold = false,
+    bool isItalic = false,
+    required VoidCallback onTap,
+  }) {
+    final colors = context.colors;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: isActive ? colors.primary.withOpacity(0.18) : colors.surface,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+            color: isActive ? colors.primary : colors.border,
+            width: 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
+            color: isActive ? colors.primary : colors.textSecondary,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showEditTextContentDialog(
+    BuildContext context,
+    VisualTextElement textEl,
+  ) async {
+    final colors = context.colors;
+    final textController = TextEditingController(text: textEl.text);
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: colors.surfaceElevated,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Edit Text',
+          style: TextStyle(
+            color: colors.textPrimary,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: TextField(
+          controller: textController,
+          autofocus: true,
+          style: TextStyle(color: colors.textPrimary, fontSize: 14),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: () {
+              final newText = textController.text.trim();
+              if (newText.isNotEmpty) {
+                setState(() {
+                  textEl.text = newText;
+                });
+                controller.textElements.refresh();
+              }
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('Update'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSelectedTextToolbar(BuildContext context) {
+    final colors = context.colors;
+    final textEl = _selectedTextElement;
+    final extractedEl = _selectedExtractedTextItem;
+
+    if (textEl == null && extractedEl == null) {
+      return const SizedBox.shrink();
+    }
+
+    final double currentSize =
+        textEl?.fontSize ?? extractedEl?.fontSize ?? 15.0;
+    final Color currentColor =
+        textEl?.color ?? extractedEl?.textColor ?? Colors.black;
+    final bool isBold = textEl?.isBold ?? extractedEl?.isBold ?? false;
+    final bool isItalic = textEl?.isItalic ?? extractedEl?.isItalic ?? false;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: colors.surfaceElevated,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: colors.primary.withOpacity(0.4), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withOpacity(0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Selected Text Badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+              decoration: BoxDecoration(
+                color: colors.primary.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.text_fields_rounded,
+                    size: 14,
+                    color: colors.primary,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Text',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: colors.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              height: 20,
+              child: VerticalDivider(color: colors.border, width: 1),
+            ),
+            const SizedBox(width: 8),
+
+            // Font Size Stepper
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: colors.border, width: 0.8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => _changeSelectedTextSize(-2.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(2),
+                      child: Icon(
+                        Icons.remove,
+                        size: 15,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${currentSize.toInt()}px',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.bold,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => _changeSelectedTextSize(2.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(2),
+                      child: Icon(
+                        Icons.add,
+                        size: 15,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+
+            // Font Size Slider for smooth real-time drag
+            SizedBox(
+              width: 100,
+              child: SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  trackHeight: 2.5,
+                  thumbShape:
+                      const RoundSliderThumbShape(enabledThumbRadius: 6),
+                  overlayShape:
+                      const RoundSliderOverlayShape(overlayRadius: 12),
+                ),
+                child: Slider(
+                  value: currentSize.clamp(8.0, 60.0),
+                  min: 8.0,
+                  max: 60.0,
+                  divisions: 52,
+                  activeColor: colors.primary,
+                  inactiveColor: colors.border,
+                  onChanged: (val) => _setSelectedTextSize(val),
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
+            SizedBox(
+              height: 20,
+              child: VerticalDivider(color: colors.border, width: 1),
+            ),
+            const SizedBox(width: 8),
+
+            // Color Palette (Including White and Black!)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: _palette.map((c) {
+                final isSelected = currentColor.value == c.value;
+                return GestureDetector(
+                  onTap: () => _setSelectedTextColor(c),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: 22,
+                    height: 22,
+                    decoration: BoxDecoration(
+                      color: c,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSelected
+                            ? colors.primary
+                            : (c == const Color(0xFFFFFFFF)
+                                ? Colors.grey.shade400
+                                : (c == const Color(0xFF000000)
+                                    ? Colors.grey.shade600
+                                    : Colors.transparent)),
+                        width: isSelected ? 2.5 : 1,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: c == const Color(0xFFFFFFFF)
+                                    ? Colors.black.withOpacity(0.15)
+                                    : c.withOpacity(0.4),
+                                blurRadius: 4,
+                                offset: const Offset(0, 1),
+                              ),
+                            ]
+                          : null,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              height: 20,
+              child: VerticalDivider(color: colors.border, width: 1),
+            ),
+            const SizedBox(width: 8),
+
+            // Bold & Italic Style Toggles
+            _buildFormatToggle(
+              label: 'B',
+              isActive: isBold,
+              isBold: true,
+              onTap: () {
+                if (textEl != null) {
+                  setState(() => textEl.isBold = !textEl.isBold);
+                  controller.textElements.refresh();
+                } else if (extractedEl != null) {
+                  setState(() {
+                    extractedEl.isBold = !extractedEl.isBold;
+                    extractedEl.isEdited = true;
+                  });
+                  controller.extractedTextItems.refresh();
+                }
+              },
+            ),
+            const SizedBox(width: 4),
+            _buildFormatToggle(
+              label: 'I',
+              isActive: isItalic,
+              isItalic: true,
+              onTap: () {
+                if (textEl != null) {
+                  setState(() => textEl.isItalic = !textEl.isItalic);
+                  controller.textElements.refresh();
+                } else if (extractedEl != null) {
+                  setState(() {
+                    extractedEl.isItalic = !extractedEl.isItalic;
+                    extractedEl.isEdited = true;
+                  });
+                  controller.extractedTextItems.refresh();
+                }
+              },
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              height: 20,
+              child: VerticalDivider(color: colors.border, width: 1),
+            ),
+            const SizedBox(width: 8),
+
+            // Edit Text String button
+            if (textEl != null) ...[
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => _showEditTextContentDialog(context, textEl),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: colors.primary.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.edit_rounded,
+                        size: 13,
+                        color: colors.primary,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        'Edit',
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          color: colors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+            ],
+
+            // Delete Button
+            if (textEl != null) ...[
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  controller.removeTextElement(textEl.id);
+                  setState(() {
+                    _selectedElementId = null;
+                  });
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: Colors.red.withOpacity(0.4),
+                      width: 1,
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.delete_outline_rounded,
+                        size: 14,
+                        color: Colors.red,
+                      ),
+                      SizedBox(width: 3),
+                      Text(
+                        'Delete',
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+            ],
+
+            // Done / Deselect Button
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                setState(() {
+                  _selectedElementId = null;
+                  _selectedExtractedId = null;
+                });
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.check_rounded, size: 13, color: Colors.white),
+                    SizedBox(width: 3),
+                    Text(
+                      'Done',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _handleSave(BuildContext context, AppLocalizations l10n) {
@@ -373,7 +905,32 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
+
+                  // Font Size Slider
+                  Row(
+                    children: [
+                      Text(
+                        'Size: ${fontSize.toInt()}px',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                      Expanded(
+                        child: Slider(
+                          value: fontSize,
+                          min: 10.0,
+                          max: 48.0,
+                          divisions: 38,
+                          activeColor: colors.primary,
+                          onChanged: (v) => setState(() => fontSize = v),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
 
                   Row(
                     children: [
@@ -404,27 +961,47 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                   ),
                   const SizedBox(height: 8),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: _palette.take(6).map((c) {
-                      return GestureDetector(
-                        onTap: () => setState(() => textColor = c),
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: c,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: textColor == c
-                                  ? colors.primary
-                                  : Colors.grey,
-                              width: textColor == c ? 2.5 : 1,
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    child: Row(
+                      children: _palette.map((c) {
+                        final isSelected = textColor.value == c.value;
+                        return GestureDetector(
+                          onTap: () => setState(() => textColor = c),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              color: c,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isSelected
+                                    ? colors.primary
+                                    : (c == const Color(0xFFFFFFFF)
+                                        ? Colors.grey.shade400
+                                        : (c == const Color(0xFF000000)
+                                            ? Colors.grey.shade600
+                                            : Colors.transparent)),
+                                width: isSelected ? 2.5 : 1,
+                              ),
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: c == const Color(0xFFFFFFFF)
+                                            ? Colors.black.withOpacity(0.15)
+                                            : c.withOpacity(0.4),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ]
+                                  : null,
                             ),
                           ),
-                        ),
-                      );
-                    }).toList(),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ],
               ),
@@ -449,9 +1026,11 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                   final text = textEditingController.text.trim();
                   if (text.isNotEmpty) {
                     final pos = position ?? const Offset(40, 100);
+                    final newId =
+                        DateTime.now().millisecondsSinceEpoch.toString();
                     controller.addTextElement(
                       VisualTextElement(
-                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        id: newId,
                         pageIndex: controller.currentPageIndex.value,
                         text: text,
                         position: pos,
@@ -461,6 +1040,11 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                         backgroundColor: isWhiteout ? Colors.white : null,
                       ),
                     );
+                    this.setState(() {
+                      _selectedElementId = newId;
+                      _selectedExtractedId = null;
+                      _selectedImageId = null;
+                    });
                   }
                   Navigator.of(ctx).pop();
                 },
@@ -1065,6 +1649,36 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                                         return;
                                       }
 
+                                      // Hit-test user-added text elements
+                                      final pageTexts = controller
+                                          .textElements
+                                          .where((t) => t.pageIndex == page)
+                                          .toList();
+                                      final hitAdded = pageTexts
+                                          .firstWhereOrNull((el) {
+                                        final textW =
+                                            (el.text.length * el.fontSize * 0.7)
+                                                .clamp(36.0, 500.0);
+                                        final textH = (el.fontSize * 1.5)
+                                            .clamp(24.0, 100.0);
+                                        final rect = Rect.fromLTWH(
+                                          el.position.dx - 8,
+                                          el.position.dy - 8,
+                                          textW + 16,
+                                          textH + 16,
+                                        );
+                                        return rect.contains(scenePos);
+                                      });
+
+                                      if (hitAdded != null) {
+                                        setState(() {
+                                          _selectedElementId = hitAdded.id;
+                                          _selectedExtractedId = null;
+                                          _selectedImageId = null;
+                                        });
+                                        return;
+                                      }
+
                                       final pdfX =
                                           (scenePos.dx - renderRect.left) /
                                               scale;
@@ -1093,6 +1707,35 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                                     final scenePos = _transformationController
                                         .toScene(details.localPosition);
                                     if (tool == EditorTool.text) {
+                                      final pageTexts = controller
+                                          .textElements
+                                          .where((t) => t.pageIndex == page)
+                                          .toList();
+                                      final hitAdded = pageTexts
+                                          .firstWhereOrNull((el) {
+                                        final textW =
+                                            (el.text.length * el.fontSize * 0.7)
+                                                .clamp(36.0, 500.0);
+                                        final textH = (el.fontSize * 1.5)
+                                            .clamp(24.0, 100.0);
+                                        final rect = Rect.fromLTWH(
+                                          el.position.dx - 8,
+                                          el.position.dy - 8,
+                                          textW + 16,
+                                          textH + 16,
+                                        );
+                                        return rect.contains(scenePos);
+                                      });
+
+                                      if (hitAdded != null) {
+                                        setState(() {
+                                          _selectedElementId = hitAdded.id;
+                                          _selectedExtractedId = null;
+                                          _selectedImageId = null;
+                                        });
+                                        return;
+                                      }
+
                                       _showAddTextDialog(
                                         context,
                                         position: scenePos,
@@ -1404,24 +2047,38 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                                         });
                                       },
                                       child: Container(
+                                        constraints: const BoxConstraints(
+                                          minWidth: 36,
+                                          minHeight: 28,
+                                        ),
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 6,
-                                          vertical: 3,
+                                          horizontal: 8,
+                                          vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
                                           color: textEl.backgroundColor ??
                                               (isSelected
                                                   ? colors.primary
-                                                      .withOpacity(0.15)
+                                                      .withOpacity(0.12)
                                                   : Colors.transparent),
                                           border: Border.all(
                                             color: isSelected
                                                 ? colors.primary
                                                 : Colors.transparent,
-                                            width: 1.5,
+                                            width: isSelected ? 1.8 : 0,
                                           ),
                                           borderRadius:
-                                              BorderRadius.circular(4),
+                                              BorderRadius.circular(6),
+                                          boxShadow: isSelected
+                                              ? [
+                                                  BoxShadow(
+                                                    color: colors.primary
+                                                        .withOpacity(0.2),
+                                                    blurRadius: 4,
+                                                    offset: const Offset(0, 1),
+                                                  ),
+                                                ]
+                                              : null,
                                         ),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
@@ -1440,14 +2097,18 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                                               ),
                                             ),
                                             if (isSelected) ...[
-                                              const SizedBox(width: 6),
+                                              const SizedBox(width: 8),
                                               GestureDetector(
                                                 behavior:
                                                     HitTestBehavior.opaque,
-                                                onTap: () => controller
-                                                    .removeTextElement(
-                                                  textEl.id,
-                                                ),
+                                                onTap: () {
+                                                  controller.removeTextElement(
+                                                    textEl.id,
+                                                  );
+                                                  setState(() {
+                                                    _selectedElementId = null;
+                                                  });
+                                                },
                                                 child: Container(
                                                   padding:
                                                       const EdgeInsets.all(2),
@@ -1493,6 +2154,10 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
     final colors = context.colors;
 
     return Obx(() {
+      if (_selectedElementId != null || _selectedExtractedId != null) {
+        return _buildSelectedTextToolbar(context);
+      }
+
       final tool = controller.activeTool.value;
       if (tool == EditorTool.select) return const SizedBox.shrink();
 
@@ -1552,7 +2217,7 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
               if (tool != EditorTool.whiteout) ...[
                 Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: _palette.take(6).map((c) {
+                  children: _palette.map((c) {
                     return Obx(() {
                       final isSelected = controller.selectedColor.value == c;
                       return GestureDetector(
@@ -1567,13 +2232,19 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                             border: Border.all(
                               color: isSelected
                                   ? colors.primary
-                                  : Colors.grey.withOpacity(0.5),
+                                  : (c == const Color(0xFFFFFFFF)
+                                      ? Colors.grey.shade400
+                                      : (c == const Color(0xFF000000)
+                                          ? Colors.grey.shade600
+                                          : Colors.transparent)),
                               width: isSelected ? 2.5 : 1,
                             ),
                             boxShadow: isSelected
                                 ? [
                                     BoxShadow(
-                                      color: c.withOpacity(0.4),
+                                      color: c == const Color(0xFFFFFFFF)
+                                          ? Colors.black.withOpacity(0.15)
+                                          : c.withOpacity(0.4),
                                       blurRadius: 4,
                                       offset: const Offset(0, 1),
                                     ),

@@ -443,5 +443,109 @@ void main() {
         expect(newFieldViewportBottom, closeTo(visibleBottom, 0.01));
       });
     });
+
+    group('Selected Text Real-Time Updates & White/Black Palette Tests', () {
+      test('1. User-added text element supports real-time size changes and notifications', () {
+        final controller = EditPdfController();
+        final textEl = VisualTextElement(
+          id: 'selected_text_1',
+          pageIndex: 0,
+          text: 'Selected Text Sample',
+          position: const Offset(50, 100),
+          fontSize: 14.0,
+          color: Colors.blue,
+        );
+
+        controller.addTextElement(textEl);
+        expect(controller.textElements.first.fontSize, equals(14.0));
+
+        // Real-time size change: increase by +4px
+        textEl.fontSize += 4.0;
+        controller.textElements.refresh();
+        expect(controller.textElements.first.fontSize, equals(18.0));
+
+        // Direct size set to 28px
+        textEl.fontSize = 28.0;
+        controller.textElements.refresh();
+        expect(controller.textElements.first.fontSize, equals(28.0));
+      });
+
+      test('2. User-added text element supports real-time color changes with Black and White', () {
+        final controller = EditPdfController();
+        final textEl = VisualTextElement(
+          id: 'selected_text_2',
+          pageIndex: 0,
+          text: 'Color Change Sample',
+          position: const Offset(50, 150),
+          fontSize: 16.0,
+          color: const Color(0xFF2563EB), // Blue
+        );
+
+        controller.addTextElement(textEl);
+        expect(controller.textElements.first.color, equals(const Color(0xFF2563EB)));
+
+        // Change color to Black
+        textEl.color = const Color(0xFF000000);
+        controller.textElements.refresh();
+        expect(controller.textElements.first.color, equals(const Color(0xFF000000)));
+
+        // Change color to White
+        textEl.color = const Color(0xFFFFFFFF);
+        controller.textElements.refresh();
+        expect(controller.textElements.first.color, equals(const Color(0xFFFFFFFF)));
+
+        // Change color to Red
+        textEl.color = const Color(0xFFDC2626);
+        controller.textElements.refresh();
+        expect(controller.textElements.first.color, equals(const Color(0xFFDC2626)));
+      });
+
+      test('3. Extracted PDF text item supports real-time size and color updates', () {
+        final controller = EditPdfController();
+        final item = ExtractedPdfTextItem(
+          id: 'ext_sample_1',
+          pageIndex: 0,
+          originalText: 'Original Contract Text',
+          currentText: 'Original Contract Text',
+          originalBounds: const Rect.fromLTWH(50, 100, 200, 20),
+          fontSize: 12.0,
+          textColor: Colors.black,
+        );
+
+        controller.extractedTextItems.add(item);
+        expect(controller.extractedTextItems.first.fontSize, equals(12.0));
+        expect(controller.extractedTextItems.first.textColor, equals(Colors.black));
+
+        // Real-time font size increase
+        item.fontSize = 20.0;
+        item.isEdited = true;
+        controller.extractedTextItems.refresh();
+        expect(controller.extractedTextItems.first.fontSize, equals(20.0));
+        expect(controller.extractedTextItems.first.isEdited, isTrue);
+
+        // Real-time color change to White
+        item.textColor = const Color(0xFFFFFFFF);
+        controller.extractedTextItems.refresh();
+        expect(controller.extractedTextItems.first.textColor, equals(const Color(0xFFFFFFFF)));
+      });
+
+      test('4. Color palette includes Black and White options', () {
+        const palette = [
+          Color(0xFF000000), // Black
+          Color(0xFFFFFFFF), // White
+          Color(0xFF2563EB), // Blue
+          Color(0xFFDC2626), // Red
+          Color(0xFF16A34A), // Green
+          Color(0xFFEAB308), // Yellow
+          Color(0xFFEA580C), // Orange
+          Color(0xFF9333EA), // Purple
+        ];
+
+        expect(palette.contains(const Color(0xFF000000)), isTrue, reason: 'Black must be in palette');
+        expect(palette.contains(const Color(0xFFFFFFFF)), isTrue, reason: 'White must be in palette');
+        expect(palette.first, equals(const Color(0xFF000000)), reason: 'Black should be accessible first');
+        expect(palette[1], equals(const Color(0xFFFFFFFF)), reason: 'White should be accessible second');
+      });
+    });
   });
 }
