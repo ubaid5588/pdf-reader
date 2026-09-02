@@ -525,6 +525,7 @@ class EditPdfController extends GetxController {
     final current = pageRotations[page] ?? 0;
     final next = (current + 90) % 360;
     pageRotations[page] = next;
+    pageRotations.refresh();
   }
 
   void deleteCurrentPage(BuildContext context) {
@@ -769,15 +770,20 @@ class EditPdfController extends GetxController {
           newPage.rotation = PdfPageRotateAngle.rotateAngle270;
         }
 
+        final isRotated90or270 = rotation == 90 || rotation == 270;
+        final effectivePageSize = isRotated90or270
+            ? ui.Size(pageSize.height, pageSize.width)
+            : pageSize;
+
         // Exact rendered page rect and scale mapping
         final pageRenderRect = computePdfPageRenderRect(
-          pageSize: pageSize,
+          pageSize: effectivePageSize,
           canvasSize: ui.Size(
-            canvasWidth > 0 ? canvasWidth : pageSize.width,
-            canvasHeight > 0 ? canvasHeight : pageSize.height,
+            canvasWidth > 0 ? canvasWidth : effectivePageSize.width,
+            canvasHeight > 0 ? canvasHeight : effectivePageSize.height,
           ),
         );
-        final double scale = pageRenderRect.width / pageSize.width;
+        final double scale = pageRenderRect.width / effectivePageSize.width;
         final double leftOffset = pageRenderRect.left;
         final double topOffset = pageRenderRect.top;
 

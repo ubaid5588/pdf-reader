@@ -707,9 +707,16 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
 
                   return Obx(() {
                     final page = controller.currentPageIndex.value;
-                    final pageSize = controller.originalPageSizes[page] ??
+                    final origSize = controller.originalPageSizes[page] ??
                         const Size(595, 842);
-                    final renderRect = EditPdfController.computePdfPageRenderRect(
+                    final rotation = controller.pageRotations[page] ?? 0;
+                    final isRotated90or270 = rotation == 90 || rotation == 270;
+                    final pageSize = isRotated90or270
+                        ? Size(origSize.height, origSize.width)
+                        : origSize;
+
+                    final renderRect =
+                        EditPdfController.computePdfPageRenderRect(
                       pageSize: pageSize,
                       canvasSize: Size(canvasWidth, canvasHeight),
                     );
@@ -733,20 +740,33 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                         child: Stack(
                           key: _canvasKey,
                           children: [
-                            // 1. Live Visual PDF Background (fitted inside renderRect)
+                            // 1. Live Visual PDF Background (fitted inside renderRect, rotated live)
                             if (controller.sourceFile.value != null)
                               Positioned.fromRect(
                                 rect: renderRect,
                                 child: IgnorePointer(
                                   ignoring: true,
-                                  child: SfPdfViewer.file(
-                                    controller.sourceFile.value!,
-                                    controller: controller.pdfViewerController,
-                                    pageLayoutMode: PdfPageLayoutMode.single,
-                                    canShowScrollHead: false,
-                                    canShowScrollStatus: false,
-                                    enableDoubleTapZooming: false,
-                                    enableTextSelection: false,
+                                  child: RotatedBox(
+                                    quarterTurns: (rotation ~/ 90) % 4,
+                                    child: SizedBox(
+                                      width: isRotated90or270
+                                          ? renderRect.height
+                                          : renderRect.width,
+                                      height: isRotated90or270
+                                          ? renderRect.width
+                                          : renderRect.height,
+                                      child: SfPdfViewer.file(
+                                        controller.sourceFile.value!,
+                                        controller:
+                                            controller.pdfViewerController,
+                                        pageLayoutMode:
+                                            PdfPageLayoutMode.single,
+                                        canShowScrollHead: false,
+                                        canShowScrollStatus: false,
+                                        enableDoubleTapZooming: false,
+                                        enableTextSelection: false,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
