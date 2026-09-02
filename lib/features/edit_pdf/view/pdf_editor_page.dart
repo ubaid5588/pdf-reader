@@ -1019,18 +1019,26 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                                     .where((w) => w.pageIndex == page)
                                     .toList();
 
+                                final isHighlighter =
+                                    controller.activeTool.value ==
+                                        EditorTool.highlight;
+                                final effectiveLiveColor = isHighlighter
+                                    ? controller.selectedColor.value
+                                        .withOpacity(
+                                          controller.highlightOpacity.value,
+                                        )
+                                    : controller.selectedColor.value;
+
                                 return CustomPaint(
                                   painter: _CanvasElementsPainter(
                                     strokes: pageStrokes,
                                     shapes: pageShapes,
                                     whiteouts: pageWhiteouts,
                                     livePoints: _livePoints,
-                                    liveColor: controller.selectedColor.value,
+                                    liveColor: effectiveLiveColor,
                                     liveStrokeWidth:
                                         controller.strokeWidth.value,
-                                    liveIsHighlighter:
-                                        controller.activeTool.value ==
-                                        EditorTool.highlight,
+                                    liveIsHighlighter: isHighlighter,
                                     liveShapeStart: _shapeStart,
                                     liveShapeEnd: _shapeEnd,
                                     liveShapeType:
@@ -1143,13 +1151,18 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
                                       setState(() => _livePoints = []);
                                     } else if (tool == EditorTool.highlight) {
                                       if (_livePoints.length > 1) {
+                                        final highlightColor = controller
+                                            .selectedColor.value
+                                            .withOpacity(
+                                              controller.highlightOpacity.value,
+                                            );
                                         controller.addDrawStroke(
                                           VisualDrawStroke(
                                             pageIndex: page,
                                             points: List.from(_livePoints),
-                                            color: controller
-                                                .selectedColor.value,
-                                            strokeWidth: 14.0,
+                                            color: highlightColor,
+                                            strokeWidth:
+                                                controller.strokeWidth.value,
                                             isHighlighter: true,
                                           ),
                                         );
@@ -1484,93 +1497,281 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
       if (tool == EditorTool.select) return const SizedBox.shrink();
 
       return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: colors.surfaceElevated,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: colors.border, width: 1),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Color Palette
-            Row(
-              children: _palette.take(5).map((c) {
-                return Obx(() {
-                  final isSelected = controller.selectedColor.value == c;
-                  return GestureDetector(
-                    onTap: () => controller.selectedColor.value = c,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: c,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isSelected ? colors.primary : Colors.grey,
-                          width: isSelected ? 2.5 : 1,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Shape switcher if in shape mode
+              if (tool == EditorTool.shape) ...[
+                Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: colors.border, width: 0.8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildShapeOption(
+                        Icons.crop_square_rounded,
+                        ShapeType.rectangle,
+                      ),
+                      _buildShapeOption(
+                        Icons.circle_outlined,
+                        ShapeType.circle,
+                      ),
+                      _buildShapeOption(
+                        Icons.horizontal_rule_rounded,
+                        ShapeType.line,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  height: 20,
+                  child: VerticalDivider(
+                    color: colors.border,
+                    width: 1,
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+
+              // Color Palette (if tool uses color)
+              if (tool != EditorTool.whiteout) ...[
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: _palette.take(6).map((c) {
+                    return Obx(() {
+                      final isSelected = controller.selectedColor.value == c;
+                      return GestureDetector(
+                        onTap: () => controller.selectedColor.value = c,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                          width: 22,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            color: c,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSelected
+                                  ? colors.primary
+                                  : Colors.grey.withOpacity(0.5),
+                              width: isSelected ? 2.5 : 1,
+                            ),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: c.withOpacity(0.4),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                        ),
+                      );
+                    });
+                  }).toList(),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  height: 20,
+                  child: VerticalDivider(
+                    color: colors.border,
+                    width: 1,
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+
+              // Highlight Opacity / Transparency Control (0% to 100%)
+              if (tool == EditorTool.highlight) ...[
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: colors.border, width: 0.8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.opacity_rounded,
+                        size: 14,
+                        color: colors.primary,
+                      ),
+                      const SizedBox(width: 3),
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (controller.highlightOpacity.value > 0.15) {
+                            controller.highlightOpacity.value =
+                                (controller.highlightOpacity.value - 0.1)
+                                    .clamp(0.1, 1.0);
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Icon(
+                            Icons.remove,
+                            size: 15,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '${(controller.highlightOpacity.value * 100).round()}%',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (controller.highlightOpacity.value < 0.95) {
+                            controller.highlightOpacity.value =
+                                (controller.highlightOpacity.value + 0.1)
+                                    .clamp(0.1, 1.0);
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(2),
+                          child: Icon(
+                            Icons.add,
+                            size: 15,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  height: 20,
+                  child: VerticalDivider(
+                    color: colors.border,
+                    width: 1,
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+
+              // Stroke Width Stepper
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                decoration: BoxDecoration(
+                  color: colors.surface,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: colors.border, width: 0.8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        final step = tool == EditorTool.highlight ? 2.0 : 1.5;
+                        final minW = tool == EditorTool.highlight ? 6.0 : 1.5;
+                        if (controller.strokeWidth.value > minW) {
+                          controller.strokeWidth.value =
+                              (controller.strokeWidth.value - step)
+                                  .clamp(minW, 40.0);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(2),
+                        child: Icon(
+                          Icons.remove,
+                          size: 16,
+                          color: colors.textPrimary,
                         ),
                       ),
                     ),
-                  );
-                });
-              }).toList(),
-            ),
-
-            // Shape switcher if in shape mode
-            if (tool == EditorTool.shape)
-              Row(
-                children: [
-                  _buildShapeOption(
-                    Icons.crop_square_rounded,
-                    ShapeType.rectangle,
-                  ),
-                  _buildShapeOption(Icons.circle_outlined, ShapeType.circle),
-                  _buildShapeOption(
-                    Icons.horizontal_rule_rounded,
-                    ShapeType.line,
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    Text(
+                      '${controller.strokeWidth.value.toInt()}px',
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.bold,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        final step = tool == EditorTool.highlight ? 2.0 : 1.5;
+                        const maxW = 40.0;
+                        if (controller.strokeWidth.value < maxW) {
+                          controller.strokeWidth.value =
+                              (controller.strokeWidth.value + step)
+                                  .clamp(1.5, maxW);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(2),
+                        child: Icon(
+                          Icons.add,
+                          size: 16,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
 
-            // Stroke Width Stepper
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    if (controller.strokeWidth.value > 1.5) {
-                      controller.strokeWidth.value -= 1.5;
-                    }
-                  },
-                  child: Icon(
-                    Icons.remove,
-                    size: 16,
-                    color: colors.textPrimary,
+              // Real-Time Stroke / Highlight Preview Swatch
+              if (tool == EditorTool.highlight ||
+                  tool == EditorTool.draw ||
+                  tool == EditorTool.shape) ...[
+                const SizedBox(width: 8),
+                Container(
+                  width: 38,
+                  height: 24,
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: colors.border, width: 0.8),
                   ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '${controller.strokeWidth.value.toInt()}px',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: colors.textPrimary,
+                  child: Center(
+                    child: Container(
+                      width: 28,
+                      height: (controller.strokeWidth.value / 2.5)
+                          .clamp(3.0, 16.0),
+                      decoration: BoxDecoration(
+                        color: tool == EditorTool.highlight
+                            ? controller.selectedColor.value.withOpacity(
+                                controller.highlightOpacity.value,
+                              )
+                            : controller.selectedColor.value,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 4),
-                GestureDetector(
-                  onTap: () {
-                    if (controller.strokeWidth.value < 20) {
-                      controller.strokeWidth.value += 1.5;
-                    }
-                  },
-                  child: Icon(Icons.add, size: 16, color: colors.textPrimary),
                 ),
               ],
-            ),
-          ],
+            ],
+          ),
         ),
       );
     });
@@ -1579,14 +1780,25 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
   Widget _buildShapeOption(IconData icon, ShapeType type) {
     return Obx(() {
       final isSelected = controller.selectedShape.value == type;
-      return IconButton(
-        icon: Icon(icon, size: 18),
-        color: isSelected
-            ? context.colors.primary
-            : context.colors.textSecondary,
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        constraints: const BoxConstraints(),
-        onPressed: () => controller.selectedShape.value = type,
+      return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => controller.selectedShape.value = type,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? context.colors.primary.withOpacity(0.18)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Icon(
+            icon,
+            size: 18,
+            color: isSelected
+                ? context.colors.primary
+                : context.colors.textSecondary,
+          ),
+        ),
       );
     });
   }
@@ -1692,7 +1904,15 @@ class _PdfEditorPageState extends State<PdfEditorPage> {
       return GestureDetector(
         onTap: () {
           controller.activeTool.value = tool;
-          if (tool == EditorTool.text) {
+          if (tool == EditorTool.highlight) {
+            if (controller.strokeWidth.value < 8.0) {
+              controller.strokeWidth.value = 16.0;
+            }
+          } else if (tool == EditorTool.draw) {
+            if (controller.strokeWidth.value > 15.0) {
+              controller.strokeWidth.value = 3.0;
+            }
+          } else if (tool == EditorTool.text) {
             _showAddTextDialog(context);
           }
         },
@@ -1824,9 +2044,7 @@ class _CanvasElementsPainter extends CustomPainter {
     for (final stroke in strokes) {
       if (stroke.points.length < 2) continue;
       final paint = Paint()
-        ..color = stroke.isHighlighter
-            ? stroke.color.withOpacity(0.35)
-            : stroke.color
+        ..color = stroke.color
         ..strokeWidth = stroke.strokeWidth
         ..strokeCap = StrokeCap.round
         ..strokeJoin = StrokeJoin.round
@@ -1843,7 +2061,7 @@ class _CanvasElementsPainter extends CustomPainter {
     // 4. Draw Live Stroke while dragging
     if (livePoints.length > 1) {
       final livePaint = Paint()
-        ..color = liveIsHighlighter ? liveColor.withOpacity(0.35) : liveColor
+        ..color = liveColor
         ..strokeWidth = liveStrokeWidth
         ..strokeCap = StrokeCap.round
         ..strokeJoin = StrokeJoin.round

@@ -196,6 +196,7 @@ class EditPdfController extends GetxController {
   Rx<EditorTool> activeTool = EditorTool.select.obs;
   Rx<Color> selectedColor = const Color(0xFF2563EB).obs;
   RxDouble strokeWidth = 3.0.obs;
+  RxDouble highlightOpacity = 0.4.obs;
   Rx<ShapeType> selectedShape = ShapeType.rectangle.obs;
 
   // Extracted interactive text elements per PDF page
@@ -901,18 +902,18 @@ class EditPdfController extends GetxController {
           }
         }
 
-        // 6. Draw Highlighter Strokes & Freehand Pen Drawings
+        // 6. Draw Freehand and Highlighter Strokes
         final pageStrokes =
             drawStrokes.where((s) => s.pageIndex == i).toList();
         for (final stroke in pageStrokes) {
-          if (stroke.points.length < 2) continue;
-
+          final int alpha =
+              (stroke.color.a * 255.0).round().clamp(10, 255) & 0xff;
           final pen = PdfPen(
             PdfColor(
               (stroke.color.r * 255.0).round() & 0xff,
               (stroke.color.g * 255.0).round() & 0xff,
               (stroke.color.b * 255.0).round() & 0xff,
-              stroke.isHighlighter ? 110 : 255,
+              alpha,
             ),
             width: toPdfDist(stroke.strokeWidth),
           );
